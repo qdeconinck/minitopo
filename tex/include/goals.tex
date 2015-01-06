@@ -1,0 +1,26 @@
+\section{Goals}
+
+\subsection{Glob}
+It should be easy to test a specific version of MPTCP.
+
+By specific version we mean :
+
+* We should be able to pick a commit
+* We should be able to select path manager
+* we should be able to express the environment to be tested
+	- All of them
+	- a subpart
+	- just one
+	- ...
+
+Results should be easy to access without any modifications.
+Results should be reproducible : meaning : even configuration and so one should
+be some how saved on the repository.
+
+Example of execution
+
+./mpTest --mpCommit xxx --pm yy --pmCommit yyy --conf all
+./mpTest --mpCommit xxx --pm yy --pmCommit yyy --conf 42
+
+
+
