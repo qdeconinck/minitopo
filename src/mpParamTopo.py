@@ -34,7 +34,7 @@ class MpParamTopo:
 
 	def loadLinkCharacteristics(self):
 		i = 0 
-		for k in self.paramDic:
+		for k in sorted(self.paramDic):
 			if k.startswith("path"):
 				tab = self.paramDic[k].split(",")
 				if len(tab) == 3:

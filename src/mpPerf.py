@@ -42,6 +42,7 @@ if __name__ == '__main__':
 			mpConfig = MpMultiInterfaceConfig(mpTopo, param)
 			mpTopo.startNetwork()
 			mpConfig.configureNetwork()
+			mpConfig.pingAllFromClient()
 			mpTopo.getCLI()
 			mpTopo.stopNetwork()
 	else:
