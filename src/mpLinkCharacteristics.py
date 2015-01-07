@@ -10,9 +10,9 @@ class MpLinkCharacteristics:
 	
 	def asDict(self):
 		d = {}
-		d['delay'] = self.delay
-		d['queueSize'] = self.queueSize
-		d['bandwidth'] = self.bandwidth
+		d['bw'] = int(self.bandwidth)
+		d['delay'] = self.delay + "ms"
+		d['max_queue_size'] = int(self.queueSize)
 		return d
 
 	def __str__(self):

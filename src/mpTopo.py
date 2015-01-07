@@ -22,7 +22,6 @@ class MpTopo:
 		return self.topoBuilder.addSwitch(switch)
 
 	def addLink(self, fromA, toB, **kwargs):
-		print(kwargs)
 		self.topoBuilder.addLink(fromA,toB,**kwargs)
 
 	def getCLI(self):
