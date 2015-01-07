@@ -1,28 +1,35 @@
 class MpTopo:
+	switchNamePrefix = "s"
+	clientName = "Client"
+	serverName = "Server"
+	routerName = "Router"
+
 	"""Simple MpTopo"""
 	def __init__(self, topoBuilder, topoParam):
 		self.topoBuilder = topoBuilder
 		self.topoParam = topoParam 
 	
 	def commandTo(self, who, cmd):
-		pass
+		self.topoBuilder.commandTo(who, cmd)
 
 	def getHost(self, who):
-		pass
+		return self.topoBuilder.getHost(who)
 
 	def addHost(self, host):
-		print("TODO, add host " + host)
-		self.topoBuilder.addHost(host)
-		pass
+		return self.topoBuilder.addHost(host)
 
 	def addSwitch(self, switch):
-		print("TODO, add switchi " + switch)
-		self.topoBuilder.addSwitch(switch)
-		pass
+		return self.topoBuilder.addSwitch(switch)
 
 	def addLink(self, fromA, toB, **kwargs):
-		#todo check syntax for **kwargs
+		print(kwargs)
 		self.topoBuilder.addLink(fromA,toB,**kwargs)
-		pass
 
-	
+	def getCLI(self):
+		self.topoBuilder.getCLI()
+
+	def startNetwork(self):
+		self.topoBuilder.startNetwork()
+
+	def stopNetwork(self):
+		self.topoBuilder.stopNetwork()

@@ -2,6 +2,12 @@ from mpLinkCharacteristics import MpLinkCharacteristics
 
 
 class MpParamTopo:
+	LSUBNET = "leftSubnet"
+	RSUBNET = "rightSubnet"
+	defaultValue = {}
+	defaultValue[LSUBNET] = "10.1."
+	defaultValue[RSUBNET] = "10.2."
+
 	def __init__(self, paramFile):
 		self.paramDic = {}
 		self.linkCharacteristics = []
@@ -43,6 +49,8 @@ class MpParamTopo:
 	def getParam(self, key):
 		if key in self.paramDic:
 			return self.paramDic[key]
+		elif key in MpParamTopo.defaultValue:
+			return MpParamTopo[key]
 		else:
 			raise Exception("Param not found " + key)
 

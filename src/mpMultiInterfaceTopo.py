@@ -4,13 +4,19 @@ class MpMultiInterfaceTopo(MpTopo):
 	def __init__(self, topoBuilder, parameterFile):
 		MpTopo.__init__(self,topoBuilder, parameterFile)
 		print("Hello from topo multi if")
-		self.addHost("Client")
-		self.addHost("Server")
+		self.client = self.addHost(MpTopo.clientName)
+		self.server = self.addHost(MpTopo.serverName)
+		self.router = self.addHost(MpTopo.routerName)
+		self.switch = []
 		for l in self.topoParam.linkCharacteristics:
-			self.addOneSwitchPerLink(l)
+			self.switch.append(self.addOneSwitchPerLink(l))
+			self.addLink(self.client,self.switch[-1])
+			self.addLink(self.switch[-1],self.router, **l.asDict())
+		self.addLink(self.router, self.server)
 
 	def addOneSwitchPerLink(self, link):
-		self.addSwitch("sw" + str(link.id))
+		return self.addSwitch(MpMultiInterfaceTopo.switchNamePrefix +
+				str(link.id))
 	
 	def __str__(self):
 		s = "Simple multiple interface topolgy \n"

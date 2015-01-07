@@ -7,6 +7,13 @@ class MpLinkCharacteristics:
 		self.delay = delay
 		self.queueSize = queueSize
 		self.bandwidth = bandwidth
+	
+	def asDict(self):
+		d = {}
+		d['delay'] = self.delay
+		d['queueSize'] = self.queueSize
+		d['bandwidth'] = self.bandwidth
+		return d
 
 	def __str__(self):
 		s = "Link id : " + str(self.id) + "\n"

@@ -3,6 +3,7 @@
 import sys, getopt
 from mpParamTopo import MpParamTopo
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
+from mpMultiInterfaceConfig import MpMultiInterfaceConfig
 from mpMininetBuilder import MpMininetBuilder
 
 topoParamFile = None
@@ -38,7 +39,11 @@ if __name__ == '__main__':
 	if topoType == "mininet":
 		if param.getParam('topoType') == "MultiIf":
 			mpTopo = MpMultiInterfaceTopo(MpMininetBuilder(), param)
-
+			mpConfig = MpMultiInterfaceConfig(mpTopo, param)
+			mpTopo.startNetwork()
+			mpConfig.configureNetwork()
+			mpTopo.getCLI()
+			mpTopo.stopNetwork()
 	else:
 		print("Unrecognized topo type")
 	print(mpTopo)

@@ -1,6 +1,6 @@
 desc:Simple configuration with two para link
-leftSubnet:xxx
-rightSubnet:yyy
+leftSubnet:5.5.
+rightSubnet:6.6.
 midSubnet:zzz
 #path_x:delay,queueSize(may be calc),bw
 error
