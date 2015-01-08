@@ -1,19 +1,26 @@
 from mpTopo import MpTopo
 from mpParamTopo import MpParamTopo
+from mpParamXp import MpParamXp
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 from mpMultiInterfaceConfig import MpMultiInterfaceConfig
 from mpMininetBuilder import MpMininetBuilder
+from mpExperiencePing import MpExperiencePing
+from mpExperience import MpExperience
 
 class MpXpRunner:
 	def __init__(self, builderType, topoParamFile, xpParamFile):
+		self.defParamXp(xpParamFile)
 		self.topoParam = MpParamTopo(topoParamFile)
 		self.defBuilder(builderType)
 		self.defTopo()
 		self.defConfig()
 		self.startTopo()
-		self.runXp(xpParamFile)
+		self.runXp()
 		self.stopTopo()
 		
+	def defParamXp(self, xpParamFile):
+		self.xpParam = MpParamXp(xpParamFile)
+
 	def defBuilder(self, builderType):
 		if builderType == MpTopo.mininetBuilder:
 			self.topoBuilder = MpMininetBuilder()
@@ -37,12 +44,13 @@ class MpXpRunner:
 		self.mpTopo.startNetwork()
 		self.mpTopoConfig.configureNetwork()
 
-	def runXp(self, xpParamFile):
-		if xpParamFile is None:
-			self.mpTopoConfig.pingAllFromClient()
-			self.mpTopo.getCLI()
+	def runXp(self):
+		xp = self.xpParam.getParam(MpParamXp.XPTYPE)
+		if xp == MpExperience.PING:
+			MpExperiencePing(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
 		else:
-			raise Exception("TODO")
+			print("Unfound xp type..." + xp)
 	
 	def stopTopo(self):
 		self.mpTopo.stopNetwork()

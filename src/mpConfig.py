@@ -6,6 +6,9 @@ class MpConfig:
 		self.topo = topo
 		self.param = param
 
+	def getClientInterfaceCount(self):
+		raise Exception("To be implemented")
+
 	def interfaceUpCommand(self, interfaceName, ip, subnet):
 		s = "ifconfig " + interfaceName + " " + ip + " netmask " + \
 			subnet

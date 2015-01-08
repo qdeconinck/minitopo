@@ -86,6 +86,9 @@ class MpMultiInterfaceConfig(MpConfig):
 		serverIP = rSubnet + "0.1"
 		return serverIP
 
+	def getClientInterfaceCount(self):
+		return len(self.topo.switch)
+
 	def getRouterInterfaceServer(self):
 		return self.getRouterInterfaceSwitch(len(self.topo.switch))
 
@@ -98,11 +101,3 @@ class MpMultiInterfaceConfig(MpConfig):
 	def getServerInterface(self):
 		return  MpTopo.serverName + "-eth0"
 
-	def pingAllFromClient(self, n = 5):
-		i = 0
-		self.topo.commandTo(self.client, "rm " + MpConfig.PING_OUTPUT)
-		for l in self.topo.switch:
-			cmd = self.pingCommand(self.getClientIP(i),
-					self.getServerIP(), n)
-			self.topo.commandTo(self.client, cmd)
-			i = i + 1

@@ -1,7 +1,7 @@
 from mpLinkCharacteristics import MpLinkCharacteristics
+from mpParam import MpParam
 
-
-class MpParamTopo:
+class MpParamTopo(MpParam):
 	LSUBNET = "leftSubnet"
 	RSUBNET = "rightSubnet"
 	defaultValue = {}
@@ -9,29 +9,10 @@ class MpParamTopo:
 	defaultValue[RSUBNET] = "10.2."
 
 	def __init__(self, paramFile):
-		self.paramDic = {}
+		MpParam.__init__(self, paramFile)
 		self.linkCharacteristics = []
-		print("Create the param Object")
-		self.loadParamFile(paramFile)
 		self.loadLinkCharacteristics()
 	
-	def loadParamFile(self, paramFile):
-		f = open(paramFile)
-		i = 0
-		for l in f:
-			i = i + 1
-			if l.startswith("#"):
-				continue
-
-			tab = l.split(":")
-			if len(tab) == 2:
-				self.paramDic[tab[0]] = tab[1][:-1]
-			else:
-				print("Ignored Line " + str(i))
-				print(l),
-				print("In file " + paramFile)
-		f.close()
-
 	def loadLinkCharacteristics(self):
 		i = 0 
 		for k in sorted(self.paramDic):
@@ -47,15 +28,17 @@ class MpParamTopo:
 					print(self.paramDic[k])
 
 	def getParam(self, key):
-		if key in self.paramDic:
-			return self.paramDic[key]
-		elif key in MpParamTopo.defaultValue:
-			return MpParamTopo[key]
+		val = MpParam.getParam(self, key)
+		if val is None:
+			if key in MpParamTopo.defaultValue:
+				return MpParamTopo[key]
+			else:
+				raise Exception("Param not found " + key)
 		else:
-			raise Exception("Param not found " + key)
+			return val
 
 	def __str__(self):
-		s = self.paramDic.__str__()
+		s = MpParam.__str__(self)
 		s = s + "\n"
 		for p in self.linkCharacteristics[:-1]:
 			s = s + p.__str__() + "\n"

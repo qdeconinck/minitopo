@@ -10,7 +10,7 @@ class MpTopo:
 	"""Simple MpTopo"""
 	def __init__(self, topoBuilder, topoParam):
 		self.topoBuilder = topoBuilder
-		self.topoParam = topoParam 
+		self.topoParam = topoParam
 	
 	def commandTo(self, who, cmd):
 		self.topoBuilder.commandTo(who, cmd)

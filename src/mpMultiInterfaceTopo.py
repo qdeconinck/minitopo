@@ -17,7 +17,7 @@ class MpMultiInterfaceTopo(MpTopo):
 	def addOneSwitchPerLink(self, link):
 		return self.addSwitch(MpMultiInterfaceTopo.switchNamePrefix +
 				str(link.id))
-	
+
 	def __str__(self):
 		s = "Simple multiple interface topolgy \n"
 		i = 0
