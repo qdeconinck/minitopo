@@ -1,4 +1,7 @@
 class MpTopo:
+	mininetBuilder = "mininet"
+	multiIfTopo = "MultiIf"
+	topoAttr    = "topoType"
 	switchNamePrefix = "s"
 	clientName = "Client"
 	serverName = "Server"

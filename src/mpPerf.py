@@ -1,21 +1,21 @@
 #!/usr/bin/python
 
 import sys, getopt
-from mpParamTopo import MpParamTopo
-from mpMultiInterfaceTopo import MpMultiInterfaceTopo
-from mpMultiInterfaceConfig import MpMultiInterfaceConfig
-from mpMininetBuilder import MpMininetBuilder
+from mpXpRunner import MpXpRunner
+from mpTopo import MpTopo
 
 topoParamFile = None
-topoType      = "mininet"
+xpParamFile   = None
+topoBuilder   = "mininet"
 
 def printHelp():
 	print("Help Menu")
 
 def parseArgs(argv):
 	global topoParamFile
+	global xpParamFile
 	try:
-		opts, args = getopt.getopt(argv, "hf:", ["topoParam="])
+		opts, args = getopt.getopt(argv, "ht:x:", ["topoParam=","xp="])
 	except getopt.GetoptError:
 		printHelp()
 		sys.exit(1)
@@ -23,28 +23,16 @@ def parseArgs(argv):
 		if opt == "-h":
 			printHelp()
 			sys.exit(1)
-		elif opt in ("-f","--topoParam"):
-			print("hllo", arg);
+		elif opt in ("-x","--xp"):
+			xpParamFile = arg
+		elif opt in ("-t","--topoParam"):
+			print("hey")
 			topoParamFile = arg
-
-
+	if topoParamFile is None:
+		print("Missing the topo...")
+		printHelp()
+		sys.exit(1)
 
 if __name__ == '__main__':
 	parseArgs(sys.argv[1:])
-	if topoParamFile is None:
-		print("Use command line param")
-	else:
-		param = MpParamTopo(topoParamFile)
-
-	if topoType == "mininet":
-		if param.getParam('topoType') == "MultiIf":
-			mpTopo = MpMultiInterfaceTopo(MpMininetBuilder(), param)
-			mpConfig = MpMultiInterfaceConfig(mpTopo, param)
-			mpTopo.startNetwork()
-			mpConfig.configureNetwork()
-			mpConfig.pingAllFromClient()
-			mpTopo.getCLI()
-			mpTopo.stopNetwork()
-	else:
-		print("Unrecognized topo type")
-	print(mpTopo)
+	MpXpRunner(MpTopo.mininetBuilder, topoParamFile, xpParamFile)

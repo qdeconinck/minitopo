@@ -1,0 +1,9 @@
+#option to dvlp are commented but already there.
+#kCommit:aaaa
+#pmCommit:bbb
+#sysctl:mem,x y z
+#sysctl:rmem,x y z
+#sysctl:wmem,x y z
+xpType:iperf
+size:10M
+
