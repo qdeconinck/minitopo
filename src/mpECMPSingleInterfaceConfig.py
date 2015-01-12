@@ -61,8 +61,8 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 	def getIptableRuleTCPPortClient(self, mask, id):
 		s = 'iptables -t mangle -A OUTPUT -m u32 --u32 ' + \
 				'"6&0xFF=0x6 && ' + \
-				'20&0x' + \
-				pack('>I',(mask<<16)).encode('hex') + \
+				'18&0x' + \
+				pack('>I',(mask)).encode('hex') + \
 				'=0x' + pack('>I',id).encode('hex') + \
 				'" -j MARK --set-mark ' + str(id + 1)
 		print (s)
