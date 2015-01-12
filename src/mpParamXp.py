@@ -7,6 +7,14 @@ class MpParamXp(MpParam):
 	SERVERPCAP = "serverPcap"
 	XPTYPE     = "xpType"
 	PINGCOUNT  = "pingCount"
+	DDIBS      = "ddIBS"
+	DDOBS      = "ddIBS"
+	DDCOUNT    = "ddCount"
+	PVRATELIMIT= "pvRateLimit"
+	PVG        = "pvG" #patched version of pv
+	PVZ        = "pvZ"
+	NCSERVERPORT = "ncServerPort"
+	NCCLIENTPORT = "ncClientPort"
 
 	defaultValue = {}
 
@@ -15,6 +23,14 @@ class MpParamXp(MpParam):
 	defaultValue[SERVERPCAP] = "no"
 	defaultValue[XPTYPE] = "ping"
 	defaultValue[PINGCOUNT] = "5"
+	defaultValue[DDIBS] = "1k"
+	defaultValue[DDOBS] = "1k"
+	defaultValue[DDCOUNT] = "5000" #5k * 1k = 5m
+	defaultValue[PVRATELIMIT] = "400k"
+	defaultValue[PVZ] = "10000"
+	defaultValue[PVG] = "10000"
+	defaultValue[NCSERVERPORT] = "33666"
+	defaultValue[NCCLIENTPORT] = "33555"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)

@@ -6,6 +6,7 @@ from mpMultiInterfaceConfig import MpMultiInterfaceConfig
 from mpECMPSingleInterfaceConfig import MpECMPSingleInterfaceConfig
 from mpMininetBuilder import MpMininetBuilder
 from mpExperiencePing import MpExperiencePing
+from mpExperienceNCPV import MpExperienceNCPV
 from mpExperience import MpExperience
 from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
 
@@ -62,6 +63,10 @@ class MpXpRunner:
 		xp = self.xpParam.getParam(MpParamXp.XPTYPE)
 		if xp == MpExperience.PING:
 			MpExperiencePing(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
+			self.mpTopo.getCLI()
+		elif xp == MpExperience.NCPV:
+			MpExperienceNCPV(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
 			self.mpTopo.getCLI()
 		else:
