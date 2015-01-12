@@ -3,9 +3,11 @@ from mpParamTopo import MpParamTopo
 from mpParamXp import MpParamXp
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 from mpMultiInterfaceConfig import MpMultiInterfaceConfig
+from mpECMPSingleInterfaceConfig import MpECMPSingleInterfaceConfig
 from mpMininetBuilder import MpMininetBuilder
 from mpExperiencePing import MpExperiencePing
 from mpExperience import MpExperience
+from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
 
 class MpXpRunner:
 	def __init__(self, builderType, topoParamFile, xpParamFile):
@@ -32,13 +34,25 @@ class MpXpRunner:
 		if t == MpTopo.multiIfTopo:
 			self.mpTopo = MpMultiInterfaceTopo(self.topoBuilder,
 					self.topoParam)
+		elif t == MpTopo.ECMPLikeTopo:
+			self.mpTopo = MpECMPSingleInterfaceTopo(
+					self.topoBuilder,
+					self.topoParam)
 		else:
 			raise Exception("Unfound Topo" + t)
 		print(self.mpTopo)
 
 	def defConfig(self):
-		self.mpTopoConfig = MpMultiInterfaceConfig(self.mpTopo,
+		t = self.topoParam.getParam(MpTopo.topoAttr)
+		if t == MpTopo.multiIfTopo:
+			self.mpTopoConfig = MpMultiInterfaceConfig(self.mpTopo,
 				self.topoParam)
+		elif t == MpTopo.ECMPLikeTopo:
+			self.mpTopoConfig = MpECMPSingleInterfaceConfig(
+					self.mpTopo,
+					self.topoParam)
+		else:
+			raise Exception("Unfound Topo" + t) 
 
 	def startTopo(self):
 		self.mpTopo.startNetwork()
@@ -49,6 +63,7 @@ class MpXpRunner:
 		if xp == MpExperience.PING:
 			MpExperiencePing(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
+			self.mpTopo.getCLI()
 		else:
 			print("Unfound xp type..." + xp)
 	

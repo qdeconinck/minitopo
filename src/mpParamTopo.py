@@ -19,10 +19,10 @@ class MpParamTopo(MpParam):
 			if k.startswith("path"):
 				tab = self.paramDic[k].split(",")
 				if len(tab) == 3:
-					i = i + 1
 					path = MpLinkCharacteristics(i,tab[0],
 							tab[1], tab[2])
 					self.linkCharacteristics.append(path)
+					i = i + 1
 				else:
 					print("Ignored path :")
 					print(self.paramDic[k])

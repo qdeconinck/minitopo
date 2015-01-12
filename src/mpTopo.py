@@ -1,8 +1,10 @@
 class MpTopo:
 	mininetBuilder = "mininet"
 	multiIfTopo = "MultiIf"
+	ECMPLikeTopo = "ECMPLike"
 	topoAttr    = "topoType"
 	switchNamePrefix = "s"
+	routerNamePrefix = "r"
 	clientName = "Client"
 	serverName = "Server"
 	routerName = "Router"
