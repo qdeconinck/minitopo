@@ -14,10 +14,15 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 	
 	def configureRoute(self):
 		i = 0
+		mask = len(self.topo.routers) - 1
 		for l in self.topo.routers:
-			##todo calculate mask length
-			cmd = self.getIptableRuleICMP(3, i)
+			cmd = self.getIptableRuleICMP(mask, i)
 			self.topo.commandTo(self.client, cmd)
+			self.topo.commandTo(self.server, cmd)
+
+			cmd = self.getIptableRuleTCPPortClient(mask, i)
+			self.topo.commandTo(self.client, cmd)
+			cmd = self.getIptableRuleTCPPortServer(mask, i)
 			self.topo.commandTo(self.server, cmd)
 
 			cmd = self.getIpRuleCmd(i)
@@ -43,17 +48,36 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 		self.topo.commandTo(self.client, "ip route flush cache")
 		self.topo.commandTo(self.server, "ip route flush cache")
 
-	def getIptableRuleICMP(self, maskLen, id):
+	def getIptableRuleICMP(self, mask, id):
 		s = 'iptables -t mangle -A OUTPUT -m u32 --u32 ' + \
 				'"6&0xFF=0x1 && ' + \
 				'24&0x' + \
-				pack('>I',(maskLen)).encode('hex') + \
+				pack('>I',(mask)).encode('hex') + \
 				'=0x' + pack('>I',id).encode('hex') + \
 				'" -j MARK --set-mark ' + str(id + 1)
 		print (s)
 		return s
 
+	def getIptableRuleTCPPortClient(self, mask, id):
+		s = 'iptables -t mangle -A OUTPUT -m u32 --u32 ' + \
+				'"6&0xFF=0x6 && ' + \
+				'20&0x' + \
+				pack('>I',(mask<<16)).encode('hex') + \
+				'=0x' + pack('>I',id).encode('hex') + \
+				'" -j MARK --set-mark ' + str(id + 1)
+		print (s)
+		return s
 	
+	def getIptableRuleTCPPortServer(self, mask, id):
+		s = 'iptables -t mangle -A OUTPUT -m u32 --u32 ' + \
+				'"6&0xFF=0x6 && ' + \
+				'20&0x' + \
+				pack('>I',(mask)).encode('hex') + \
+				'=0x' + pack('>I',id).encode('hex') + \
+				'" -j MARK --set-mark ' + str(id + 1)
+		print (s)
+		return s
+
 	def getIpRuleCmd(self, id):
 		s = 'ip rule add fwmark ' + str(id + 1) + ' table ' + \
 				str(id + 1)
