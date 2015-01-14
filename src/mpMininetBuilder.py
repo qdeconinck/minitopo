@@ -2,6 +2,7 @@ from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.link import TCLink
 from mininet.cli import CLI
+from subprocess import Popen, PIPE
 
 class MpMininetBuilder(Topo):
 	def __init__(self):
@@ -10,6 +11,13 @@ class MpMininetBuilder(Topo):
 	
 	def commandTo(self, who, cmd):
 		who.cmd(cmd)
+
+	def notNSCommand(self, cmd):
+		p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+		stdout, stderr = p.communicate()
+		if stderr:
+			return "Error"
+		return stdout
 	
 	def startNetwork(self):
 		self.net = Mininet(topo=self,link=TCLink)

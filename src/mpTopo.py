@@ -20,6 +20,13 @@ class MpTopo:
 		self.logFile.write(who.__str__() + " : " + cmd + "\n")
 		self.topoBuilder.commandTo(who, cmd)
 
+	def notNSCommand(self, cmd):
+		"""
+		mainly use for not namespace sysctl.
+		"""
+		self.logFile.write("Not_NS" + " : " + cmd + "\n")
+		return self.topoBuilder.notNSCommand(cmd)
+
 	def getHost(self, who):
 		return self.topoBuilder.getHost(who)
 

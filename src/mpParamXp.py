@@ -3,6 +3,7 @@ from mpParam import MpParam
 class MpParamXp(MpParam):
 
 	RMEM       = "rmem"
+	KERNELPM   = "kpm"
 	CLIENTPCAP = "clientPcap"
 	SERVERPCAP = "serverPcap"
 	XPTYPE     = "xpType"
@@ -16,9 +17,19 @@ class MpParamXp(MpParam):
 	NCSERVERPORT = "ncServerPort"
 	NCCLIENTPORT = "ncClientPort"
 
+	# global sysctl
+	sysctlKey = {}
+	sysctlKey[RMEM] = "net.ipv4.tcp_rmem"
+	sysctlKey[KERNELPM] = "net.mptcp.mptcp_path_manager"
+
+	sysctlListClient = []
+	sysctlListServer = []
+
 	defaultValue = {}
 
-	defaultValue[RMEM] = "x y z"
+	defaultValue[RMEM] = "10240 87380 16777216"
+	defaultValue[KERNELPM] = "fullmesh"
+
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
 	defaultValue[XPTYPE] = "ping"
