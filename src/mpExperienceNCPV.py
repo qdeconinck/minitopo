@@ -5,8 +5,8 @@ class  MpExperienceNCPV(MpExperience):
 	"""
 	NC PV : NetCat and Pipe Viewer
 	"""
-	SERVER_NC_LOG = "netcat_server.log"
-	CLIENT_NC_LOG = "netcat_client.log"
+	SERVER_NC_LOG = "netcat_server"
+	CLIENT_NC_LOG = "netcat_client"
 	NC_BIN = "netcat"
 	PV_BIN = "/home/bhesmans/Documents/git/pv/pv"
 
@@ -45,7 +45,7 @@ class  MpExperienceNCPV(MpExperience):
 		s = MpExperienceNCPV.NC_BIN + " -d " + \
 				" -l " + self.ncServerPort  + \
 				" &>" + MpExperienceNCPV.SERVER_NC_LOG + \
-				"_" + str(id) + " &"
+				"_" + str(id) + ".log &"
 		print(s)
 		return s
 
@@ -61,7 +61,7 @@ class  MpExperienceNCPV(MpExperience):
 				self.mpConfig.getServerIP() + " " + \
 				self.ncServerPort + " " + \
 				"&>" + MpExperienceNCPV.CLIENT_NC_LOG + \
-				"_" + str(id)
+				"_" + str(id) + ".log"
 		print(s)
 		return s
 
