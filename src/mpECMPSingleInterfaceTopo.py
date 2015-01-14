@@ -26,22 +26,19 @@ class MpECMPSingleInterfaceTopo(MpTopo):
 				str(link.id))
 
 	def __str__(self):
-		s = "Single if ECMP like env"
-		"""
+		s = "Single if ECMP like env\n"
 		i = 0
 		n = len(self.topoParam.linkCharacteristics)
 		for p in self.topoParam.linkCharacteristics:
 			if i == n // 2:
 				if n % 2 == 0:
-					s = s + "c            r-----s\n"
-					s = s + "|-----sw-----|\n"
+					s = s + "c---sw          sw-----s\n"
+					s = s + "    |-----R-----|\n"
 				else:
-					s = s + "c-----sw-----r-----s\n"
+					s = s + "c---sw----R-----sw-----s\n"
 			else:
-				s = s + "|-----sw-----|\n"
+				s = s + "    |-----R-----|\n"
 
 			i = i + 1
-		"""
-
 		return s
 
