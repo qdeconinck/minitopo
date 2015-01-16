@@ -28,10 +28,6 @@ class MpConfig:
 	def configureInterfaces(self):
 		pass
 
-	def configureNetwork(self):
-		pass
-
-
 	def getClientInterfaceCount(self):
 		raise Exception("To be implemented")
 

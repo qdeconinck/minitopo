@@ -17,10 +17,12 @@ class MpExperience:
 	def prepare(self):
 		self.setupSysctl()
 		self.runTcpDump()
+		self.runNetemAt()
 		pass
 
 	def runNetemAt(self):
 		if not self.mpTopo.changeNetem == "yes":
+			print("I don't need to change netem")
 			return
 		print("Will change netem config on the fly")
 		links = self.mpTopo.getLinkCharacteristics()

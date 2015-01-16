@@ -20,7 +20,7 @@ class MpTopo:
 		self.logFile = open(MpTopo.cmdLog, 'w')
 
 	def getLinkCharacteristics(self):
-		return topoParam.linkCharacteristics()
+		return self.topoParam.linkCharacteristics
 
 	def commandTo(self, who, cmd):
 		self.logFile.write(who.__str__() + " : " + cmd + "\n")

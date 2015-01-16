@@ -29,10 +29,11 @@ class MpLinkCharacteristics:
 			cmd = cmd + " && "
 			cmd = cmd + " echo " + n.cmd + " && "
 		cmd = cmd + " true &"
+		return cmd
 
 	def asDict(self):
 		d = {}
-		d['bw'] = int(self.bandwidth)
+		d['bw'] = float(self.bandwidth)
 		d['delay'] = self.delay + "ms"
 		d['max_queue_size'] = int(self.queueSize)
 		return d
