@@ -27,7 +27,9 @@ class MpParamTopo(MpParam):
 				i = int(k[len(MpParamTopo.netemAt):])
 				val = self.paramDic[k]
 				if not isinstance(val, list):
-					val = list(val)
+					tmp = val
+					val = []
+					val.append(tmp)
 				self.loadNetemAtList(i, val)
 	
 	def loadNetemAtList(self, id, nlist):
