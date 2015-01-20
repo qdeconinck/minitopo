@@ -2,6 +2,10 @@
 
 
 class MpLinkCharacteristics:
+
+	tcNetemParent = "5:1"
+	tcNetemHandle = "10:"
+
 	def __init__(self, id, delay, queueSize, bandwidth):
 		self.id = id
 		self.delay = delay
@@ -11,7 +15,7 @@ class MpLinkCharacteristics:
 
 	def addNetemAt(self, n):
 		if len(self.netemAt) == 0:
-			n.delay = n.at
+			n.delta = n.at
 			self.netemAt.append(n)
 		else:
 			if n.at > self.netemAt[-1].at:
@@ -22,12 +26,15 @@ class MpLinkCharacteristics:
 						"because ooo !")
 			pass
 	
-	def buildNetemCmd(self):
+	def buildNetemCmd(self, ifname):
 		cmd = ""
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
 			cmd = cmd + " && "
-			cmd = cmd + " echo " + n.cmd + " && "
+			cmd = cmd + " tc qdisc change dev " + ifname + " " 
+			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemParent
+			cmd = cmd + " handle " + MpLinkCharacteristics.tcNetemHandle
+			cmd = cmd + " netem " + n.cmd + " && "
 		cmd = cmd + " true &"
 		return cmd
 

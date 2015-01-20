@@ -26,9 +26,24 @@ class MpExperience:
 			return
 		print("Will change netem config on the fly")
 		links = self.mpTopo.getLinkCharacteristics()
+		i = 0
 		for l in links:
-			cmd = l.buildNetemCmd()
+			lname = self.mpConfig.getMidLeftName(i)
+			rname = self.mpConfig.getMidRightName(i)
+			lbox = self.mpTopo.getHost(lname)
+			lif = self.mpConfig.getMidL2RInterface(i)
+			rif = self.mpConfig.getMidR2LInterface(i)
+			rbox = self.mpTopo.getHost(rname)
+			print(str(lname) + " " + str(lif))
+			print(str(rname) + " " + str(rif))
+			print("boxes " + str(lbox) + " " + str(rbox))
+			cmd = l.buildNetemCmd(lif)
 			print(cmd)
+			self.mpTopo.commandTo(lbox, cmd)
+			cmd = l.buildNetemCmd(rif)
+			print(cmd)
+			self.mpTopo.commandTo(rbox, cmd)
+			i = i + 1
 
 	def run(self):
 		pass
