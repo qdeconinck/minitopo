@@ -1,17 +1,47 @@
 from mpLinkCharacteristics import MpLinkCharacteristics
 from mpParam import MpParam
+from mpNetemAt import MpNetemAt
 
 class MpParamTopo(MpParam):
 	LSUBNET = "leftSubnet"
 	RSUBNET = "rightSubnet"
+	netemAt = "netemAt_"
+	changeNetem = "changeNetem"
 	defaultValue = {}
 	defaultValue[LSUBNET] = "10.1."
 	defaultValue[RSUBNET] = "10.2."
+	defaultValue[changeNetem] = "false"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)
 		self.linkCharacteristics = []
 		self.loadLinkCharacteristics()
+		self.loadNetemAt()
+		print(self.__str__())
+
+	def loadNetemAt(self):
+		if not self.getParam(MpParamTopo.changeNetem) == "yes":
+			return
+		for k in sorted(self.paramDic):
+			if k.startswith(MpParamTopo.netemAt):
+				i = int(k[len(MpParamTopo.netemAt):])
+				val = self.paramDic[k]
+				if not isinstance(val, list):
+					val = list(val)
+				self.loadNetemAtList(i, val)
+	
+	def loadNetemAtList(self, id, nlist):
+		for n in nlist:
+			tab = n.split(",")
+			if len(tab)==2:
+				o = MpNetemAt(float(tab[0]), tab[1])
+				if id < len(self.linkCharacteristics):
+					self.linkCharacteristics[id].addNetemAt(o)
+				else:
+					print("Error can't set netem for link " + str(id))
+			else:
+				print("Netem wrong line : " + n)
+		print(self.linkCharacteristics[id].netemAt)
 	
 	def loadLinkCharacteristics(self):
 		i = 0 
@@ -31,7 +61,7 @@ class MpParamTopo(MpParam):
 		val = MpParam.getParam(self, key)
 		if val is None:
 			if key in MpParamTopo.defaultValue:
-				return MpParamTopo[key]
+				return MpParamTopo.defaultValue[key]
 			else:
 				raise Exception("Param not found " + key)
 		else:

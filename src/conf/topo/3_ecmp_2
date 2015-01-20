@@ -7,3 +7,9 @@ error
 path_0:10,10,5
 path_1:100,20,5
 topoType:ECMPLike
+# change tc during an experiment
+changeNetem:yes
+#netem_{path_id}:at,cmd
+netemAt_0:2,delay 100ms
+netemAt_0:5,delay 2ms
+

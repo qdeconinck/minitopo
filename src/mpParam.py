@@ -18,7 +18,15 @@ class MpParam:
 
 			tab = l.split(":")
 			if len(tab) == 2:
-				self.paramDic[tab[0]] = tab[1][:-1]
+				k = tab[0]
+				val = tab[1][:-1]
+				if k in self.paramDic:
+					tmp = self.paramDic[k]
+					self.paramDic[k] = []
+					self.paramDic[k].append(tmp)
+					self.paramDic[k].append(val)
+				else:
+					self.paramDic[k] = val
 			else:
 				print("Ignored Line " + str(i))
 				print(l),

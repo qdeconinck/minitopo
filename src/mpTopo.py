@@ -1,3 +1,5 @@
+from mpParamTopo import MpParamTopo
+
 class MpTopo:
 	mininetBuilder = "mininet"
 	multiIfTopo = "MultiIf"
@@ -14,8 +16,12 @@ class MpTopo:
 	def __init__(self, topoBuilder, topoParam):
 		self.topoBuilder = topoBuilder
 		self.topoParam = topoParam
+		self.changeNetem = topoParam.getParam(MpParamTopo.changeNetem)
 		self.logFile = open(MpTopo.cmdLog, 'w')
-	
+
+	def getLinkCharacteristics(self):
+		return topoParam.linkCharacteristics()
+
 	def commandTo(self, who, cmd):
 		self.logFile.write(who.__str__() + " : " + cmd + "\n")
 		self.topoBuilder.commandTo(who, cmd)

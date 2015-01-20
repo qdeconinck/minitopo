@@ -7,10 +7,6 @@ class MpMultiInterfaceConfig(MpConfig):
 	def __init__(self, topo, param):
 		MpConfig.__init__(self, topo, param)
 
-	def configureNetwork(self):
-		self.configureInterfaces()
-		self.configureRoute()
-	
 	def configureRoute(self):
 		i = 0
 		for l in self.topo.switch:
@@ -36,6 +32,7 @@ class MpMultiInterfaceConfig(MpConfig):
 
 	
 	def configureInterfaces(self):
+		print("Configure interfaces for multi inf")
 		self.client = self.topo.getHost(MpTopo.clientName)
 		self.server = self.topo.getHost(MpTopo.serverName)
 		self.router = self.topo.getHost(MpTopo.routerName)
@@ -101,3 +98,14 @@ class MpMultiInterfaceConfig(MpConfig):
 	def getServerInterface(self):
 		return  MpTopo.serverName + "-eth0"
 
+	def getMidLeftName(self, id):
+		return MpTopo.switchNamePrefix + str(id)
+
+	def getMidRightName(self, id):
+		return MpTopo.routerName
+	
+	def getMidL2RInterface(self, id):
+		return self.getMidLeftName(id) + "-eth1"
+
+	def getMidR2LInterface(self, id):
+		return self.getMidRightName(id) + "-eth" + str(id)

@@ -19,6 +19,15 @@ class MpExperience:
 		self.runTcpDump()
 		pass
 
+	def runNetemAt(self):
+		if not self.mpTopo.changeNetem == "yes":
+			return
+		print("Will change netem config on the fly")
+		links = self.mpTopo.getLinkCharacteristics()
+		for l in links:
+			cmd = l.buildNetemCmd()
+			print(cmd)
+
 	def run(self):
 		pass
 

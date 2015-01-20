@@ -8,10 +8,6 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 	def __init__(self, topo, param):
 		MpConfig.__init__(self, topo, param)
 
-	def configureNetwork(self):
-		self.configureInterfaces()
-		self.configureRoute()
-	
 	def configureRoute(self):
 		i = 0
 		mask = len(self.topo.routers) - 1

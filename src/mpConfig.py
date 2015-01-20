@@ -6,6 +6,32 @@ class MpConfig:
 		self.topo = topo
 		self.param = param
 
+	def configureNetwork(self):
+		print("Configure interfaces....Generic call ?")
+		self.configureInterfaces()
+		self.configureRoute()
+
+	def getMidL2RInterface(self, id):
+		"get Middle link, left to right interface"
+		pass
+
+	def getMidR2LInterface(self, id):
+		pass
+
+	def getMidLeftName(self, i):
+		"get Middle link, left box name"
+		pass
+
+	def getMidRightName(self, i):
+		pass
+
+	def configureInterfaces(self):
+		pass
+
+	def configureNetwork(self):
+		pass
+
+
 	def getClientInterfaceCount(self):
 		raise Exception("To be implemented")
 
