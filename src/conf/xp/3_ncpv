@@ -1,3 +1,4 @@
 xpType:ncpv
 ncClientPort_0:33400
 clientPcap:yes
+sched:roundrobin

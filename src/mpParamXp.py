@@ -3,6 +3,7 @@ from mpParam import MpParam
 class MpParamXp(MpParam):
 
 	RMEM       = "rmem"
+	SCHED      = "sched"
 	KERNELPM   = "kpm"
 	CLIENTPCAP = "clientPcap"
 	SERVERPCAP = "serverPcap"
@@ -21,6 +22,7 @@ class MpParamXp(MpParam):
 	sysctlKey = {}
 	sysctlKey[RMEM] = "net.ipv4.tcp_rmem"
 	sysctlKey[KERNELPM] = "net.mptcp.mptcp_path_manager"
+	sysctlKey[SCHED] = "net.mptcp.mptcp_scheduler"
 
 	sysctlListClient = []
 	sysctlListServer = []
@@ -29,6 +31,7 @@ class MpParamXp(MpParam):
 
 	defaultValue[RMEM] = "10240 87380 16777216"
 	defaultValue[KERNELPM] = "fullmesh"
+	defaultValue[SCHED] = "default"
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
