@@ -100,11 +100,13 @@ class MpExperience:
 
 	def runTcpDump(self):
 		#todo : replace filename by cst
-		if self.xpParam.getParam(MpParamXp.CLIENTPCAP) == "yes" :
+		cpcap = self.xpParam.getParam(MpParamXp.CLIENTPCAP)
+		spcap = self.xpParam.getParam(MpParamXp.SERVERPCAP)
+		if cpcap == "yes" :
 			self.mpTopo.commandTo(self.mpConfig.client,
 					"tcpdump -i any -w client.pcap &")
-		if self.xpParam.getParam(MpParamXp.SERVERPCAP) == "yes" :
+		if spcap == "yes" :
 			self.mpTopo.commandTo(self.mpConfig.client,
 					"tcpdump -i any -w server.pcap &")
-		self.mpTopo.commandTo(self.mpConfig.client,
-				"sleep 5")
+		if spcap == "yes" or cpcap == "yes":
+			self.mpTopo.commandTo(self.mpConfig.client,"sleep 5")

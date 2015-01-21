@@ -154,3 +154,14 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 	def getServerInterface(self):
 		return  MpTopo.serverName + "-eth0"
 
+	def getMidLeftName(self, id):
+		return MpTopo.routerNamePrefix + str(id)
+
+	def getMidRightName(self, id):
+		return MpTopo.switchNamePrefix + "1"
+
+	def getMidL2RInterface(self, id):
+		return self.getMidLeftName(id) + "-eth1"
+
+	def getMidR2LInterface(self, id):
+		return self.getMidRightName(id) + "-eth" + str(id+2)
