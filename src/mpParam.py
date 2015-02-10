@@ -21,9 +21,8 @@ class MpParam:
 				k = tab[0]
 				val = tab[1][:-1]
 				if k in self.paramDic:
-					tmp = self.paramDic[k]
-					self.paramDic[k] = []
-					self.paramDic[k].append(tmp)
+					if not isinstance(self.paramDic[k], list):
+						self.paramDic[k] = [self.paramDic[k]]
 					self.paramDic[k].append(val)
 				else:
 					self.paramDic[k] = val

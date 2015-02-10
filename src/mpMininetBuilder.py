@@ -10,7 +10,7 @@ class MpMininetBuilder(Topo):
 		self.net = None
 	
 	def commandTo(self, who, cmd):
-		who.cmd(cmd)
+		return who.cmd(cmd)
 
 	def notNSCommand(self, cmd):
 		p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)

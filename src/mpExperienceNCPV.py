@@ -1,5 +1,6 @@
 from mpExperience import MpExperience
 from mpParamXp import MpParamXp
+from mpPvAt import MpPvAt
 
 class  MpExperienceNCPV(MpExperience): 
 	"""
@@ -32,7 +33,47 @@ class  MpExperienceNCPV(MpExperience):
 		if len(self.ncClientPort) == 0:
 			d = self.xpParam.getParam(MpParamXp.NCCLIENTPORT)
 			self.ncClientPort.append(d)
+		self.loadPvAt()
 
+	def loadPvAt(self):
+		self.changePvAt = []
+		self.changePv = self.xpParam.getParam(MpParamXp.CHANGEPV)
+		if self.changePv != "yes":
+			print("Don't change pv rate...")
+			return
+		changePvAt = self.xpParam.getParam(MpParamXp.CHANGEPVAT)
+		if not isinstance(changePvAt, list):
+			changePvAt = [changePvAt]
+		for p in changePvAt:
+			tab = p.split(",")
+			if len(tab)==2:
+				o = MpPvAt(float(tab[0]), tab[1])
+				self.addPvAt(o)
+			else:
+				print("pv wrong line : " + n)		
+	
+	def addPvAt(self, p):
+		if len(self.changePvAt) == 0 :
+			p.delta = p.at
+		else:
+			if p.at > self.changePvAt[-1].at:
+				p.delta = p.at - self.changePvAt[-1].at
+			else:
+				print("Do not take into account " + p.__str__() + \
+						"because ooo !")
+				return
+
+		self.changePvAt.append(p)
+
+	def getPvChangeCmd(self):
+		cmd = ""
+		for p in self.changePvAt:
+			cmd = cmd + "sleep " + str(p.delta)
+			cmd = cmd + " && "
+			cmd = cmd + MpExperienceNCPV.PV_BIN + " -R " + self.pvPid
+			cmd = cmd + " " + p.cmd + " && "
+		cmd = cmd + " true &"
+		return cmd
 
 	def prepare(self):
 		MpExperience.prepare(self)
@@ -64,6 +105,9 @@ class  MpExperienceNCPV(MpExperience):
 				"_" + str(id) + ".log"
 		print(s)
 		return s
+	def getPvPidCmd(self):
+		s = "pgrep -n pv"
+		return s
 
 	def clean(self):
 		MpExperience.clean(self)
@@ -77,6 +121,17 @@ class  MpExperienceNCPV(MpExperience):
 			self.mpTopo.commandTo(self.mpConfig.server, cmd)
 			
 			cmd = self.getNCClientCmd(i)
-			self.mpTopo.commandTo(self.mpConfig.client, cmd)
+			self.mpConfig.client.sendCmd(cmd)
+
+			cmd = self.getPvPidCmd()
+			self.pvPid = self.mpTopo.commandTo(self.mpConfig.server, cmd)[:-1]
+			
+			cmd = self.getPvChangeCmd()
+			print(cmd)
+			self.mpTopo.commandTo(self.mpConfig.server, cmd)
+
+
+			self.mpConfig.client.waitOutput()
+			
 			self.mpTopo.commandTo(self.mpConfig.client, "sleep 1")
 

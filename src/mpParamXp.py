@@ -17,6 +17,8 @@ class MpParamXp(MpParam):
 	PVZ        = "pvZ"
 	NCSERVERPORT = "ncServerPort"
 	NCCLIENTPORT = "ncClientPort"
+	CHANGEPV   = "changePv"
+	CHANGEPVAT = "changePvAt"
 
 	# global sysctl
 	sysctlKey = {}
@@ -45,6 +47,7 @@ class MpParamXp(MpParam):
 	defaultValue[PVG] = "10000"
 	defaultValue[NCSERVERPORT] = "33666"
 	defaultValue[NCCLIENTPORT] = "33555"
+	defaultValue[CHANGEPV] = "no"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)

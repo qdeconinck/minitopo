@@ -24,7 +24,7 @@ class MpTopo:
 
 	def commandTo(self, who, cmd):
 		self.logFile.write(who.__str__() + " : " + cmd + "\n")
-		self.topoBuilder.commandTo(who, cmd)
+		return self.topoBuilder.commandTo(who, cmd)
 
 	def notNSCommand(self, cmd):
 		"""
