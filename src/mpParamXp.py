@@ -5,6 +5,8 @@ class MpParamXp(MpParam):
 	RMEM       = "rmem"
 	SCHED      = "sched"
 	KERNELPM   = "kpm"
+	KERNELPMC  = "kpmc" #kernel path manager client / server
+	KERNELPMS  = "kpms"
 	CLIENTPCAP = "clientPcap"
 	SERVERPCAP = "serverPcap"
 	XPTYPE     = "xpType"
@@ -26,13 +28,17 @@ class MpParamXp(MpParam):
 	sysctlKey[KERNELPM] = "net.mptcp.mptcp_path_manager"
 	sysctlKey[SCHED] = "net.mptcp.mptcp_scheduler"
 
-	sysctlListClient = []
-	sysctlListServer = []
+	sysctlKeyClient = {}
+	sysctlKeyClient[KERNELPMC] = "net.mptcp.mptcp_path_manager"
+	sysctlKeyServer = {}
+	sysctlKeyServer[KERNELPMS] = "net.mptcp.mptcp_path_manager"
 
 	defaultValue = {}
 
 	defaultValue[RMEM] = "10240 87380 16777216"
 	defaultValue[KERNELPM] = "fullmesh"
+	defaultValue[KERNELPMC] = "fullmesh"
+	defaultValue[KERNELPMS] = "fullmesh"
 	defaultValue[SCHED] = "default"
 
 	defaultValue[CLIENTPCAP] = "no"

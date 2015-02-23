@@ -62,14 +62,27 @@ class MpExperience:
 
 	def saveSysctl(self):
 		self.sysctlBUP = {}
-		for k in MpParamXp.sysctlKey:
-			sysctlKey = MpParamXp.sysctlKey[k]
+		self._saveSysctl(MpParamXp.sysctlKey, self.sysctlBUP)
+		self.sysctlBUPC = {}
+		self._saveSysctl(MpParamXp.sysctlKeyClient, self.sysctlBUPC,
+				ns = True, who = self.mpConfig.client)
+		self.sysctlBUPS = {}
+		self._saveSysctl(MpParamXp.sysctlKeyServer, self.sysctlBUPS,
+				ns = True, who = self.mpConfig.server)
+
+	def _saveSysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
+		for k in sysctlDic:
+			sysctlKey = sysctlDic[k]
 			cmd = self.cmdReadSysctl(sysctlKey)
-			val = self.mpTopo.notNSCommand(cmd)
+			if not ns:
+				val = self.mpTopo.notNSCommand(cmd)
+			else:
+				val = self.mpTopo.commandTo(who, cmd)
 			if val == "Error":
 				print("oooops can't get sysctl " + sysctlKey)
 			else:
-				self.sysctlBUP[k] = val.split(" ",2)[2][:-1]
+				sysctlBUP[k] = val.split(" ",2)[2][:-1]
+
 
 	def cmdReadSysctl(self, key):
 		s = "sysctl " + key
@@ -81,22 +94,46 @@ class MpExperience:
 		return s
 
 	def writeSysctl(self):
-		for k in self.sysctlBUP:
-			sysctlKey = MpParamXp.sysctlKey[k]
+		self._writeSysctl(MpParamXp.sysctlKey, self.sysctlBUP)
+		self._writeSysctl(MpParamXp.sysctlKeyClient, self.sysctlBUPC,
+				ns = True, who = self.mpConfig.client)
+		self._writeSysctl(MpParamXp.sysctlKeyServer, self.sysctlBUPS,
+				ns = True, who = self.mpConfig.server)
+
+	def _writeSysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
+		for k in sysctlBUP:
+			sysctlKey = sysctlDic[k]
 			sysctlValue = self.xpParam.getParam(k)
 			cmd = self.cmdWriteSysctl(sysctlKey,sysctlValue)
-			val = self.mpTopo.notNSCommand(cmd)
+			if not ns:
+				val = self.mpTopo.notNSCommand(cmd)
+			else:
+				val = self.mpTopo.commandTo(who, cmd)
 			if val == "Error":
 				print("oooops can't set sysctl " + sysctlKey)
 
+
 	def backUpSysctl(self):
-		for k in self.sysctlBUP:
-			sysctlKey = MpParamXp.sysctlKey[k]
-			sysctlValue = self.sysctlBUP[k]
+		self._backUpSysctl(MpParamXp.sysctlKey, self.sysctlBUP)
+		self._backUpSysctl(MpParamXp.sysctlKeyClient, self.sysctlBUPC,
+				ns = True, who = self.mpConfig.client)
+		self._backUpSysctl(MpParamXp.sysctlKeyServer, self.sysctlBUPS,
+				ns = True, who = self.mpConfig.server)
+
+
+	def _backUpSysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
+		for k in sysctlBUP:
+			sysctlKey = sysctlKey[k]
+			sysctlValue = sysctlBUP[k]
 			cmd = self.cmdWriteSysctl(sysctlKey,sysctlValue)
-			val = self.mpTopo.notNSCommand(cmd)
+			if not ns:
+				val = self.mpTopo.notNSCommand(cmd)
+			else:
+				val = self.mpTopo.commandTo(who, cmd)
+
 			if val == "Error":
 				print("oooops can't set sysctl " + sysctlKey)
+
 
 	def runTcpDump(self):
 		#todo : replace filename by cst
