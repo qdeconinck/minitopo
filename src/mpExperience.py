@@ -123,7 +123,7 @@ class MpExperience:
 
 	def _backUpSysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
 		for k in sysctlBUP:
-			sysctlKey = sysctlKey[k]
+			sysctlKey = sysctlDic[k]
 			sysctlValue = sysctlBUP[k]
 			cmd = self.cmdWriteSysctl(sysctlKey,sysctlValue)
 			if not ns:
