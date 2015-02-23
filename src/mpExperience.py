@@ -16,9 +16,36 @@ class MpExperience:
 	
 	def prepare(self):
 		self.setupSysctl()
+		self.runUserspacePM()
 		self.runTcpDump()
 		self.runNetemAt()
 		pass
+
+	def runUserspacePM(self):
+		if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
+			print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
+		else:
+			upmc = self.xpParam.getParam(MpParamXp.USERPMC)
+			self.mpConfig.commandTo(self.mpConfig.client, upmc + \
+					"&>upmc.log &")
+		if self.xpParam.getParam(MpParamXp.KERNELPMS) != "netlink":
+			print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
+		else:
+			upms = self.xpParam.getParam(MpParamXp.USERPMS)
+			self.mpConfig.commandTo(self.mpConfig.server, upms + \
+					"&>upms.log &")
+
+	def cleanUserspacePM(self):
+		if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
+			print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
+		else:
+			upmc = self.xpParam.getParam(MpParamXp.USERPMC)
+			self.mpConfig.commandTo(self.mpConfig.client, "killall " + upmc)
+		if self.xpParam.getParam(MpParamXp.KERNELPMS) != "netlink":
+			print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
+		else:
+			upms = self.xpParam.getParam(MpParamXp.USERPMS)
+			self.mpConfig.commandTo(self.mpConfig.server, "killall " + upms)
 
 	def runNetemAt(self):
 		if not self.mpTopo.changeNetem == "yes":
@@ -54,6 +81,7 @@ class MpExperience:
 		self.mpTopo.commandTo(self.mpConfig.server,
 				"killall tcpdump")
 		self.backUpSysctl()
+		self.cleanUserspacePM()
 		pass
 
 	def setupSysctl(self):

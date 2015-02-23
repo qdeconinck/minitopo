@@ -7,6 +7,8 @@ class MpParamXp(MpParam):
 	KERNELPM   = "kpm"
 	KERNELPMC  = "kpmc" #kernel path manager client / server
 	KERNELPMS  = "kpms"
+	USERPMC	   = "upmc"
+	USERPMS	   = "upms" #userspace path manager client / server
 	CLIENTPCAP = "clientPcap"
 	SERVERPCAP = "serverPcap"
 	XPTYPE     = "xpType"
@@ -38,7 +40,8 @@ class MpParamXp(MpParam):
 	defaultValue[RMEM] = "10240 87380 16777216"
 	defaultValue[KERNELPM] = "fullmesh"
 	defaultValue[KERNELPMC] = "fullmesh"
-	defaultValue[KERNELPMS] = "fullmesh"
+	defaultValue[USERPMC] = "fullmesh"
+	defaultValue[USERPMS] = "fullmesh"
 	defaultValue[SCHED] = "default"
 
 	defaultValue[CLIENTPCAP] = "no"
