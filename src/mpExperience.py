@@ -26,14 +26,16 @@ class MpExperience:
 			print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
 		else:
 			upmc = self.xpParam.getParam(MpParamXp.USERPMC)
+			upmca = self.xpParam.getParam(MpParamXp.USERPMCARGS)
 			self.mpTopo.commandTo(self.mpConfig.client, upmc + \
-					"&>upmc.log &")
+					upmca + " &>upmc.log &")
 		if self.xpParam.getParam(MpParamXp.KERNELPMS) != "netlink":
 			print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
 		else:
 			upms = self.xpParam.getParam(MpParamXp.USERPMS)
+			upmsa = self.xpParam.getParam(MpParamXp.USERPMSARGS)
 			self.mpTopo.commandTo(self.mpConfig.server, upms + \
-					"&>upms.log &")
+					upmsa + " &>upms.log &")
 
 	def cleanUserspacePM(self):
 		if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
