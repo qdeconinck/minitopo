@@ -1,16 +1,16 @@
 from mpExperience import MpExperience
 from mpParamXp import MpParamXp
 
-class  MpExperiencePing(MpExperience): 
+class  MpExperiencePing(MpExperience):
 
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
 		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
-		MpExperience.classicRun(self)	
+		MpExperience.classicRun(self)
 	def prepapre(self):
 		MpExperience.prepare(self)
-	
+
 	def clean(self):
 		MpExperience.clean(self)
 

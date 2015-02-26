@@ -20,7 +20,7 @@ class MpXpRunner:
 		self.startTopo()
 		self.runXp()
 		self.stopTopo()
-		
+
 	def defParamXp(self, xpParamFile):
 		self.xpParam = MpParamXp(xpParamFile)
 
@@ -28,7 +28,7 @@ class MpXpRunner:
 		if builderType == MpTopo.mininetBuilder:
 			self.topoBuilder = MpMininetBuilder()
 		else:
-			raise Exception("I can not find the builder " + 
+			raise Exception("I can not find the builder " +
 					builderType)
 	def defTopo(self):
 		t = self.topoParam.getParam(MpTopo.topoAttr)
@@ -53,7 +53,7 @@ class MpXpRunner:
 					self.mpTopo,
 					self.topoParam)
 		else:
-			raise Exception("Unfound Topo" + t) 
+			raise Exception("Unfound Topo" + t)
 
 	def startTopo(self):
 		self.mpTopo.startNetwork()
@@ -71,6 +71,6 @@ class MpXpRunner:
 			self.mpTopo.getCLI()
 		else:
 			print("Unfound xp type..." + xp)
-	
+
 	def stopTopo(self):
 		self.mpTopo.stopNetwork()

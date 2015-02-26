@@ -64,7 +64,7 @@ class MpParamXp(MpParam):
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)
-	
+
 	def getParam(self, key):
 		val = MpParam.getParam(self, key)
 		if val is None:

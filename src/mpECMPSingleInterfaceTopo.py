@@ -3,14 +3,14 @@ from mpTopo import MpTopo
 class MpECMPSingleInterfaceTopo(MpTopo):
 	def __init__(self, topoBuilder, parameterFile):
 		MpTopo.__init__(self,topoBuilder, parameterFile)
-		
+
 		print("Hello ECMP topo")
-		
+
 		self.client = self.addHost(MpTopo.clientName)
 		self.server = self.addHost(MpTopo.serverName)
 		self.lswitch = self.addSwitch(MpTopo.switchNamePrefix + "0")
 		self.rswitch = self.addSwitch(MpTopo.switchNamePrefix + "1")
-		
+
 		self.addLink( self.client, self.lswitch)
 		self.addLink( self.server, self.rswitch)
 

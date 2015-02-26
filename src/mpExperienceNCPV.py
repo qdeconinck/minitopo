@@ -2,7 +2,7 @@ from mpExperience import MpExperience
 from mpParamXp import MpParamXp
 from mpPvAt import MpPvAt
 
-class  MpExperienceNCPV(MpExperience): 
+class  MpExperienceNCPV(MpExperience):
 	"""
 	NC PV : NetCat and Pipe Viewer
 	"""
@@ -15,7 +15,7 @@ class  MpExperienceNCPV(MpExperience):
 		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		MpExperience.classicRun(self)
-	
+
 	def loadParam(self):
 		self.pvg = self.xpParam.getParam(MpParamXp.PVG)
 		self.pvz = self.xpParam.getParam(MpParamXp.PVZ)
@@ -50,8 +50,8 @@ class  MpExperienceNCPV(MpExperience):
 				o = MpPvAt(float(tab[0]), tab[1])
 				self.addPvAt(o)
 			else:
-				print("pv wrong line : " + n)		
-	
+				print("pv wrong line : " + n)
+
 	def addPvAt(self, p):
 		if len(self.changePvAt) == 0 :
 			p.delta = p.at
@@ -119,19 +119,19 @@ class  MpExperienceNCPV(MpExperience):
 		for i in range(0, len(self.ncClientPort)):
 			cmd = self.getNCServerCmd(i)
 			self.mpTopo.commandTo(self.mpConfig.server, cmd)
-			
+
 			cmd = self.getNCClientCmd(i)
 			self.mpConfig.client.sendCmd(cmd)
 
 			cmd = self.getPvPidCmd()
 			self.pvPid = self.mpTopo.commandTo(self.mpConfig.server, cmd)[:-1]
-			
+
 			cmd = self.getPvChangeCmd()
 			print(cmd)
 			self.mpTopo.commandTo(self.mpConfig.server, cmd)
 
 
 			self.mpConfig.client.waitOutput()
-			
+
 			self.mpTopo.commandTo(self.mpConfig.client, "sleep 1")
 

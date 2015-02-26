@@ -8,7 +8,7 @@ class MpMininetBuilder(Topo):
 	def __init__(self):
 		Topo.__init__( self )
 		self.net = None
-	
+
 	def commandTo(self, who, cmd):
 		return who.cmd(cmd)
 
@@ -18,7 +18,7 @@ class MpMininetBuilder(Topo):
 		if stderr:
 			return "Error"
 		return stdout
-	
+
 	def startNetwork(self):
 		self.net = Mininet(topo=self,link=TCLink)
 		self.net.start()
@@ -35,7 +35,7 @@ class MpMininetBuilder(Topo):
 			raise Exception("Network not ready");
 		else:
 			return self.net.getNodeByName(who)
-	
+
 	def stopNetwork(self):
 		if self.net is None:
 			print("Could not stop network... Nothing to stop)")

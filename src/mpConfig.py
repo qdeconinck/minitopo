@@ -1,5 +1,5 @@
 class MpConfig:
-	
+
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, topo, param):
@@ -63,7 +63,7 @@ class MpConfig:
 		s = "ip route add default via " + via
 		print(s)
 		return s
-	
+
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
 				" >> " + MpConfig.PING_OUTPUT

@@ -31,7 +31,7 @@ class MpParamTopo(MpParam):
 					val = []
 					val.append(tmp)
 				self.loadNetemAtList(i, val)
-	
+
 	def loadNetemAtList(self, id, nlist):
 		for n in nlist:
 			tab = n.split(",")
@@ -44,9 +44,9 @@ class MpParamTopo(MpParam):
 			else:
 				print("Netem wrong line : " + n)
 		print(self.linkCharacteristics[id].netemAt)
-	
+
 	def loadLinkCharacteristics(self):
-		i = 0 
+		i = 0
 		for k in sorted(self.paramDic):
 			if k.startswith("path"):
 				tab = self.paramDic[k].split(",")

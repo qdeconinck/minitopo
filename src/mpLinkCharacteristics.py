@@ -25,13 +25,13 @@ class MpLinkCharacteristics:
 				print("Do not take into account " + n.__str__() + \
 						"because ooo !")
 			pass
-	
+
 	def buildNetemCmd(self, ifname):
 		cmd = ""
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
 			cmd = cmd + " && "
-			cmd = cmd + " tc qdisc change dev " + ifname + " " 
+			cmd = cmd + " tc qdisc change dev " + ifname + " "
 			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemParent
 			cmd = cmd + " handle " + MpLinkCharacteristics.tcNetemHandle
 			cmd = cmd + " netem " + n.cmd + " && "
@@ -53,4 +53,4 @@ class MpLinkCharacteristics:
 		for l in self.netemAt:
 			s = s + "\t" + l.__str__() + "\n"
 		return s
-		
+

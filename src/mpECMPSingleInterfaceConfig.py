@@ -24,23 +24,23 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 			cmd = self.getIpRuleCmd(i)
 			self.topo.commandTo(self.client, cmd)
 			self.topo.commandTo(self.server, cmd)
-			
+
 			cmd = self.getDefaultRouteCmd(self.getRouterIPClient(i),
 					i)
 			self.topo.commandTo(self.client, cmd)
 			cmd = self.getDefaultRouteCmd(self.getRouterIPServer(i),
 					i)
 			self.topo.commandTo(self.server, cmd)
-			
+
 			i = i + 1
-		
+
 		###
 		cmd = self.addRouteDefaultSimple(self.getRouterIPServer(0))
 		self.topo.commandTo(self.server, cmd)
-		
+
 		cmd = self.addRouteDefaultSimple(self.getRouterIPClient(0))
 		self.topo.commandTo(self.client, cmd)
-		
+
 		self.topo.commandTo(self.client, "ip route flush cache")
 		self.topo.commandTo(self.server, "ip route flush cache")
 
@@ -63,7 +63,7 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 				'" -j MARK --set-mark ' + str(id + 1)
 		print (s)
 		return s
-	
+
 	def getIptableRuleTCPPortServer(self, mask, id):
 		s = 'iptables -t mangle -A OUTPUT -m u32 --u32 ' + \
 				'"6&0xFF=0x6 && ' + \
@@ -98,7 +98,7 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 					self.getRouterInterfaceLSwitch(i),
 					self.getRouterIPClient(i), netmask)
 			self.topo.commandTo(self.routers[-1] , cmd)
-			
+
 			cmd = self.interfaceUpCommand(
 					self.getRouterInterfaceRSwitch(i),
 					self.getRouterIPServer(i), netmask)
@@ -109,7 +109,7 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 		cmd = self.interfaceUpCommand(self.getClientInterface(0),
 				self.getClientIP(0), netmask)
 		self.topo.commandTo(self.client, cmd)
-		
+
 		cmd = self.interfaceUpCommand(self.getServerInterface(),
 				self.getServerIP(), netmask)
 		self.topo.commandTo(self.server, cmd)
@@ -133,7 +133,7 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 		rSubnet = self.param.getParam(MpParamTopo.RSUBNET)
 		routerIP = rSubnet + "0." + str(id + 2)
 		return routerIP
-	
+
 	def getServerIP(self):
 		rSubnet = self.param.getParam(MpParamTopo.RSUBNET)
 		serverIP = rSubnet + "0.1"
@@ -150,7 +150,7 @@ class MpECMPSingleInterfaceConfig(MpConfig):
 
 	def getClientInterface(self, interfaceID):
 		return  MpTopo.clientName + "-eth" + str(interfaceID)
-	
+
 	def getServerInterface(self):
 		return  MpTopo.serverName + "-eth0"
 

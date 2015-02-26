@@ -50,7 +50,7 @@ class MpTopo:
 
 	def startNetwork(self):
 		self.topoBuilder.startNetwork()
-	
+
 	def closeLogFile(self):
 		self.logFile.close()
 

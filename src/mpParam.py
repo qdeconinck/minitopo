@@ -7,7 +7,7 @@ class MpParam:
 			print("default param...")
 		else:
 			self.loadParamFile(paramFile)
-	
+
 	def loadParamFile(self, paramFile):
 		f = open(paramFile)
 		i = 0

@@ -12,7 +12,7 @@ class MpMultiInterfaceConfig(MpConfig):
 		for l in self.topo.switch:
 			cmd = self.addRouteTableCommand(self.getClientIP(i), i)
 			self.topo.commandTo(self.client, cmd)
-			
+
 			cmd = self.addRouteScopeLinkCommand(
 					self.getClientSubnet(i),
 					self.getClientInterface(i), i)
@@ -22,7 +22,7 @@ class MpMultiInterfaceConfig(MpConfig):
 					i)
 			self.topo.commandTo(self.client, cmd)
 			i = i + 1
-		
+
 		cmd = self.addRouteDefaultGlobalCommand(self.getRouterIPSwitch(0),
 				self.getClientInterface(0))
 		self.topo.commandTo(self.client, cmd)
@@ -30,7 +30,7 @@ class MpMultiInterfaceConfig(MpConfig):
 		cmd = self.addRouteDefaultSimple(self.getRouterIPServer())
 		self.topo.commandTo(self.server, cmd)
 
-	
+
 	def configureInterfaces(self):
 		print("Configure interfaces for multi inf")
 		self.client = self.topo.getHost(MpTopo.clientName)
@@ -43,17 +43,17 @@ class MpMultiInterfaceConfig(MpConfig):
 					self.getClientInterface(i),
 					self.getClientIP(i), netmask)
 			self.topo.commandTo(self.client, cmd)
-			
+
 			cmd = self.interfaceUpCommand(
 					self.getRouterInterfaceSwitch(i),
 					self.getRouterIPSwitch(i), netmask)
 			self.topo.commandTo(self.router, cmd)
 			i = i + 1
-		
+
 		cmd = self.interfaceUpCommand(self.getRouterInterfaceServer(),
 				self.getRouterIPServer(), netmask)
 		self.topo.commandTo(self.router, cmd)
-		
+
 		cmd = self.interfaceUpCommand(self.getServerInterface(),
 				self.getServerIP(), netmask)
 		self.topo.commandTo(self.server, cmd)
@@ -77,7 +77,7 @@ class MpMultiInterfaceConfig(MpConfig):
 		rSubnet = self.param.getParam(MpParamTopo.RSUBNET)
 		routerIP = rSubnet + "0.2"
 		return routerIP
-	
+
 	def getServerIP(self):
 		rSubnet = self.param.getParam(MpParamTopo.RSUBNET)
 		serverIP = rSubnet + "0.1"
@@ -94,7 +94,7 @@ class MpMultiInterfaceConfig(MpConfig):
 
 	def getRouterInterfaceSwitch(self, interfaceID):
 		return  MpTopo.routerName + "-eth" + str(interfaceID)
-	
+
 	def getServerInterface(self):
 		return  MpTopo.serverName + "-eth0"
 
@@ -103,7 +103,7 @@ class MpMultiInterfaceConfig(MpConfig):
 
 	def getMidRightName(self, id):
 		return MpTopo.routerName
-	
+
 	def getMidL2RInterface(self, id):
 		return self.getMidLeftName(id) + "-eth2"
 
