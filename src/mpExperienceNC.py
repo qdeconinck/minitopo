@@ -56,7 +56,7 @@ class  MpExperienceNC(MpExperience):
 				self.mpConfig.getServerIP() + " " + \
 				self.ncServerPort + " " + \
 				"&>" + MpExperienceNC.CLIENT_NC_LOG + \
-				"_" + str(id) + ".log &"
+				"_" + str(id) + ".log"
 		print(s)
 		return s
 
