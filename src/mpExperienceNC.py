@@ -34,9 +34,9 @@ class  MpExperienceNC(MpExperience):
 	def prepare(self):
 		MpExperience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceNCPV.CLIENT_NC_LOG )
+				MpExperienceNC.CLIENT_NC_LOG )
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceNCPV.SERVER_NC_LOG )
+				MpExperienceNC.SERVER_NC_LOG )
 
 	def getNCServerCmd(self, id):
 		s = "dd if=/dev/urandom ibs=" + self.ddibs + \
@@ -51,7 +51,7 @@ class  MpExperienceNC(MpExperience):
 		return s
 
 	def getNCClientCmd(self, id):
-		s = MpExperienceNCPV.NC_BIN + " " + \
+		s = MpExperienceNC.NC_BIN + " " + \
 				" -p " + self.ncClientPort[id] + " " + \
 				self.mpConfig.getServerIP() + " " + \
 				self.ncServerPort + " " + \

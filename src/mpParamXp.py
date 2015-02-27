@@ -42,6 +42,7 @@ class MpParamXp(MpParam):
 	defaultValue[RMEM] = "10240 87380 16777216"
 	defaultValue[KERNELPM] = "fullmesh"
 	defaultValue[KERNELPMC] = "fullmesh"
+	defaultValue[KERNELPMS] = "fullmesh"
 	defaultValue[USERPMC] = "fullmesh"
 	defaultValue[USERPMS] = "fullmesh"
 	defaultValue[USERPMCARGS] = ""
