@@ -3,6 +3,7 @@ from mpParamXp import MpParamXp
 class MpExperience:
 	PING = "ping"
 	NCPV = "ncpv"
+	NC = "nc"
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
 		self.mpTopo   = mpTopo
