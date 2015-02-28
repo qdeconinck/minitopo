@@ -1,0 +1,10 @@
+xpType:ncpv
+ncClientPort_0:33400
+clientPcap:yes
+pvRateLimit:600k
+ddCount:10000
+kpm:fullmesh
+kpms:fullmesh
+kpmc:netlink
+upmc:fullmeshIfNeeded
+rmem:300000 300000 300000

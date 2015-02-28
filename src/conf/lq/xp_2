@@ -1,0 +1,8 @@
+xpType:ncpv
+ncClientPort_0:33400
+clientPcap:yes
+pvRateLimit:600k
+ddCount:15000
+sched:roundrobin
+#rmem:300000 300000 300000
+rmem:8000000 8000000 8000000

@@ -1,0 +1,7 @@
+xpType:nc
+ncClientPort_0:33400
+clientPcap:yes
+ddCount:15000
+kpms:fullmesh
+kpmc:fullmesh
+rmem:300000 300000 300000

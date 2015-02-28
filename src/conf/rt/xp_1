@@ -1,0 +1,11 @@
+xpType:nc
+ncClientPort_0:33400
+clientPcap:yes
+ddCount:15000
+kpm:fullmesh
+kpms:netlink
+kpmc:netlink
+upmc:fullmeshIfNeededClient
+upms:fullmeshIfNeededServer
+upms_args: -S 15360000 -L 27 -C 4
+rmem:300000 300000 300000

@@ -1,10 +1,11 @@
 xpType:ncpv
 ncClientPort_0:33400
+ddCount:100
 clientPcap:yes
 ddCount:15000
 pvRateLimit:100k
-sched:roundrobin
 changePv:yes
 changePvAt:5,-L 200k
 changePvAt:10,-L 100k
 changePvAt:15,-L 600k
+#sched:roundrobin
