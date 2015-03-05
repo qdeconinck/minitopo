@@ -51,7 +51,7 @@ class MpParamXp(MpParam):
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
-	defaultValue[XPTYPE] = "ping"
+	defaultValue[XPTYPE] = "none"
 	defaultValue[PINGCOUNT] = "5"
 	defaultValue[DDIBS] = "1k"
 	defaultValue[DDOBS] = "1k"

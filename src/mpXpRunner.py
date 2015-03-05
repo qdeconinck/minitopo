@@ -65,15 +65,15 @@ class MpXpRunner:
 		if xp == MpExperience.PING:
 			MpExperiencePing(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
-			self.mpTopo.getCLI()
 		elif xp == MpExperience.NCPV:
 			MpExperienceNCPV(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
-			self.mpTopo.getCLI()
 		elif xp == MpExperience.NC:
 			MpExperienceNC(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
-			self.mpTopo.getCLI()
+		elif xp == MpExperience.NONE:
+			MpExperienceNC(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
 		else:
 			print("Unfound xp type..." + xp)
 

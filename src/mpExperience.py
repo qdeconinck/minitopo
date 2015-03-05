@@ -4,6 +4,8 @@ class MpExperience:
 	PING = "ping"
 	NCPV = "ncpv"
 	NC = "nc"
+	NONE = "none"
+
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
 		self.mpTopo   = mpTopo
