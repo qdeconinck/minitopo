@@ -1,0 +1,5 @@
+xpType:nc
+ncClientPort_0:33400
+clientPcap:yes
+ddCount:15000
+rmem:300000 300000 300000
