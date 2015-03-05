@@ -1,12 +1,12 @@
 What ?
-------
+======
 
 Simple tool, based on `mininet <http://mininet.org/>`_, to boot a simple network
 with n paths and run experiments between two hosts.
 
 
 Usage
------
+=====
 
 .. code-block:: console
 
@@ -16,7 +16,10 @@ The format for the topo file and xp file is simple but could be different based
 on the type of topo or experiments. Details should follow.
 
 basic Example
--------------
+=============
+
+1. Get the CLI
+--------------
 
 .. code-block:: console
 
@@ -46,5 +49,15 @@ Once the configuration is up, you have access to the CLI. You can check route
 configuration (policy routing etc.) Just by issuing regular commands preceded
 by ``Client`` or ``Server``
 
-They are other option and experiments, but the documentation is still to be
+2. Simple experiment
+--------------------
+
+.. code-block:: console
+
+        ./mpPerf -t conf/topo/simple_para -x conf/xp/4_nc
+
+This command will start the same topology and run the experiment defined by 4_nc
+The result for this experiment is a simple pcap file.
+
+They are other options and experiments, but the documentation is still to be
 written.
