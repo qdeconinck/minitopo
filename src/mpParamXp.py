@@ -3,6 +3,7 @@ from mpParam import MpParam
 class MpParamXp(MpParam):
 
 	RMEM       = "rmem"
+	WMEM       = "wmem"
 	SCHED      = "sched"
 	KERNELPM   = "kpm"
 	KERNELPMC  = "kpmc" #kernel path manager client / server
@@ -29,6 +30,7 @@ class MpParamXp(MpParam):
 	# global sysctl
 	sysctlKey = {}
 	sysctlKey[RMEM] = "net.ipv4.tcp_rmem"
+	sysctlKey[WMEM] = "net.ipv4.tcp_wmem"
 	sysctlKey[KERNELPM] = "net.mptcp.mptcp_path_manager"
 	sysctlKey[SCHED] = "net.mptcp.mptcp_scheduler"
 
@@ -40,6 +42,7 @@ class MpParamXp(MpParam):
 	defaultValue = {}
 
 	defaultValue[RMEM] = "10240 87380 16777216"
+	defaultValue[WMEM] = "4096 16384 4194304"
 	defaultValue[KERNELPM] = "fullmesh"
 	defaultValue[KERNELPMC] = "fullmesh"
 	defaultValue[KERNELPMS] = "fullmesh"
