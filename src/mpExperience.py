@@ -176,7 +176,7 @@ class MpExperience:
 			self.mpTopo.commandTo(self.mpConfig.client,
 					"tcpdump -i any -w client.pcap &")
 		if spcap == "yes" :
-			self.mpTopo.commandTo(self.mpConfig.client,
+			self.mpTopo.commandTo(self.mpConfig.server,
 					"tcpdump -i any -w server.pcap &")
 		if spcap == "yes" or cpcap == "yes":
 			self.mpTopo.commandTo(self.mpConfig.client,"sleep 5")
