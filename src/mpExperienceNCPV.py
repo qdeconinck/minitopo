@@ -124,7 +124,10 @@ class  MpExperienceNCPV(MpExperience):
 			self.mpConfig.client.sendCmd(cmd)
 
 			cmd = self.getPvPidCmd()
-			self.pvPid = self.mpTopo.commandTo(self.mpConfig.server, cmd)[:-1]
+			self.pvPid = None
+			while self.pvPid == None or self.pvPid == "": 
+				self.pvPid = self.mpTopo.commandTo(self.mpConfig.server, cmd)[:-1]
+				print("guessing pv pid ... :" + str(self.pvPid))
 
 			cmd = self.getPvChangeCmd()
 			print(cmd)
