@@ -50,9 +50,12 @@ class MpParamTopo(MpParam):
 		for k in sorted(self.paramDic):
 			if k.startswith("path"):
 				tab = self.paramDic[k].split(",")
-				if len(tab) == 3:
+				bup = False
+				if len(tab) == 4:
+					bup = tab[3] == 'True'
+				if len(tab) == 3 or len(tab) == 4:
 					path = MpLinkCharacteristics(i,tab[0],
-							tab[1], tab[2])
+							tab[1], tab[2], bup)
 					self.linkCharacteristics.append(path)
 					i = i + 1
 				else:

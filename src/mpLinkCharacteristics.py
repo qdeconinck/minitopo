@@ -6,12 +6,13 @@ class MpLinkCharacteristics:
 	tcNetemParent = "5:1"
 	tcNetemHandle = "10:"
 
-	def __init__(self, id, delay, queueSize, bandwidth):
+	def __init__(self, id, delay, queueSize, bandwidth, back_up=False):
 		self.id = id
 		self.delay = delay
 		self.queueSize = queueSize
 		self.bandwidth = bandwidth
 		self.netemAt = []
+		self.back_up = back_up
 
 	def addNetemAt(self, n):
 		if len(self.netemAt) == 0:
@@ -50,6 +51,7 @@ class MpLinkCharacteristics:
 		s =  s + "\tDelay : " + str(self.delay) + "\n"
 		s =  s + "\tQueue Size : " + str(self.queueSize) + "\n"
 		s =  s + "\tBandwidth : " + str(self.bandwidth) + "\n"
+		s =  s + "\tBack up : " + str(self.back_up) + "\n"
 		for l in self.netemAt:
 			s = s + "\t" + l.__str__() + "\n"
 		return s

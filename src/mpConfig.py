@@ -31,6 +31,11 @@ class MpConfig:
 	def getClientInterfaceCount(self):
 		raise Exception("To be implemented")
 
+	def interfaceBUPCommand(self, interfaceName):
+		s = "/home/mininet/git/iproute-mptcp/ip/ip link set dev " + interfaceName + " multipath backup "
+		print(s)
+		return s
+
 	def interfaceUpCommand(self, interfaceName, ip, subnet):
 		s = "ifconfig " + interfaceName + " " + ip + " netmask " + \
 			subnet

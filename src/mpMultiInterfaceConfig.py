@@ -38,16 +38,23 @@ class MpMultiInterfaceConfig(MpConfig):
 		self.router = self.topo.getHost(MpTopo.routerName)
 		i = 0
 		netmask = "255.255.255.0"
+		links = self.topo.getLinkCharacteristics()
 		for l in self.topo.switch:
 			cmd = self.interfaceUpCommand(
 					self.getClientInterface(i),
 					self.getClientIP(i), netmask)
 			self.topo.commandTo(self.client, cmd)
 
+			if(links[i].back_up):
+				cmd = self.interfaceBUPCommand(
+						self.getClientInterface(i))
+				self.topo.commandTo(self.client, cmd)
+
 			cmd = self.interfaceUpCommand(
 					self.getRouterInterfaceSwitch(i),
 					self.getRouterIPSwitch(i), netmask)
 			self.topo.commandTo(self.router, cmd)
+			print(str(links[i]))
 			i = i + 1
 
 		cmd = self.interfaceUpCommand(self.getRouterInterfaceServer(),
