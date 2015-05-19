@@ -17,12 +17,18 @@ topoParamFile = None
 xpParamFile   = None
 topoBuilder   = "mininet"
 
+# A checker runs tests, and a test is made of multiple validations
+
+
+
+# checks a value passed is greater or equel (generic)
 class MinValueValidation:
 	def __init__(self, yml):
 		self.compared=yml["target"]
 	def validate(self, value):
 		return self.compared<=value
 
+# individual flow validation (specific)
 class MinDelayValidation:
 	def __init__(self, v):
 		self.compared=v["target"]
@@ -30,12 +36,15 @@ class MinDelayValidation:
 		return self.compared<=flow[5]
 
 
+
+# class testing tcptrace results
+# the inheriting class should implement get_tested_value(self, yml)
 class TcptraceTest: 
 	def __init__(self, yml, trace):
 		self.yml = yml["validations"]
 		self.trace = trace
+	# performs a validation found in the yml file.
 	def validate(self):
-		print self.yml
 		for val in self.yml:
 			tested_value = self.get_tested_value(val) 
 			klass_name=val["name"].title().replace("_","")+"Validation"
@@ -46,19 +55,19 @@ class TcptraceTest:
 			else:
 				print "FAIL"
 class NumberOfFlowsTest(TcptraceTest):
-	def get_tested_value(self, val):
+	def get_tested_value(self, yml):
 		return self.trace.number_of_flows
 
 class FlowsTest(TcptraceTest):
-	def get_tested_value(self, val):
-		return self.trace.flows[val["index"]]
+	def get_tested_value(self, yml):
+		return self.trace.flows[yml["index"]]
 
 
-class TcptraceValidator:
+class TcptraceChecker:
 	def __init__(self, yml, trace):
 		self.yml = yml["tcptrace"]
 		self.trace = trace
-	def validate(self):
+	def check(self):
 		for test in self.yml:
 			name=test["test"].title().replace("_","")+"Test"
 			klass = globals()[name]
@@ -67,30 +76,6 @@ class TcptraceValidator:
 
 
 
-def printHelp():
-	print("Help Menu")
-
-def parseArgs(argv):
-	global topoParamFile
-	global xpParamFile
-	try:
-		opts, args = getopt.getopt(argv, "ht:x:", ["topoParam=","xp="])
-	except getopt.GetoptError:
-		printHelp()
-		sys.exit(1)
-	for opt, arg in opts:
-		if opt == "-h":
-			printHelp()
-			sys.exit(1)
-		elif opt in ("-x","--xp"):
-			xpParamFile = arg
-		elif opt in ("-t","--topoParam"):
-			print("hey")
-			topoParamFile = arg
-	if topoParamFile is None:
-		print("Missing the topo...")
-		printHelp()
-		sys.exit(1)
 def write_entry(f, key, val):
 	f.write("{}:{}\n".format(key,val))
 	
@@ -154,9 +139,9 @@ with open(validation_file, 'r') as f:
 	validations = load(f)
 print validations
 
-tcptrace_validator = TcptraceValidator(validations, t )
+tcptrace_checker = TcptraceChecker(validations, t )
 print "WILL VALIDATE"
-tcptrace_validator.validate()
+tcptrace_checker.check()
 
 #for v  in validations["tcptrace"]:
 #	print dump(v)
