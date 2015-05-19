@@ -9,7 +9,7 @@ class  MpExperienceNCPV(MpExperience):
 	SERVER_NC_LOG = "netcat_server"
 	CLIENT_NC_LOG = "netcat_client"
 	NC_BIN = "netcat"
-	PV_BIN = "/home/bhesmans/Documents/git/pv/pv"
+	PV_BIN = "pv"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
 		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)

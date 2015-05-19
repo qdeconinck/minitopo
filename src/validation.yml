@@ -1,8 +1,10 @@
 tcptrace:
   - test: "number_of_flows"
     validations:
-      min_value: 2
-#  - test: "flows"
-#    validations:
-#      - index: 1
-#        min_delay: 7000
+      - name: "min_value"
+        target: 2
+  - test: "flows"
+    validations:
+      - name: "min_delay"
+        index: 1
+        target: 7000

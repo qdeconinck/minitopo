@@ -18,28 +18,39 @@ xpParamFile   = None
 topoBuilder   = "mininet"
 
 class MinValueValidation:
-	def __init__(self, compared):
-		self.compared=compared
+	def __init__(self, yml):
+		self.compared=yml["target"]
 	def validate(self, value):
 		return self.compared<=value
 
-class NumberOfFlowsTest:
+class MinDelayValidation:
+	def __init__(self, v):
+		self.compared=v["target"]
+	def validate(self, flow):
+		return self.compared<=flow[5]
+class TcptraceTest: 
 	def __init__(self, yml, trace):
 		self.yml = yml["validations"]
 		self.trace = trace
 	def validate(self):
 		print self.yml
-		tested_value = self.trace.number_of_flows
-		for k,v in self.yml.iteritems():
-			name = k.title().replace("_","")+"Validation"
-			tester_klass=globals()[name]
-			tester = tester_klass(v)
+		for val in self.yml:
+			print "val: ", val
+			tested_value = self.get_tested_value(val) 
+			klass_name=val["name"].title().replace("_","")+"Validation"
+			tester_klass=globals()[klass_name]
+			tester = tester_klass(val)
 			if tester.validate(tested_value):
 				print "SUCCESS"
 			else:
 				print "FAIL"
-			print k,v
-			
+class NumberOfFlowsTest(TcptraceTest):
+	def get_tested_value(self, val):
+		return self.trace.number_of_flows
+
+class FlowsTest(TcptraceTest):
+	def get_tested_value(self, val):
+		return self.trace.flows[val["index"]]
 
 
 class TcptraceValidator:
