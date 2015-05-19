@@ -28,6 +28,8 @@ class MinDelayValidation:
 		self.compared=v["target"]
 	def validate(self, flow):
 		return self.compared<=flow[5]
+
+
 class TcptraceTest: 
 	def __init__(self, yml, trace):
 		self.yml = yml["validations"]
@@ -35,7 +37,6 @@ class TcptraceTest:
 	def validate(self):
 		print self.yml
 		for val in self.yml:
-			print "val: ", val
 			tested_value = self.get_tested_value(val) 
 			klass_name=val["name"].title().replace("_","")+"Validation"
 			tester_klass=globals()[klass_name]
