@@ -7,4 +7,4 @@ tcptrace:
     validations:
       - name: "min_delay"
         index: 1
-        target: 7000
+        target: 29000
