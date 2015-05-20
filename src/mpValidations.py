@@ -14,6 +14,8 @@ class Validation:
 		self.compared=yml["target"]
 	def name(self):
 		return self.__class__.__name__
+	def validate(self,value):
+		raise Exception("Method not implemented")
 
 # checks a value passed is greater or equal (generic)
 class MinValueValidation(Validation):
@@ -32,6 +34,8 @@ class MinDelayValidation(Validation):
 
 # Base class testing tcptrace results
 # the inheriting class should implement get_tested_value(self, yml)
+# the get_tested_value should return the value that all validations of this test will use
+# the validations get this value as argument of their validate method
 # The validate method iterates one the validations mentioned for the test in the yml file.
 class TcptraceTest: 
 	def __init__(self, yml, trace):
@@ -55,6 +59,8 @@ class TcptraceTest:
 		return is_ok
 	def name(self):
 		return self.__class__.__name__ 
+	def get_tested_value(self,yml):
+		raise Exception("Method not implemented")
 
 # get_tested_value returns the number of flows
 class NumberOfFlowsTest(TcptraceTest):
