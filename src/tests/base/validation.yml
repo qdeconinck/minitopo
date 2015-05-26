@@ -1,3 +1,11 @@
+mptcptrace:
+  - test: "column_values" 
+    validations:
+      - name: "increasing_value"
+        csv: "c2s_seq_1"
+        column: 2
+        target: irrelevant
+        desc: "dummy: check sequence numbers grow"
 tcptrace:
   - test: "number_of_flows"
     validations:

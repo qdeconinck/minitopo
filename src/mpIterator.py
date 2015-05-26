@@ -35,6 +35,8 @@ logs_dir=options.logs_dir.rstrip("/")
 # take timestamp, used as subdirectory in logs_dir
 timestamp=datetime.datetime.now().isoformat()
 
+#timestamp = "2015-05-26T15:42:45.419949"
+
 for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.path.join(tests_dir, name))]:
 	# initialise files defining the experience and test
 	test_dir =  tests_dir + "/" + test_name

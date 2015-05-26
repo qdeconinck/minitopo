@@ -2,6 +2,8 @@
 
 from mpTcptraceData import *
 
+import numpy as np
+
 
 # A checker runs tests, and a test is made of multiple validations
 
@@ -91,8 +93,23 @@ class AttributeMaximumRatioValidation(AttributeValidation):
 		self.value = float(self.val1)/float(self.val0)
 		return self.compared>=self.value
 
+class IncreasingValueValidation(AttributeValidation):
+	def validate(self, values):
+		previous = 0
+		for i,v in enumerate(values):
+			#print i, "{:10.6f}".format(previous), "{:10.6f}".format(v)
+			if v<previous:
+				self.value=i # index of error row 
+				return False
+			else:
+				previous=v
+		return self.compared>=self.value
+
 
 class Tester:
+	def __init__(self, yml, trace):
+		self.yml = yml["validations"]
+		self.trace = trace
 	# performs a validation found in the yml file.
 	def validate(self):
 		is_ok = True
@@ -123,10 +140,8 @@ class Tester:
 # the get_tested_value should return the value that all validations of this test will use
 # the validations get this value as argument of their validate method
 # The validate method iterates one the validations mentioned for the test in the yml file.
-class TcptraceTest(Tester): 
-	def __init__(self, yml, trace):
-		self.yml = yml["validations"]
-		self.trace = trace
+class TcptraceTest(Tester):
+	pass
 
 # get_tested_value returns the number of flows
 class NumberOfFlowsTest(TcptraceTest):
@@ -138,6 +153,20 @@ class NumberOfFlowsTest(TcptraceTest):
 class FlowsTest(TcptraceTest):
 	def get_tested_value(self, yml):
 		return (yml,self.trace) 
+
+
+
+		
+class MptcptraceTest(Tester):
+	pass
+
+import code
+# get_tested_value returns the number of flows
+class ColumnValuesTest(TcptraceTest):
+	def get_tested_value(self, yml):
+		a =  self.trace.get(yml["csv"])
+		code.interact(local=locals()) 
+		return a[:,yml["column"]]
 
 class Checker:
 	def check(self):
@@ -162,6 +191,7 @@ class TcptraceChecker(Checker):
 		self.trace = TcptraceData(destDir+"/client.pcap")
 		self.test_id = test_id
 
+from mpMptcptraceData import *
 
 # Runs tests based on mptcptrace
 # It (in the method inherited from its parent class) instanciates the ...Test class passing it the MptcptraceData instance
