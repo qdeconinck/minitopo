@@ -21,6 +21,14 @@ class Validation:
 class MinValueValidation(Validation):
 	def validate(self, value):
 		return self.compared<=value
+# checks a value passed is greater or equal (generic)
+class MaxValueValidation(Validation):
+	def validate(self, value):
+		return self.compared>=value
+# checks a value passed is greater or equal (generic)
+class ExactValueValidation(Validation):
+	def validate(self, value):
+		return self.compared==value
 
 # individual flow validation (specific)
 # gets flow_spec = (index, flows) where index is the index of the flow to validate, and flows is the array of flows
@@ -45,14 +53,15 @@ class TcptraceTest:
 	def validate(self):
 		is_ok = True
 		self.logs = ""
+		print self.yml
 		for val in self.yml:
+			print val["name"]
 			tested_value = self.get_tested_value(val) 
 			klass_name=val["name"].title().replace("_","")+"Validation"
 			tester_klass=globals()[klass_name]
 			tester = tester_klass(val)
 			if tester.validate(tested_value):
 				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" OK\n"
-				return True
 			else:
 				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" FAILS\n"
 				is_ok = False
@@ -75,9 +84,9 @@ class FlowsTest(TcptraceTest):
 
 # Runs tests based on tcptrace
 class TcptraceChecker:
-	def __init__(self, yml, test_id):
+	def __init__(self, yml, test_id, destDir):
 		self.yml = yml["tcptrace"]
-		self.trace = TcptraceData("/tmp/dest/client.pcap")
+		self.trace = TcptraceData(destDir+"/client.pcap")
 		self.test_id = test_id
 	def check(self):
 		is_ok = True

@@ -3,8 +3,12 @@ tcptrace:
     validations:
       - name: "min_value"
         target: 2
+      - name: "max_value"
+        target: 4
+      - name: "exact_value"
+        target: 4
   - test: "flows"
     validations:
       - name: "min_delay"
         index: 1
-        target: 29000
+        target: 2000

@@ -65,7 +65,7 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 		name = k.title().replace("_","")+"Checker"
 		klass= globals()[name]
 		# instantiate checker with validations and test_name
-		checker = klass(validations, test_name)
+		checker = klass(validations, test_name, destDir)
 		if checker.check():
 			print checker.logs
 		else:
