@@ -34,8 +34,8 @@ class ExactValueValidation(Validation):
 # gets flow_spec = (index, flows) where index is the index of the flow to validate, and flows is the array of flows
 class MinDelayValidation(Validation):
 	def validate(self, flow_spec):
-		(index,flows) = flow_spec
-		val = float(flows[index][5])-float(flows[0][5])
+		(index,trace) = flow_spec
+		val = trace.first_packet(index)-trace.first_packet(0)
 		return self.compared<=val
 
 
@@ -79,7 +79,7 @@ class NumberOfFlowsTest(TcptraceTest):
 # get_tested_value returns index of the flow to validate, and the list of flows
 class FlowsTest(TcptraceTest):
 	def get_tested_value(self, yml):
-		return (yml["index"],self.trace.flows) 
+		return (yml["index"],self.trace) 
 
 
 # Runs tests based on tcptrace
