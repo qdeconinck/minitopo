@@ -3,12 +3,22 @@ tcptrace:
     validations:
       - name: "min_value"
         target: 2
+        desc: "Open minimum 2 flows"
       - name: "max_value"
         target: 4
+        desc: "Open maximum 4 flows"
       - name: "exact_value"
         target: 4
+        desc: "Open exactly 4 flows"
   - test: "flows"
     validations:
       - name: "min_delay"
         index: 1
-        target: 2000
+        target: 2
+        desc: "Minimum 2 seconds delay between opening of first and second flow"
+      - name: "min_delay_between"
+        index:
+          - 1
+          - 2
+        target: 1
+        desc: "Minimum 1 second delay between opening of second and third flow"

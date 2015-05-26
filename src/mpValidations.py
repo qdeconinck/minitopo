@@ -38,6 +38,17 @@ class MinDelayValidation(Validation):
 		val = trace.first_packet(index)-trace.first_packet(0)
 		return self.compared<=val
 
+# individual flow validation (specific)
+# gets flow_spec = ( [ index0, index1] , flows) where:
+#                      - index0 is the index of the flow taken as reference for timing
+#                      - index1 is the flow for which we want to validate the timing
+#                      - flows is the array of flows
+class MinDelayBetweenValidation(Validation):
+	def validate(self, flow_spec):
+		([index0, index1] ,trace) = flow_spec
+		val = trace.first_packet(index1)-trace.first_packet(index0)
+		return self.compared<=val
+
 
 
 # Base class testing tcptrace results
@@ -77,6 +88,7 @@ class NumberOfFlowsTest(TcptraceTest):
 		return self.trace.number_of_flows
 
 # get_tested_value returns index of the flow to validate, and the list of flows
+# index can be a compound value, as in the case of min_delay_between where it is an array of indexes
 class FlowsTest(TcptraceTest):
 	def get_tested_value(self, yml):
 		return (yml["index"],self.trace) 
