@@ -20,6 +20,8 @@ tcptrace:
         desc: "Minimum 2 seconds delay between opening of first and second flow"
       # validates time between first packets of streams for which the index is passed. 
       # index is now a compound value, handled by the validate method of the class MinDelayBetweenValidation
+      # first index value is the base flow we compare to
+      # second index is the flow we want to validate
       - name: "min_delay_between"
         index:
           - 1
@@ -28,8 +30,20 @@ tcptrace:
         desc: "Minimum 1 second delay between opening of second and third flow"
       - name: "attribute_minimum_difference"
         attribute: "first_packet"
+        # first index value is the base flow we compare to
+        # second index is the flow we want to validate
         index:
           - 0
           - 1
         target: 2
         desc: "first packet delay 2nd flow"
+      - name: "attribute_maximum_ratio"
+        attribute: "total_packets_a2b"
+        # first index value is the base flow we compare to
+        # second index is the flow we want to validate
+        index:
+          - 0
+          - 1
+        # 5%
+        target: 0.05
+        desc: "a->b packet ration flow 2 compard to flow1"

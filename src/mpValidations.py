@@ -16,6 +16,9 @@ class Validation:
 		return self.__class__.__name__
 	def validate(self,value):
 		raise Exception("Method not implemented")
+	def setup(self):
+		raise Exception("Method not implemented")
+
 
 # checks a value passed is greater or equal (generic)
 class MinValueValidation(Validation):
@@ -56,13 +59,39 @@ class MinDelayBetweenValidation(Validation):
 		self.value = val
 		return self.compared<=val
 
-class AttributeMinimumDifferenceValidation(Validation):
-	def validate(self, flow_spec):
+class AttributeValidation(Validation):
+	def setup(self, flow_spec):
 		(yml ,trace) = flow_spec
 		[index0, index1] = yml["index"]
-		val = trace.get(index1, yml["attribute"]) - trace.get(index0, yml["attribute"]) 
-		self.value = val
-		return self.compared<=val
+		self.val0 = trace.get(index0, yml["attribute"]) 
+		self.val1 = trace.get(index1, yml["attribute"])
+
+class AttributeMinimumDifferenceValidation(AttributeValidation):
+	def validate(self, flow_spec):
+		self.setup(flow_spec)
+		self.value = self.val1 - self.val0
+		return self.compared<=self.value
+
+class AttributeMaximumDifferenceValidation(AttributeValidation):
+	def validate(self, flow_spec):
+		self.setup(flow_spec)
+		self.value = self.val1 - self.val0
+		return self.compared>=self.value
+
+
+class AttributeMinimumRatioValidation(AttributeValidation):
+	def validate(self, flow_spec):
+		self.setup(flow_spec)
+		self.value = float(self.val1)/+float(self.val1)
+		return self.compared<=self.value
+
+class AttributeMaximumRatioValidation(AttributeValidation):
+	def validate(self, flow_spec):
+		self.setup(flow_spec)
+		self.value = float(self.val1)/float(self.val0)
+		return self.compared>=self.value
+
+
 
 
 # Base class testing tcptrace results
