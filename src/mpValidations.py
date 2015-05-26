@@ -71,11 +71,14 @@ class TcptraceTest:
 			klass_name=val["name"].title().replace("_","")+"Validation"
 			tester_klass=globals()[klass_name]
 			tester = tester_klass(val)
-			if tester.validate(tested_value):
-				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" OK\n"
-			else:
-				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" FAILS "+ val["desc"] +"\n"
-				is_ok = False
+			try:
+				if tester.validate(tested_value):
+					self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" OK\n"
+				else:
+					self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" FAILS "+ val["desc"] +"\n"
+					is_ok = False
+			except Exception as e:
+				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" FAILS (EXCEPTION:"+ str(e) + ") "+ val["desc"] +"\n"
 		return is_ok
 	def name(self):
 		return self.__class__.__name__ 
