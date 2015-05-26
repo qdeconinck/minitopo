@@ -92,17 +92,7 @@ class AttributeMaximumRatioValidation(AttributeValidation):
 		return self.compared>=self.value
 
 
-
-
-# Base class testing tcptrace results
-# the inheriting class should implement get_tested_value(self, yml)
-# the get_tested_value should return the value that all validations of this test will use
-# the validations get this value as argument of their validate method
-# The validate method iterates one the validations mentioned for the test in the yml file.
-class TcptraceTest: 
-	def __init__(self, yml, trace):
-		self.yml = yml["validations"]
-		self.trace = trace
+class Tester:
 	# performs a validation found in the yml file.
 	def validate(self):
 		is_ok = True
@@ -126,6 +116,18 @@ class TcptraceTest:
 	def get_tested_value(self,yml):
 		raise Exception("Method not implemented")
 
+
+
+# Base class testing tcptrace results
+# the inheriting class should implement get_tested_value(self, yml)
+# the get_tested_value should return the value that all validations of this test will use
+# the validations get this value as argument of their validate method
+# The validate method iterates one the validations mentioned for the test in the yml file.
+class TcptraceTest(Tester): 
+	def __init__(self, yml, trace):
+		self.yml = yml["validations"]
+		self.trace = trace
+
 # get_tested_value returns the number of flows
 class NumberOfFlowsTest(TcptraceTest):
 	def get_tested_value(self, yml):
@@ -137,13 +139,7 @@ class FlowsTest(TcptraceTest):
 	def get_tested_value(self, yml):
 		return (yml,self.trace) 
 
-
-# Runs tests based on tcptrace
-class TcptraceChecker:
-	def __init__(self, yml, test_id, destDir):
-		self.yml = yml["tcptrace"]
-		self.trace = TcptraceData(destDir+"/client.pcap")
-		self.test_id = test_id
+class Checker:
 	def check(self):
 		is_ok = True
 		self.logs=self.test_id+"\n"
@@ -157,5 +153,22 @@ class TcptraceChecker:
 			else:
 				self.logs = self.logs + " *" + self.test_id + " " + r.name() + " FAIL\n"
 				self.logs = self.logs + r.logs
+
+# Runs tests based on tcptrace
+# It (in the method inherited from its parent class) instanciates the ...Test class passing it the TcptraceData instance
+class TcptraceChecker(Checker):
+	def __init__(self, yml, test_id, destDir):
+		self.yml = yml["tcptrace"]
+		self.trace = TcptraceData(destDir+"/client.pcap")
+		self.test_id = test_id
+
+
+# Runs tests based on mptcptrace
+# It (in the method inherited from its parent class) instanciates the ...Test class passing it the MptcptraceData instance
+class MptcptraceChecker(Checker):
+	def __init__(self, yml, test_id, destDir):
+		self.yml = yml["mptcptrace"]
+		self.trace = MptcptraceData(destDir+"/client.pcap")
+		self.test_id = test_id
 
 
