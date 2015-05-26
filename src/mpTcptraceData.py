@@ -5,6 +5,8 @@ from subprocess import check_output
 import csv
 
 from io import StringIO
+import re
+
 
 
 
@@ -22,7 +24,16 @@ class TcptraceData:
 	def get(self, flow, column):
 		if flow>self.number_of_flows-1:
 			raise Exception("Bad flow index")
-		return self.flows[flow][self.headers.index(column)]
+		value = self.flows[flow][self.headers.index(column)]
+		if re.search("[a-zA-Z]", value):
+			return value
+		elif re.search("\.", value):
+			return float(value)
+		elif re.search("^[0-9]+$", value):
+			return int(value)
+		else:
+			return value
+
 	# returns first packet time of flow
 	def first_packet(self, flow):
 		return float(self.flows[flow][self.header_index("first_packet")])-float(self.flows[0][self.header_index("first_packet")])
