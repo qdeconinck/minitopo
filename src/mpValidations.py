@@ -74,7 +74,7 @@ class TcptraceTest:
 			if tester.validate(tested_value):
 				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" OK\n"
 			else:
-				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" FAILS\n"
+				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  -" +tester.name()+" FAILS "+ val["desc"] +"\n"
 				is_ok = False
 		return is_ok
 	def name(self):

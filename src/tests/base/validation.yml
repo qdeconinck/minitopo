@@ -8,14 +8,18 @@ tcptrace:
         target: 4
         desc: "Open maximum 4 flows"
       - name: "exact_value"
-        target: 4
+        target: 5
         desc: "Open exactly 4 flows"
+  # This tests the flows opened by the connection. See class FlowsTest
   - test: "flows"
     validations:
+      # validates time between first packets of the first stream and the stream for which the index is passed. 
       - name: "min_delay"
         index: 1
         target: 2
         desc: "Minimum 2 seconds delay between opening of first and second flow"
+      # validates time between first packets of streams for which the index is passed. 
+      # index is now a compound value, handled by the validate method of the class MinDelayBetweenValidation
       - name: "min_delay_between"
         index:
           - 1
