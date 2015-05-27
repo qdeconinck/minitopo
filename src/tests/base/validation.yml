@@ -4,7 +4,6 @@ mptcptrace:
       - name: "increasing_value"
         csv: "c2s_seq_1"
         column: 2
-        target: irrelevant
         desc: "dummy: check sequence numbers grow"
 tcptrace:
   - test: "number_of_flows"
@@ -52,6 +51,6 @@ tcptrace:
         index:
           - 0
           - 1
-        # 5%
+        # flows[1].packets_a2b/flows[2].packets_a2b < 5%
         target: 0.05
         desc: "a->b packet ration flow 2 compard to flow1"

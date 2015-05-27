@@ -5,6 +5,12 @@ from mpTcptraceData import *
 import numpy as np
 
 
+# to get a REPL:
+#import code
+#code.interact(local=locals()) 
+
+
+
 # A checker runs tests, and a test is made of multiple validations
 
 
@@ -13,7 +19,10 @@ import numpy as np
 # as argument a value from which to extract the value to compare or the value itself
 class Validation:
 	def __init__(self, yml):
-		self.compared=yml["target"]
+		if "target" in yml:
+			self.compared=yml["target"]
+		else:
+			self.compared=None
 	def name(self):
 		return self.__class__.__name__
 	def validate(self,value):
@@ -38,9 +47,11 @@ class ExactValueValidation(Validation):
 		self.value = value
 		return self.compared==value
 
-# individual flow validation (specific)
-# gets flow_spec = (index, flows) where index is the index of the flow to validate, and flows is the array of flows
+# individual flow validations (used with FlowsTest)
+###################################################
+
 class MinDelayValidation(Validation):
+        # receives flow_spec = (index, flows) where index is the index of the flow to validate, and flows is the array of flows
 	def validate(self, flow_spec):
 		(yml,trace) = flow_spec
 		index=yml["index"]
@@ -48,12 +59,11 @@ class MinDelayValidation(Validation):
 		self.value = val
 		return self.compared<=val
 
-# individual flow validation (specific)
-# gets flow_spec = ( [ index0, index1] , flows) where:
-#                      - index0 is the index of the flow taken as reference for timing
-#                      - index1 is the flow for which we want to validate the timing
-#                      - flows is the array of flows
 class MinDelayBetweenValidation(Validation):
+        # gets flow_spec = ( [ index0, index1] , flows) where:
+        #                      - index0 is the index of the flow taken as reference for timing
+        #                      - index1 is the flow for which we want to validate the timing
+        #                      - flows is the array of flows
 	def validate(self, flow_spec):
 		(yml ,trace) = flow_spec
 		[index0, index1] = yml["index"]
@@ -93,17 +103,23 @@ class AttributeMaximumRatioValidation(AttributeValidation):
 		self.value = float(self.val1)/float(self.val0)
 		return self.compared>=self.value
 
+# mptcptrace csv validations
+############################
+
+# validates all values passed have increasing values
+# it is the Tester's get_tested_value method that does the work
+# to extract the values list from the trace.
 class IncreasingValueValidation(AttributeValidation):
 	def validate(self, values):
 		previous = 0
 		for i,v in enumerate(values):
 			#print i, "{:10.6f}".format(previous), "{:10.6f}".format(v)
 			if v<previous:
-				self.value=i # index of error row 
+				self.value= "row " + str(i) # index of error row 
 				return False
 			else:
 				previous=v
-		return self.compared>=self.value
+		return True
 
 
 class Tester:
@@ -119,11 +135,16 @@ class Tester:
 			klass_name=val["name"].title().replace("_","")+"Validation"
 			tester_klass=globals()[klass_name]
 			tester = tester_klass(val)
+			if "target" in val:
+				target=val["target"]
+			else:
+				target=None
+
 			try:
 				if tester.validate(tested_value):
-					self.logs=self.logs+ " " + "  OK  :" + val["desc"] +" - " + tester.name()+ " value : " + str(tester.value) +" vs " + str(val["target"]) + "\n"
+					self.logs=self.logs+ " " + "  OK  :" + val["desc"] +" - " + tester.name()+ " value : " + str(tester.value) + ("" if target==None else " vs target " + str(val["target"])) + "\n"
 				else:
-					self.logs=self.logs+ " " + "  FAIL:" + val["desc"] +" - " + tester.name()+ " value : " + str(tester.value) +" vs " + str(val["target"]) + "\n"
+					self.logs=self.logs+ " " + "  FAIL:" + val["desc"] +" - " + tester.name()+ " value : " + str(tester.value) + ("" if target==None else " vs target " + str(val["target"])) + "\n"
 					is_ok = False
 			except Exception as e:
 				self.logs=self.logs+ ("" if self.logs=="" else "\n ")+ "  EXCP:" + val["desc"] +" - " + tester.name()+ " " + str(e) + "\n"
@@ -160,12 +181,10 @@ class FlowsTest(TcptraceTest):
 class MptcptraceTest(Tester):
 	pass
 
-import code
 # get_tested_value returns the number of flows
 class ColumnValuesTest(TcptraceTest):
 	def get_tested_value(self, yml):
 		a =  self.trace.get(yml["csv"])
-		code.interact(local=locals()) 
 		return a[:,yml["column"]]
 
 class Checker:
