@@ -38,7 +38,7 @@ class MptcptraceData:
 
 	# gets cell corresponding to flow with header column 
 	# flow 0 = first one, from 1=subflows
-	def get(self, name):
+	def get_csv(self, name):
                 if hasattr(self,name):
                         return getattr(self,name)
                 else:

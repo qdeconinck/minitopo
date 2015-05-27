@@ -47,72 +47,42 @@ class ExactValueValidation(Validation):
 		self.value = value
 		return self.compared==value
 
-# individual flow validations (used with FlowsTest)
-###################################################
 
-class MinDelayValidation(Validation):
-        # receives flow_spec = (index, flows) where index is the index of the flow to validate, and flows is the array of flows
-	def validate(self, flow_spec):
-		(yml,trace) = flow_spec
-		index=yml["index"]
-		val = trace.first_packet(index)-trace.first_packet(0)
-		self.value = val
-		return self.compared<=val
-
-class MinDelayBetweenValidation(Validation):
-        # gets flow_spec = ( [ index0, index1] , flows) where:
-        #                      - index0 is the index of the flow taken as reference for timing
-        #                      - index1 is the flow for which we want to validate the timing
-        #                      - flows is the array of flows
-	def validate(self, flow_spec):
-		(yml ,trace) = flow_spec
-		[index0, index1] = yml["index"]
-		val = trace.first_packet(index1)-trace.first_packet(index0)
-		self.value = val
-		return self.compared<=val
-
-class AttributeValidation(Validation):
-	def setup(self, flow_spec):
-		(yml ,trace) = flow_spec
-		[index0, index1] = yml["index"]
-		self.val0 = trace.get(index0, yml["attribute"]) 
-		self.val1 = trace.get(index1, yml["attribute"])
-
-class AttributeMinimumDifferenceValidation(AttributeValidation):
-	def validate(self, flow_spec):
-		self.setup(flow_spec)
-		self.value = self.val1 - self.val0
+# the method get_tested_value of the tester returns the value passed to validate.
+# the CsvTester returns an array of values
+class MinDifferenceValidation(Validation):
+	def validate(self, value):
+		v = value.flatten()
+		if len(v)>2:
+			raise Exception("MinDifferenceValidation requires 2 values maximum, not "+ str(len(v)))
+		self.value = float(v[1])-float(v[0])
 		return self.compared<=self.value
-
-class AttributeMaximumDifferenceValidation(AttributeValidation):
-	def validate(self, flow_spec):
-		self.setup(flow_spec)
-		self.value = self.val1 - self.val0
-		return self.compared>=self.value
-
-
-class AttributeMinimumRatioValidation(AttributeValidation):
-	def validate(self, flow_spec):
-		self.setup(flow_spec)
-		self.value = float(self.val1)/+float(self.val1)
+class MinRowsValidation(Validation):
+	def validate(self, value):
+		self.value =  len(value)
 		return self.compared<=self.value
-
-class AttributeMaximumRatioValidation(AttributeValidation):
-	def validate(self, flow_spec):
-		self.setup(flow_spec)
-		self.value = float(self.val1)/float(self.val0)
+class MaxRowsValidation(Validation):
+	def validate(self, value):
+		self.value =  len(value)
 		return self.compared>=self.value
-
-# mptcptrace csv validations
-############################
-
+class ExactRowsValidation(Validation):
+	def validate(self, value):
+		self.value =  len(value)
+		return self.compared==self.value
+class MaxRatioValidation(Validation):
+	def validate(self, value):
+		v = value.flatten()
+		if len(v)>2:
+			raise Exception("MinDifferenceValidation requires 2 values maximum, not "+ str(len(v)))
+		self.value = float(v[1])/(float(v[0])+float(v[1]))
+		return self.compared>=self.value
 # validates all values passed have increasing values
 # it is the Tester's get_tested_value method that does the work
 # to extract the values list from the trace.
-class IncreasingValueValidation(AttributeValidation):
+class IncreasingValuesValidation(Validation):
 	def validate(self, values):
 		previous = 0
-		for i,v in enumerate(values):
+		for i,v in enumerate(values.flatten()):
 			#print i, "{:10.6f}".format(previous), "{:10.6f}".format(v)
 			if v<previous:
 				self.value= "row " + str(i) # index of error row 
@@ -122,15 +92,16 @@ class IncreasingValueValidation(AttributeValidation):
 		return True
 
 
+
 class Tester:
 	def __init__(self, yml, trace):
-		self.yml = yml["validations"]
+		self.yml = yml
 		self.trace = trace
 	# performs a validation found in the yml file.
 	def validate(self):
 		is_ok = True
 		self.logs = ""
-		for val in self.yml:
+		for val in self.yml["validations"]:
 			tested_value = self.get_tested_value(val) 
 			klass_name=val["name"].title().replace("_","")+"Validation"
 			tester_klass=globals()[klass_name]
@@ -156,36 +127,15 @@ class Tester:
 
 
 
-# Base class testing tcptrace results
-# the inheriting class should implement get_tested_value(self, yml)
-# the get_tested_value should return the value that all validations of this test will use
-# the validations get this value as argument of their validate method
-# The validate method iterates one the validations mentioned for the test in the yml file.
-class TcptraceTest(Tester):
-	pass
+class CsvTest(Tester):
+	def get_tested_value(self, validation):
+		a =  self.trace.get_csv(self.yml["csv"])
+		if "rows" in self.yml:
+			a = a[self.yml["rows"]]
+		if "columns" in self.yml:
+			a = a[:,self.yml["columns"]]
+		return a
 
-# get_tested_value returns the number of flows
-class NumberOfFlowsTest(TcptraceTest):
-	def get_tested_value(self, yml):
-		return self.trace.number_of_flows
-
-# get_tested_value returns index of the flow to validate, and the list of flows
-# index can be a compound value, as in the case of min_delay_between where it is an array of indexes
-class FlowsTest(TcptraceTest):
-	def get_tested_value(self, yml):
-		return (yml,self.trace) 
-
-
-
-		
-class MptcptraceTest(Tester):
-	pass
-
-# get_tested_value returns the number of flows
-class ColumnValuesTest(TcptraceTest):
-	def get_tested_value(self, yml):
-		a =  self.trace.get(yml["csv"])
-		return a[:,yml["column"]]
 
 class Checker:
 	def check(self):
