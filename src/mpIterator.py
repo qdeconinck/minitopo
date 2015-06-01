@@ -13,6 +13,7 @@ from subprocess import call
 import datetime
 # currently all checkers and validations and defined in this file
 from mpValidations import *
+from mpBurstBlocks import *
 
 from yaml import load, dump
 
@@ -25,16 +26,22 @@ parser.add_option("-t", "--tests", dest="tests_dir",
                   help="Directory holding tests", metavar="TESTSDIR" , default="./tests")
 parser.add_option("-l", "--logs", dest="logs_dir",
                   help="Directory where to log", metavar="LOGSDIR" , default="./logs")
+parser.add_option("-r", "--repeat", dest="repeat", action="store_true",
+                  help="Reuse existing logs", metavar="REPEAT" , default=False)
 
 (options, args) = parser.parse_args()
 
 # initialise flags values
 tests_dir=options.tests_dir.rstrip("/")
 logs_dir=options.logs_dir.rstrip("/")
+repeat = options.repeat
 
 # take timestamp, used as subdirectory in logs_dir
 timestamp=datetime.datetime.now().isoformat()
 
+if repeat:
+	print "not implemented"
+	timestamp="2015-06-01T14:57:31.617534"
 #timestamp = "2015-05-26T15:42:45.419949"
 
 for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.path.join(tests_dir, name))]:
@@ -49,7 +56,8 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 
 	print "Running " + test_dir
 	# run the experience
-	MpXpRunner(MpTopo.mininetBuilder, topoFile, xpFile)
+	if not repeat:
+		MpXpRunner(MpTopo.mininetBuilder, topoFile, xpFile)
 
 	#copy xp, topo and validation to log
 	copy(topoFile,destDir) 
@@ -63,16 +71,23 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 	with open(validation_file, 'r') as f:
 		validations = load(f)
 	if validations!=None:
-		for k in validations.keys():
+		for k in validations["checkers"].keys():
 			# Identify checker class
 			name = k.title().replace("_","")+"Checker"
 			klass= globals()[name]
 			# instantiate checker with validations and test_name
-			checker = klass(validations, test_name, destDir)
+			checker = klass(validations["checkers"], test_name, destDir)
 			if checker.check():
 				print checker.logs
 			else:
 				print checker.logs
+		for k in validations["aggregators"]:
+			# Identify checker class
+			name = k.title().replace("_","")+"Aggregator"
+			klass= globals()[name]
+			# instantiate checker with validations and test_name
+			agg = klass(validations, test_name, destDir)
+			print agg
 
 
 
