@@ -141,16 +141,17 @@ class Checker:
 	def check(self):
 		is_ok = True
 		self.logs=self.test_id+"\n"
-		for test in self.yml:
-			name=test["test"].title().replace("_","")+"Test"
-			klass = globals()[name]
-			r = klass(test, self.trace)
-			if r.validate():
-				self.logs = self.logs + " *" + self.test_id + " " + r.name() + " SUCCESS\n"
-				self.logs = self.logs +  r.logs
-			else:
-				self.logs = self.logs + " *" + self.test_id + " " + r.name() + " FAIL\n"
-				self.logs = self.logs + r.logs
+		if self.yml!=None:
+			for test in self.yml:
+				name=test["test"].title().replace("_","")+"Test"
+				klass = globals()[name]
+				r = klass(test, self.trace)
+				if r.validate():
+					self.logs = self.logs + " *" + self.test_id + " " + r.name() + " SUCCESS\n"
+					self.logs = self.logs +  r.logs
+				else:
+					self.logs = self.logs + " *" + self.test_id + " " + r.name() + " FAIL\n"
+					self.logs = self.logs + r.logs
 
 # Runs tests based on tcptrace
 # It (in the method inherited from its parent class) instanciates the ...Test class passing it the TcptraceData instance
