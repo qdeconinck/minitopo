@@ -1,5 +1,6 @@
 import numpy as np
 import os as os
+import matplotlib.pyplot as plt
 
 class BurstBlocksAggregator:
 	def __init__(self, yml, test_name, dest_dir):
@@ -12,8 +13,14 @@ class BurstBlocksAggregator:
 		self.a = np.genfromtxt (self.csv_file, delimiter=",")
 		self.blocks=[]
 		self.times=[]
+		self.packets_per_flow=[]
+		self.flows_ratios = []
+		self.subflows=[]
+		self.flows_ratios=[]
 		self.extract_blocks()
 		self.extract_times()
+		self.extract_flows_packets()
+		self.extract_flows_ratios()
 
 	def c(self,column):
 		"""Return column index corresponding to name passed as argument"""
@@ -67,8 +74,52 @@ class BurstBlocksAggregator:
 		self.times = np.array(self.times)
 		np.set_printoptions(precision=6)
 		block_times= self.times[:,2]
-		block_times.sort()
-		self.block_times=block_times[1:-2]
+		self.block_times=block_times
+		# this was to drop the smallest and biggest values from the mean
+		# block_times.sort()
+		# self.block_times=block_times[1:-2]
+	def extract_flows_packets(self):
+		for i in range(len(self.blocks)):
+			# will hold number of packets per flow for this block
+			r={}
+			print >>self.log, "Block " + str(i)
+			print >>self.log, "---------------------"
+			first,last = self.blocks[i]
+			# +1 because our ranges are inclusive
+			packets = self.a[first:last+1]
+			for p in packets:
+				if p[self.c("is_seq")]==0:
+					continue
+				flow = int(p[self.c("subflow")])
+				if flow in r.keys():
+					r[flow]+=1
+				else:
+					r[flow]=1
+			self.packets_per_flow.append(r) 
+			print >>self.log, r
+			print >>self.log, "############################"
+		print >>self.log, "---------------------------------------------"
+		# now set values to 0 as needed for block that didn't send on some subflows
+		sublist = [ h.keys() for h in self.packets_per_flow]
+		all_subflows = list( set ( [item for sublist in self.packets_per_flow for item in sublist] ))
+		self.subflows= all_subflows
+		for h in self.packets_per_flow:
+			for f in all_subflows:
+				if not f in h.keys():
+					h[f]=0
+
+	def extract_flows_ratios(self):
+		# reset value
+		self.flows_ratios = []
+		# for each block compute the ratio
+		for count in self.packets_per_flow:
+			total_packets = sum(count.values())
+			h = {}
+			for s in self.subflows:
+				h[s]=count[s]/float(total_packets)
+			self.flows_ratios.append(h)
+
+
 	def find_ack_for_seq(self, seq, start_index):
 		i=start_index
 		while i<len(self.a):
@@ -95,4 +146,15 @@ class BurstBlocksAggregator:
 		self.log.close()
 
 	def __str__(self):
-		return  str(self.block_times) + "\nmean:\t" + str(self.block_times.mean()) +"\nstd:\t"+ str(self.block_times.std())
+		s =   str(self.block_times) + "\nmean:\t" + str(self.block_times.mean()) +"\nstd:\t"+ str(self.block_times.std())
+		s+= "\nPackets per flow:\n"
+		s += str(self.packets_per_flow)
+		s+= "\nRatio of packets per flow:\n"
+		s += str(self.flows_ratios)
+		return s
+	def plot(self):
+		ratio1 = plt.plot([ h[1] for h in self.flows_ratios ] , label = "flow 1 ratio")
+		ratio2 = plt.plot([ h[2] for h in self.flows_ratios ] , label = "flow 2 ratio")
+		times  = plt.plot(self.block_times, label = 'block time' )
+		plt.legend(["ratio1", "ratio2", "times"])
+		plt.show()
