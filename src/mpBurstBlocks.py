@@ -6,7 +6,7 @@ class BurstBlocksAggregator:
 	def __init__(self, yml, test_name, dest_dir):
 		# csv_file="c2s_seq_1.csv"
 		# minimum delay to observe to identify the beginning of a block
-		self.min_block_sep = 0.1 
+		self.min_block_sep = 0.3 
 		self.headers = [ "ts", "map_begin", "subflow", "is_seq", "map_end", "is_reinject" ] 
 		self.log = open(dest_dir+"/burst_block_aggregator.log","w")
 		self.csv_file=dest_dir+"/"+"c2s_seq_1.csv"
@@ -39,7 +39,7 @@ class BurstBlocksAggregator:
 					print >>self.log, "previous seq packet:", "{:10.8f}".format(self.a[previous][self.c("ts")]), "seq:", self.a[previous][self.c("map_begin")]
 					print >>self.log, "found block starting at ", "{:10.8f}".format(self.a[i][self.c("ts")]), "seq:", self.a[i][self.c("map_begin")]
 				# we know the start of the block and look for its last packet
-				elif self.a[i][self.c("ts")]-self.a[previous][self.c("ts")]>0.1:
+				elif self.a[i][self.c("ts")]-self.a[previous][self.c("ts")]>self.min_block_sep:
 					print >>self.log, "next block:", "{:10.8f}".format(self.a[i+1][self.c("ts")]), "seq:", self.a[i+1][self.c("map_begin")]
 					print >>self.log,"--------------------------------------"
 					# the ranges we use here are inclusive, ie the range contains both elements.
