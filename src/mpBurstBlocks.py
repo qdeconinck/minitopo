@@ -56,26 +56,20 @@ class BurstBlocksAggregator:
 		b=0
 		# iteration, we can start at packet 1
 		i=1
-		last_end=None
+		first_seq=self.a[i][self.c("map_begin")]
+		previous_seq=None
 		while i<len(self.a):
 			if self.a[i][self.c("is_seq")]==1:
-				# in this case we look for the start of a new sending block
-				if b==None and last_end!=None:
-					if self.a[i][self.c("map_begin")]==self.a[last_end][self.c("map_end")]:
-						b=i
-						print >>self.log, "found block starting at ", "{:10.8f}".format(self.a[i][self.c("ts")]), "seq:", self.a[i][self.c("map_begin")]
-				# we know the start of the block and look for its last packet
-				elif self.a[i][self.c("map_end")]-self.a[b][self.c("map_begin")]==65536:
-					print >>self.log, "found block ending at ", "{:10.8f}".format(self.a[i][self.c("ts")]), "end seq:", self.a[i][self.c("map_end")]
+				if (self.a[i][self.c("map_end")]-self.a[0][self.c("map_begin")])%65536==1428:
+					print >>self.log, "found block beginning at ", "{:10.8f}".format(self.a[i][self.c("ts")]), "end seq:", self.a[i][self.c("map_end")]
 					print >>self.log,"--------------------------------------"
-					# the ranges we use here are inclusive, ie the range contains both elements.
-					self.blocks.append((b,i))
-					last_end = i
-					b=None
-					print self.blocks
+					self.blocks.append((b,previous_seq))
+					b = i
 				# keep track of previous seq packet
+				previous_seq=i
 			i=i+1
 		self.blocks.append((b,i-1))
+		print self.blocks
 		print >>self.log, "# blocks: ", len(self.blocks)
 	def extract_times(self):
 		for i in range(len(self.blocks)):
@@ -152,7 +146,7 @@ class BurstBlocksAggregator:
 		while i<len(self.a):
 			# find ack packets
 			if self.a[i][self.c("is_seq")]==0:
-				if self.a[i][self.c("map_begin")]>=seq:
+				if self.a[i][self.c("map_begin")]>seq:
 					return (i,self.a[i])
 			i=i+1
 		return None
