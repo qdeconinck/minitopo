@@ -8,13 +8,30 @@ class  MpExperienceNCPV(MpExperience):
 	"""
 	SERVER_NC_LOG = "netcat_server"
 	CLIENT_NC_LOG = "netcat_client"
-	NC_BIN = "netcat"
-	PV_BIN = "/home/bhesmans/Documents/git/pv/pv"
+	NC_BIN = "/home/mininet/git/netcat-openbsd-1.105/nc"
+	PV_BIN = "pv"
+	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
 		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
+		self.ping()
 		MpExperience.classicRun(self)
+
+	def ping(self):
+		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+				MpExperienceNCPV.PING_OUTPUT )
+		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+		for i in range(0, self.mpConfig.getClientInterfaceCount()):
+			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
+				 self.mpConfig.getServerIP(), n = count)
+			 self.mpTopo.commandTo(self.mpConfig.client, cmd)
+
+	def pingCommand(self, fromIP, toIP, n=5):
+		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
+				  " >> " + MpExperienceNCPV.PING_OUTPUT
+		print(s)
+		return s
 
 	def loadParam(self):
 		self.pvg = self.xpParam.getParam(MpParamXp.PVG)
@@ -83,9 +100,9 @@ class  MpExperienceNCPV(MpExperience):
 				MpExperienceNCPV.SERVER_NC_LOG )
 
 	def getNCServerCmd(self, id):
-		s = MpExperienceNCPV.NC_BIN + " -d " + \
+		s = MpExperienceNCPV.NC_BIN + " -d  " + \
 				" -l " + self.ncServerPort  + \
-				" &>" + MpExperienceNCPV.SERVER_NC_LOG + \
+				" 1>/dev/null 2>" + MpExperienceNCPV.SERVER_NC_LOG + \
 				"_" + str(id) + ".log &"
 		print(s)
 		return s
@@ -98,7 +115,7 @@ class  MpExperienceNCPV(MpExperience):
 				" -g " + self.pvg + " -z " + self.pvz + \
 				" -q --rate-limit " + self.pvRateLimit + \
 				" | " + MpExperienceNCPV.NC_BIN + " " + \
-				" -p " + self.ncClientPort[id] + " " + \
+				"  -p " + self.ncClientPort[id] + " " + \
 				self.mpConfig.getServerIP() + " " + \
 				self.ncServerPort + " " + \
 				"&>" + MpExperienceNCPV.CLIENT_NC_LOG + \
