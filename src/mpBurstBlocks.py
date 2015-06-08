@@ -51,24 +51,34 @@ class BurstBlocksAggregator:
 #		self.blocks.append((b,previous))
 #		print >>self.log, "# blocks: ", len(self.blocks)
 # detect blocks based on number of bytes sent
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# buggy code !!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	def extract_blocks(self):
 		# beginning of block. First block starts at packet 0
 		b=0
 		# iteration, we can start at packet 1
 		i=1
+		previous_mod=0
 		first_seq=self.a[i][self.c("map_begin")]
 		previous_seq=None
 		while i<len(self.a):
 			if self.a[i][self.c("is_seq")]==1:
-				if (self.a[i][self.c("map_end")]-self.a[0][self.c("map_begin")])%65536==1428:
+				if (self.a[i][self.c("map_end")]-self.a[0][self.c("map_begin")])%65536<previous_mod and self.a[i][self.c("map_begin")]>self.a[previous_seq][self.c("map_begin")]:
 					print >>self.log, "found block beginning at ", "{:10.8f}".format(self.a[i][self.c("ts")]), "end seq:", self.a[i][self.c("map_end")]
 					print >>self.log,"--------------------------------------"
 					self.blocks.append((b,previous_seq))
 					b = i
-				# keep track of previous seq packet
-				previous_seq=i
+					# keep track of previous seq packet
+					#print >>self.log, "recording previous seq at time ", "{:10.8f}".format(self.a[i][self.c("ts")]), "and end_seq:", self.a[i][self.c("map_end")]
+				if self.a[i][self.c("map_begin")]>self.a[previous_seq][self.c("map_begin")]:
+					previous_mod=(self.a[i][self.c("map_end")]-self.a[0][self.c("map_begin")])%65536
+					previous_seq=i
 			i=i+1
-		self.blocks.append((b,i-1))
+		print "last block previous_seq = " + str(previous_seq)
+		print >>self.log, "Rcording last block end at time ", "{:10.8f}".format(self.a[previous_seq][self.c("ts")]), "and end_seq:", self.a[previous_seq][self.c("map_end")]
+		self.blocks.append((b,previous_seq))
 		print self.blocks
 		print >>self.log, "# blocks: ", len(self.blocks)
 	def extract_times(self):
@@ -149,6 +159,8 @@ class BurstBlocksAggregator:
 				if self.a[i][self.c("map_begin")]>seq:
 					return (i,self.a[i])
 			i=i+1
+		print "Did not find ack for:"
+		print "seq : " + str(seq)
 		return None
 
 	def find_biggest_seq_in_block(self, packets):
@@ -161,6 +173,7 @@ class BurstBlocksAggregator:
 				elif packets[j][self.c("map_begin")]>packets[biggest_seq][self.c("map_begin")]:
 					biggest_seq=j
 			j=j+1
+		print >>self.log, "biggest seq in block: " + str(packets[biggest_seq][self.c("map_end")])
 		return biggest_seq
 		
 	def __del__(self):
