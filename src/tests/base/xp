@@ -7,5 +7,5 @@ ddCount:10000
 kpm:fullmesh
 kpms:netlink
 kpmc:netlink
-upmc:fullmesh
-#upmc_args: -n 5
+upmc:delayOpen
+upmc_args: -c 2000 -d

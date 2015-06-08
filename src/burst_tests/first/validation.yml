@@ -1,0 +1,5 @@
+checkers:
+  mptcptrace:
+  tcptrace:
+aggregators:
+  - burst_blocks

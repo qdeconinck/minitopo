@@ -1,0 +1,7 @@
+desc:Simple configuration with two para link
+topoType:MultiIf
+leftSubnet:10.0.
+rightSubnet:10.1.
+#path_x:delay,queueSize(may be calc),bw
+path_0:10,10,5
+path_1:1000,40,5
