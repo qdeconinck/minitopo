@@ -26,8 +26,8 @@ parser.add_option("-t", "--tests", dest="tests_dir",
                   help="Directory holding tests", metavar="TESTSDIR" , default="./tests")
 parser.add_option("-l", "--logs", dest="logs_dir",
                   help="Directory where to log", metavar="LOGSDIR" , default="./logs")
-parser.add_option("-r", "--repeat", dest="repeat", action="store_true",
-                  help="Reuse existing logs", metavar="REPEAT" , default=False)
+parser.add_option("-r", "--repeat", dest="repeat",
+                  help="Reuse existing logs", metavar="REPEAT" , default="")
 
 (options, args) = parser.parse_args()
 
@@ -39,9 +39,8 @@ repeat = options.repeat
 # take timestamp, used as subdirectory in logs_dir
 timestamp=datetime.datetime.now().isoformat()
 
-if repeat:
-	print "not implemented"
-	timestamp="2015-06-01T14:57:31.617534"
+if repeat!="":
+	timestamp=repeat
 #timestamp = "2015-05-26T15:42:45.419949"
 
 for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.path.join(tests_dir, name))]:
@@ -81,13 +80,14 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 				print checker.logs
 			else:
 				print checker.logs
-		for k in validations["aggregators"]:
-			# Identify checker class
-			name = k.title().replace("_","")+"Aggregator"
-			klass= globals()[name]
-			# instantiate checker with validations and test_name
-			agg = klass(validations, test_name, destDir)
-			print agg
+		if validations["aggregators"]!=None:
+			for k in validations["aggregators"]:
+				# Identify checker class
+				name = k.title().replace("_","")+"Aggregator"
+				klass= globals()[name]
+				# instantiate checker with validations and test_name
+				agg = klass(validations, test_name, destDir)
+				print agg
 
 
 
