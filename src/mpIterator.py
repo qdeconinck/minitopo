@@ -14,6 +14,7 @@ import datetime
 # currently all checkers and validations and defined in this file
 from mpValidations import *
 from mpBurstBlocks import *
+from mpRefreshSetCsv import *
 
 from yaml import load, dump
 
@@ -28,6 +29,8 @@ parser.add_option("-l", "--logs", dest="logs_dir",
                   help="Directory where to log", metavar="LOGSDIR" , default="./logs")
 parser.add_option("-r", "--repeat", dest="repeat",
                   help="Reuse existing logs", metavar="REPEAT" , default="")
+parser.add_option("-c", "--clean-pcap", dest="clean", action="store_true",
+                  help="Delete pcap from logs directory", metavar="CLEAN" , default="false")
 
 (options, args) = parser.parse_args()
 
@@ -35,6 +38,7 @@ parser.add_option("-r", "--repeat", dest="repeat",
 tests_dir=options.tests_dir.rstrip("/")
 logs_dir=options.logs_dir.rstrip("/")
 repeat = options.repeat
+clean = options.clean
 
 # take timestamp, used as subdirectory in logs_dir
 timestamp=datetime.datetime.now().isoformat()
@@ -63,23 +67,24 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 	copy(xpFile,destDir) 
 	copy(validation_file,destDir) 
 	#copy log files
-        for l in ["client.pcap" ,"command.log" ,"upmc.log" ,"upms.log" ,"client.pcap" ,"netcat_server_0.log" ,"netcat_client_0.log"]:
-		copy(l,destDir) 
+        for l in ["client.pcap" ,"command.log" ,"upmc.log" ,"upms.log" ,"netcat_server_0.log" ,"netcat_client_0.log"]:
+		copy(l,destDir+"/") 
 
 	# Run validations
 	with open(validation_file, 'r') as f:
 		validations = load(f)
 	if validations!=None:
-		for k in validations["checkers"].keys():
-			# Identify checker class
-			name = k.title().replace("_","")+"Checker"
-			klass= globals()[name]
-			# instantiate checker with validations and test_name
-			checker = klass(validations["checkers"], test_name, destDir)
-			if checker.check():
-				print checker.logs
-			else:
-				print checker.logs
+		if validations["checkers"]!=None:
+			for k in validations["checkers"].keys():
+				# Identify checker class
+				name = k.title().replace("_","")+"Checker"
+				klass= globals()[name]
+				# instantiate checker with validations and test_name
+				checker = klass(validations["checkers"], test_name, destDir)
+				if checker.check():
+					print checker.logs
+				else:
+					print checker.logs
 		if validations["aggregators"]!=None:
 			for k in validations["aggregators"]:
 				# Identify checker class
@@ -88,6 +93,8 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 				# instantiate checker with validations and test_name
 				agg = klass(validations, test_name, destDir)
 				print agg
+	if clean:
+		os.remove(destDir+"/client.pcap")
 
 
 
