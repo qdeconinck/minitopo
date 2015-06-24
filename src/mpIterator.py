@@ -74,7 +74,7 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 	with open(validation_file, 'r') as f:
 		validations = load(f)
 	if validations!=None:
-		if validations["checkers"]!=None:
+		if "checkers" in validations:
 			for k in validations["checkers"].keys():
 				# Identify checker class
 				name = k.title().replace("_","")+"Checker"
@@ -85,7 +85,7 @@ for test_name in [name for name in os.listdir(tests_dir) if os.path.isdir(os.pat
 					print checker.logs
 				else:
 					print checker.logs
-		if validations["aggregators"]!=None:
+		if "aggregators" in validations:
 			for k in validations["aggregators"]:
 				# Identify checker class
 				name = k.title().replace("_","")+"Aggregator"
