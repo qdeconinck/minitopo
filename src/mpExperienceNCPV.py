@@ -8,8 +8,8 @@ class  MpExperienceNCPV(MpExperience):
 	"""
 	SERVER_NC_LOG = "netcat_server"
 	CLIENT_NC_LOG = "netcat_client"
-	NC_BIN = "/home/mininet/git/netcat-openbsd-1.105/nc"
-	PV_BIN = "pv"
+	NC_BIN = "/usr/local/bin/nc"
+	PV_BIN = "/usr/local/bin/pv"
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
