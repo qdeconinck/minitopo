@@ -1,44 +1,45 @@
-mptcptrace:
-  - test: "csv"
-    csv: "c2s_seq_1"
-    columns: 2
-    validations:
-      - name: "increasing_values"
-        desc: "dummy: check sequence numbers grow"
-tcptrace:
-  - test: "csv"
-    csv: "tcptrace"
-    rows: [0,1]
-    columns: [5]
-    validations:
-      - name: "min_difference"
-        target: 2
-        desc: "minimum difference of opening time"
-  - test: "csv"
-    csv: "tcptrace"
-    validations:
-      - name: "min_rows"
-        target: 2
-        desc: "minimum number of flows"
-      - name: "max_rows"
-        target: 5
-        desc: "minimum number of flows"
-      - name: "exact_rows"
-        target: 4
-        desc: "minimum number of flows"
-  - test: "csv"
-    csv: "tcptrace"
-    rows: [1,2]
-    columns: [5]
-    validations:
-      - name: "min_difference"
-        target: 2
-        desc: "minimum difference of opening time between flow 2 and 3"
-  - test: "csv"
-    csv: "tcptrace"
-    rows: [0,1]
-    columns: [7]
-    validations:
-      - name: "max_ratio"
-        target: 0.05
-        desc: "max ration of packet a->b on flow 1 compared to flow 0."
+checkers:
+  mptcptrace:
+    - test: "csv"
+      csv: "c2s_seq_1"
+      columns: 2
+      validations:
+        - name: "increasing_values"
+          desc: "dummy: check sequence numbers grow"
+  tcptrace:
+    - test: "csv"
+      csv: "tcptrace"
+      rows: [0,1]
+      columns: [5]
+      validations:
+        - name: "min_difference"
+          target: 2
+          desc: "minimum difference of opening time"
+    - test: "csv"
+      csv: "tcptrace"
+      validations:
+        - name: "min_rows"
+          target: 2
+          desc: "minimum number of flows"
+        - name: "max_rows"
+          target: 5
+          desc: "minimum number of flows"
+        - name: "exact_rows"
+          target: 4
+          desc: "minimum number of flows"
+    - test: "csv"
+      csv: "tcptrace"
+      rows: [1,2]
+      columns: [5]
+      validations:
+        - name: "min_difference"
+          target: 2
+          desc: "minimum difference of opening time between flow 2 and 3"
+    - test: "csv"
+      csv: "tcptrace"
+      rows: [0,1]
+      columns: [7]
+      validations:
+        - name: "max_ratio"
+          target: 0.05
+          desc: "max ration of packet a->b on flow 1 compared to flow 0."
