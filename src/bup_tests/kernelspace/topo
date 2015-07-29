@@ -1,0 +1,10 @@
+leftSubnet:10.0.
+rightSubnet:10.1.
+path_0:10,10,4,True
+path_1:40,30,4,False
+topoType:MultiIf
+#changeNetem:yes
+#netem_{path_id}:at,cmd
+#netemAt_0:5,delay 100ms limit 10 loss 10%
+#netemAt_0:15,delay 10ms limit 10
+#netemAt_1:15,delay 100ms limit 10

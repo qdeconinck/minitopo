@@ -1,6 +1,7 @@
 
 
 from mpTcptraceData import *
+from subprocess import check_output
 
 import numpy as np
 
@@ -126,6 +127,15 @@ class Tester:
 		raise Exception("Method not implemented")
 
 
+class FilterTest(Tester):
+	def get_tested_value(self, yml):
+		if "filter" in self.yml:
+			ret = check_output(["tshark", "-r", self.trace, "-Y", self.yml["filter"]])
+			return len(ret.split("\n")) - 1
+		else:
+			raise Exception("Test requires a filter.")
+
+
 
 class CsvTest(Tester):
 	def get_tested_value(self, validation):
@@ -159,6 +169,12 @@ class TcptraceChecker(Checker):
 	def __init__(self, yml, test_id, destDir):
 		self.yml = yml["tcptrace"]
 		self.trace = TcptraceData(destDir+"/client.pcap")
+		self.test_id = test_id
+
+class TsharkChecker(Checker):
+	def __init__(self, yml, test_id, destDir):
+		self.yml = yml["tshark"]
+		self.trace = destDir+"/client.pcap"
 		self.test_id = test_id
 
 from mpMptcptraceData import *
