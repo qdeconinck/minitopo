@@ -127,10 +127,12 @@ class Tester:
 		raise Exception("Method not implemented")
 
 
+# applies provided filter to Checker's trace, and returns number of lines in output(ie number of packets) 
 class FilterTest(Tester):
 	def get_tested_value(self, yml):
 		if "filter" in self.yml:
 			ret = check_output(["tshark", "-r", self.trace, "-Y", self.yml["filter"]])
+			# -1 : substract line of sudo error message printed by tshark
 			return len(ret.split("\n")) - 1
 		else:
 			raise Exception("Test requires a filter.")
@@ -171,6 +173,7 @@ class TcptraceChecker(Checker):
 		self.trace = TcptraceData(destDir+"/client.pcap")
 		self.test_id = test_id
 
+# Runs tests based on the tcpdump trace itself
 class TsharkChecker(Checker):
 	def __init__(self, yml, test_id, destDir):
 		self.yml = yml["tshark"]
