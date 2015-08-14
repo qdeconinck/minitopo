@@ -26,6 +26,9 @@ class MpParamXp(MpParam):
 	NCCLIENTPORT = "ncClientPort"
 	CHANGEPV   = "changePv"
 	CHANGEPVAT = "changePvAt"
+	HTTPSFILE  = "file" # file to wget, if random : we create a file with random data called random.
+	HTTPSRANDOMSIZE = "file_size" # if file is set to random, define the size of the random file
+
 
 	# global sysctl
 	sysctlKey = {}
@@ -65,6 +68,8 @@ class MpParamXp(MpParam):
 	defaultValue[NCSERVERPORT] = "33666"
 	defaultValue[NCCLIENTPORT] = "33555"
 	defaultValue[CHANGEPV] = "no"
+	defaultValue[HTTPSFILE] = "random"
+	defaultValue[HTTPSRANDOMSIZE] = "1024"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)

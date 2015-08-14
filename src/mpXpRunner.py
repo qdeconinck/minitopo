@@ -8,6 +8,7 @@ from mpMininetBuilder import MpMininetBuilder
 from mpExperiencePing import MpExperiencePing
 from mpExperienceNCPV import MpExperienceNCPV
 from mpExperienceNC import MpExperienceNC
+from mpExperienceHTTPS import MpExperienceHTTPS
 from mpExperienceNone import MpExperienceNone
 from mpExperience import MpExperience
 from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
@@ -74,6 +75,9 @@ class MpXpRunner:
 					self.mpTopoConfig)
 		elif xp == MpExperience.NONE:
 			MpExperienceNone(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
+		elif xp == MpExperience.HTTPS:
+			MpExperienceHTTPS(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
 		else:
 			print("Unfound xp type..." + xp)

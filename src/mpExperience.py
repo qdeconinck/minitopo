@@ -5,6 +5,7 @@ class MpExperience:
 	NCPV = "ncpv"
 	NC = "nc"
 	NONE = "none"
+	HTTPS = "https"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
