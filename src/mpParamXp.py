@@ -28,6 +28,7 @@ class MpParamXp(MpParam):
 	CHANGEPVAT = "changePvAt"
 	HTTPSFILE  = "file" # file to wget, if random : we create a file with random data called random.
 	HTTPSRANDOMSIZE = "file_size" # if file is set to random, define the size of the random file
+	EPLOADTESTDIR = "epload_test_dir"
 
 
 	# global sysctl
@@ -70,6 +71,7 @@ class MpParamXp(MpParam):
 	defaultValue[CHANGEPV] = "no"
 	defaultValue[HTTPSFILE] = "random"
 	defaultValue[HTTPSRANDOMSIZE] = "1024"
+	defaultValue[EPLOADTESTDIR] = "/bla/bla/bla"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)
