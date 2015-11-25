@@ -5,6 +5,7 @@ class MpParamXp(MpParam):
 	RMEM       = "rmem"
 	WMEM       = "wmem"
 	SCHED      = "sched"
+	CC		   = "congctrl"
 	KERNELPM   = "kpm"
 	KERNELPMC  = "kpmc" #kernel path manager client / server
 	KERNELPMS  = "kpms"
@@ -37,6 +38,7 @@ class MpParamXp(MpParam):
 	sysctlKey[WMEM] = "net.ipv4.tcp_wmem"
 	sysctlKey[KERNELPM] = "net.mptcp.mptcp_path_manager"
 	sysctlKey[SCHED] = "net.mptcp.mptcp_scheduler"
+	sysctlKey[CC] = "net.ipv4.tcp_congestion_control"
 
 	sysctlKeyClient = {}
 	sysctlKeyClient[KERNELPMC] = "net.mptcp.mptcp_path_manager"
@@ -54,6 +56,7 @@ class MpParamXp(MpParam):
 	defaultValue[USERPMS] = "fullmesh"
 	defaultValue[USERPMCARGS] = ""
 	defaultValue[USERPMSARGS] = ""
+	defaultValue[CC] = "olia"
 	defaultValue[SCHED] = "default"
 
 	defaultValue[CLIENTPCAP] = "no"
