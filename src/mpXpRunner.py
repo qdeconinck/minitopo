@@ -9,6 +9,7 @@ from mpExperiencePing import MpExperiencePing
 from mpExperienceNCPV import MpExperienceNCPV
 from mpExperienceNC import MpExperienceNC
 from mpExperienceHTTPS import MpExperienceHTTPS
+from mpExperienceHTTP import MpExperienceHTTP
 from mpExperienceEpload import MpExperienceEpload
 from mpExperienceNone import MpExperienceNone
 from mpExperience import MpExperience
@@ -79,6 +80,9 @@ class MpXpRunner:
 					self.mpTopoConfig)
 		elif xp == MpExperience.HTTPS:
 			MpExperienceHTTPS(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
+		elif xp == MpExperience.HTTP:
+			MpExperienceHTTP(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
 		elif xp == MpExperience.EPLOAD:
 			MpExperienceEpload(self.xpParam, self.mpTopo,
