@@ -35,6 +35,8 @@ class MpParamXp(MpParam):
 	NETPERFTESTLEN = "netperfTestlen"
 	NETPERFTESTNAME = "netperfTestname"
 	NETPERFREQRESSIZE = "netperfReqresSize"
+	ABCONCURRENTREQUESTS = "abConccurentRequests"
+	ABTIMELIMIT = "abTimelimit"
 
 
 	# global sysctl
@@ -84,7 +86,9 @@ class MpParamXp(MpParam):
 	defaultValue[HTTPRANDOMSIZE] = "1024"
 	defaultValue[NETPERFTESTLEN] = "10"
 	defaultValue[NETPERFTESTNAME] = "TCP_RR"
-	defaultValue[NETPERFREQRESSIZE] = "2k,256"
+	defaultValue[NETPERFREQRESSIZE] = "2K,256"
+	defaultValue[ABCONCURRENTREQUESTS] = "50"
+	defaultValue[ABTIMELIMIT] = "20"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)

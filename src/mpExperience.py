@@ -9,6 +9,7 @@ class MpExperience:
 	HTTP = "http"
 	EPLOAD = "epload"
 	NETPERF = "netperf"
+	AB = "ab"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
