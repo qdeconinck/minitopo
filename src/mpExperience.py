@@ -8,6 +8,7 @@ class MpExperience:
 	HTTPS = "https"
 	HTTP = "http"
 	EPLOAD = "epload"
+	NETPERF = "netperf"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam

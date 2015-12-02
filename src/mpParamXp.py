@@ -32,6 +32,9 @@ class MpParamXp(MpParam):
 	EPLOADTESTDIR = "epload_test_dir"
 	HTTPFILE = "http_file"
 	HTTPRANDOMSIZE = "http_file_size"
+	NETPERFTESTLEN = "netperfTestlen"
+	NETPERFTESTNAME = "netperfTestname"
+	NETPERFREQRESSIZE = "netperfReqresSize"
 
 
 	# global sysctl
@@ -79,6 +82,9 @@ class MpParamXp(MpParam):
 	defaultValue[EPLOADTESTDIR] = "/bla/bla/bla"
 	defaultValue[HTTPFILE] = "random"
 	defaultValue[HTTPRANDOMSIZE] = "1024"
+	defaultValue[NETPERFTESTLEN] = "10"
+	defaultValue[NETPERFTESTNAME] = "TCP_RR"
+	defaultValue[NETPERFREQRESSIZE] = "2k,256"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)
