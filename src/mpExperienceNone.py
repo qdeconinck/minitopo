@@ -6,7 +6,7 @@ class  MpExperienceNone(MpExperience):
 		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		MpExperience.classicRun(self)
 
-	def prepapre(self):
+	def prepare(self):
 		MpExperience.prepare(self)
 
 	def clean(self):
