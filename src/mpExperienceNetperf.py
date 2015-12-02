@@ -48,12 +48,14 @@ class  MpExperienceNetperf(MpExperience):
 
 	def getClientCmd(self):
 		s = MpExperienceNetperf.NETPERF_BIN + " -H " + self.mpConfig.getServerIP() + \
-			" -l " + self.testlen + " -t " + self.testname + " -r " + self.reqres_size
+			" -l " + self.testlen + " -t " + self.testname + " -r " + self.reqres_size + \
+			" &>" + MpExperienceNetperf.NETPERF_LOG
 		print(s)
 		return s
 
 	def getServerCmd(self):
-		s = "sudo " + MpExperienceNetperf.NETSERVER_BIN
+		s = "sudo " + MpExperienceNetperf.NETSERVER_BIN + " &>" + \
+			MpExperienceNetperf.NETSERVER_LOG + "&"
 		print(s)
 		return s
 
