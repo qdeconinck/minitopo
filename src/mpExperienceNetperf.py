@@ -37,7 +37,7 @@ class  MpExperienceNetperf(MpExperience):
 		"""
 		self.testlen = self.xpParam.getParam(MpParamXp.NETPERFTESTLEN)
 		self.testname = self.xpParam.getParam(MpParamXp.NETPERFTESTNAME)
-		self.reqres_size = self.XpParam.getParam(MpParamXp.NETPERFREQRESSIZE)
+		self.reqres_size = self.xpParam.getParam(MpParamXp.NETPERFREQRESSIZE)
 
 	def prepare(self):
 		MpExperience.prepare(self)
