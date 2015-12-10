@@ -5,6 +5,8 @@ class MpParamXp(MpParam):
 	RMEM       = "rmem"
 	WMEM       = "wmem"
 	SCHED      = "sched"
+	SCHEDC     = "schedc"
+	SCHEDS     = "scheds"
 	CC		   = "congctrl"
 	KERNELPM   = "kpm"
 	KERNELPMC  = "kpmc" #kernel path manager client / server
@@ -49,8 +51,10 @@ class MpParamXp(MpParam):
 
 	sysctlKeyClient = {}
 	sysctlKeyClient[KERNELPMC] = "net.mptcp.mptcp_path_manager"
+	sysctlKeyClient[SCHEDC] = "net.mptcp.mptcp_scheduler"
 	sysctlKeyServer = {}
 	sysctlKeyServer[KERNELPMS] = "net.mptcp.mptcp_path_manager"
+	sysctlKeyServer[SCHEDS] = "net.mptcp.mptcp_scheduler"
 
 	defaultValue = {}
 
