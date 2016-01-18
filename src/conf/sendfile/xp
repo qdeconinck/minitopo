@@ -1,0 +1,6 @@
+xpType:sendfile
+clientPcap:yes
+kpms:fullmesh
+kpmc:fullmesh
+sched:metric
+rmem:300000 300000 300000

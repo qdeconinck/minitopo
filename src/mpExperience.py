@@ -10,6 +10,7 @@ class MpExperience:
 	EPLOAD = "epload"
 	NETPERF = "netperf"
 	AB = "ab"
+	SENDFILE = "sendfile"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam

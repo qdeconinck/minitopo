@@ -10,6 +10,7 @@ from mpExperienceNCPV import MpExperienceNCPV
 from mpExperienceNC import MpExperienceNC
 from mpExperienceHTTPS import MpExperienceHTTPS
 from mpExperienceHTTP import MpExperienceHTTP
+from mpExperienceSendFile import MpExperienceSendFile
 from mpExperienceEpload import MpExperienceEpload
 from mpExperienceNetperf import MpExperienceNetperf
 from mpExperienceAb import MpExperienceAb
@@ -94,6 +95,9 @@ class MpXpRunner:
 					self.mpTopoConfig)
 		elif xp == MpExperience.AB:
 			MpExperienceAb(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
+		elif xp == MpExperience.SENDFILE:
+			MpExperienceSendFile(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
 		else:
 			print("Unfound xp type..." + xp)
