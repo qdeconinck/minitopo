@@ -178,11 +178,12 @@ class MpExperience:
 		#todo : replace filename by cst
 		cpcap = self.xpParam.getParam(MpParamXp.CLIENTPCAP)
 		spcap = self.xpParam.getParam(MpParamXp.SERVERPCAP)
+		snaplenpcap = self.xpParam.getParam(MpParamXp.SNAPLENPCAP)
 		if cpcap == "yes" :
 			self.mpTopo.commandTo(self.mpConfig.client,
-					"tcpdump -i any -w client.pcap &")
+					"tcpdump -i any -s " + snaplenpcap + " -w client.pcap &")
 		if spcap == "yes" :
 			self.mpTopo.commandTo(self.mpConfig.server,
-					"tcpdump -i any -w server.pcap &")
+					"tcpdump -i any -s " + snaplenpcap + " -w server.pcap &")
 		if spcap == "yes" or cpcap == "yes":
 			self.mpTopo.commandTo(self.mpConfig.client,"sleep 5")

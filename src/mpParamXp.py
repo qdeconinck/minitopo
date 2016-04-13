@@ -15,6 +15,7 @@ class MpParamXp(MpParam):
 	USERPMSARGS   = "upms_args"
 	CLIENTPCAP = "clientPcap"
 	SERVERPCAP = "serverPcap"
+	SNAPLENPCAP = "snaplenPcap"
 	XPTYPE     = "xpType"
 	PINGCOUNT  = "pingCount"
 	DDIBS      = "ddIBS"
@@ -68,6 +69,7 @@ class MpParamXp(MpParam):
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
+	defaultValue[SNAPLENPCAP] = "65535"  # Default snapping value of tcpdump
 	defaultValue[XPTYPE] = "none"
 	defaultValue[PINGCOUNT] = "5"
 	defaultValue[DDIBS] = "1k"
