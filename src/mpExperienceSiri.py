@@ -1,0 +1,81 @@
+from mpExperience import MpExperience
+from mpParamXp import MpParamXp
+from mpPvAt import MpPvAt
+import os
+
+class  MpExperienceSiri(MpExperience):
+	SERVER_LOG = "siri_server.log"
+	CLIENT_LOG = "siri_client.log"
+	JAVA_BIN = "java"
+	PING_OUTPUT = "ping.log"
+
+	def __init__(self, xpParamFile, mpTopo, mpConfig):
+		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		self.loadParam()
+		self.ping()
+		MpExperience.classicRun(self)
+
+	def ping(self):
+		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+				MpExperienceSiri.PING_OUTPUT )
+		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+		for i in range(0, self.mpConfig.getClientInterfaceCount()):
+			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
+				 self.mpConfig.getServerIP(), n = count)
+			 self.mpTopo.commandTo(self.mpConfig.client, cmd)
+
+	def pingCommand(self, fromIP, toIP, n=5):
+		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
+				  " >> " + MpExperienceSiri.PING_OUTPUT
+		print(s)
+		return s
+
+	def loadParam(self):
+		"""
+		todo : param LD_PRELOAD ??
+		"""
+		self.run_time = self.xpParam.getParam(MpParamXp.SIRIRUNTIME)
+		self.query_size = self.xpParam.getParam(MpParamXp.SIRIQUERYSIZE)
+		self.response_size = self.xpParam.getParam(MpParamXp.SIRIRESPONSESIZE)
+		self.delay_query_response = self.xpParam.getParam(MpParamXp.SIRIDELAYQUERYRESPONSE)
+		self.min_payload_size = self.xpParam.getParam(MpParamXp.SIRIMINPAYLOADSIZE)
+		self.max_payload_size = self.xpParam.getParam(MpParamXp.SIRIMAXPAYLOADSIZE)
+		self.interval_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALTIMEMS)
+		self.buffer_size = self.xpParam.getParam(MpParamXp.SIRIBUFFERSIZE)
+		# Little trick here
+		self.xpParam.defaultValue[MpParamXp.AUTOCORK] = "0"
+
+	def prepare(self):
+		MpExperience.prepare(self)
+		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+				MpExperienceSiri.CLIENT_LOG)
+		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+				MpExperienceSiri.SERVER_LOG)
+
+	def getSiriServerCmd(self):
+		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
+				"/siri_server.py &>" + MpExperienceSiri.SERVER_LOG + "&"
+		print(s)
+		return s
+
+	def getSiriClientCmd(self):
+		s = MpExperienceSiri.JAVA_BIN + " -jar siriClient.jar" + self.mpConfig.getServerIP() + \
+				" 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
+				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
+				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + \
+				" &>" + MpExperienceSiri.CLIENT_LOG
+		print(s)
+		return s
+
+	def clean(self):
+		MpExperience.clean(self)
+
+
+	def run(self):
+		cmd = self.getSiriServerCmd()
+		self.mpTopo.commandTo(self.mpConfig.server, cmd)
+
+		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+		cmd = self.getSiriClientCmd()
+		self.mpTopo.commandTo(self.mpConfig.client, cmd)
+		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")

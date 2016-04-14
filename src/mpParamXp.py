@@ -6,6 +6,7 @@ class MpParamXp(MpParam):
 	WMEM       = "wmem"
 	SCHED      = "sched"
 	CC		   = "congctrl"
+	AUTOCORK   = "autocork"
 	KERNELPM   = "kpm"
 	KERNELPMC  = "kpmc" #kernel path manager client / server
 	KERNELPMS  = "kpms"
@@ -38,6 +39,14 @@ class MpParamXp(MpParam):
 	NETPERFREQRESSIZE = "netperfReqresSize"
 	ABCONCURRENTREQUESTS = "abConccurentRequests"
 	ABTIMELIMIT = "abTimelimit"
+	SIRIRUNTIME = "siriRunTime"
+	SIRIQUERYSIZE = "siriQuerySize"
+	SIRIRESPONSESIZE = "siriResponseSize"
+	SIRIDELAYQUERYRESPONSE = "siriDelayQueryResponse"
+	SIRIMINPAYLOADSIZE = "siriMinPayloadSize"
+	SIRIMAXPAYLOADSIZE = "siriMaxPayloadSize"
+	SIRIINTERVALTIMEMS = "siriIntervalTimeMs"
+	SIRIBUFFERSIZE = "siriBufferSize"
 
 
 	# global sysctl
@@ -47,6 +56,7 @@ class MpParamXp(MpParam):
 	sysctlKey[KERNELPM] = "net.mptcp.mptcp_path_manager"
 	sysctlKey[SCHED] = "net.mptcp.mptcp_scheduler"
 	sysctlKey[CC] = "net.ipv4.tcp_congestion_control"
+	sysctlKey[AUTOCORK] = "net.ipv4.tcp_autocorking"
 
 	sysctlKeyClient = {}
 	sysctlKeyClient[KERNELPMC] = "net.mptcp.mptcp_path_manager"
@@ -66,6 +76,7 @@ class MpParamXp(MpParam):
 	defaultValue[USERPMSARGS] = ""
 	defaultValue[CC] = "olia"
 	defaultValue[SCHED] = "default"
+	defaultValue[AUTOCORK] = "1"
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
@@ -91,6 +102,13 @@ class MpParamXp(MpParam):
 	defaultValue[NETPERFREQRESSIZE] = "2K,256"
 	defaultValue[ABCONCURRENTREQUESTS] = "50"
 	defaultValue[ABTIMELIMIT] = "20"
+	defaultValue[SIRIQUERYSIZE] = "2500"
+	defaultValue[SIRIRESPONSESIZE] = "750"
+	defaultValue[SIRIDELAYQUERYRESPONSE] = "0"
+	defaultValue[SIRIMINPAYLOADSIZE] = "85"
+	defaultValue[SIRIMAXPAYLOADSIZE] = "500"
+	defaultValue[SIRIINTERVALTIMEMS] = "333"
+	defaultValue[SIRIBUFFERSIZE] = "9"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)
