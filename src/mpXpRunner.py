@@ -14,6 +14,7 @@ from mpExperienceSendFile import MpExperienceSendFile
 from mpExperienceEpload import MpExperienceEpload
 from mpExperienceNetperf import MpExperienceNetperf
 from mpExperienceAb import MpExperienceAb
+from mpExperienceSiri import MpExperienceSiri
 from mpExperienceNone import MpExperienceNone
 from mpExperience import MpExperience
 from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
@@ -95,6 +96,9 @@ class MpXpRunner:
 					self.mpTopoConfig)
 		elif xp == MpExperience.AB:
 			MpExperienceAb(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
+		elif xp == MpExperience.SIRI:
+			MpExperienceSiri(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
 		elif xp == MpExperience.SENDFILE:
 			MpExperienceSendFile(self.xpParam, self.mpTopo,

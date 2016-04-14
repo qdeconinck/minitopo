@@ -53,13 +53,13 @@ class  MpExperienceSiri(MpExperience):
 				MpExperienceSiri.SERVER_LOG)
 
 	def getSiriServerCmd(self):
-		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
+		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
 				"/siri_server.py &>" + MpExperienceSiri.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getSiriClientCmd(self):
-		s = MpExperienceSiri.JAVA_BIN + " -jar siriClient.jar" + self.mpConfig.getServerIP() + \
+		s = MpExperienceSiri.JAVA_BIN + " -jar siriClient.jar " + self.mpConfig.getServerIP() + \
 				" 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + \
