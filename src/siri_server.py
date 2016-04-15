@@ -87,15 +87,12 @@ class HandleClientConnectionThread(threading.Thread):
                         for i in range(expected_delay_results):
                             delay_results[self.id].append(int(split_data[7 + i]))
                         first_data = False
-                        if len(delay_results[self.id]) % 10 == 0:
-                            print(self.id, ":", time_sent[self.id])
-                            print(self.id, ":", delay_results[self.id])
                     else:
                         # Avoid further processing, wait for additional packets
                         continue
 
                 if len(buffer_data) == expected_req_size:
-                    print(self.id, ": Received request of size", expected_req_size, "; send response of", res_size, "after", waiting_time, "s")
+                    # print(self.id, ": Received request of size", expected_req_size, "; send response of", res_size, "after", waiting_time, "s")
                     time.sleep(waiting_time)
                     self.connection.sendall((str(message_id) + "&" + "0" * (res_size - len(str(message_id)) - 2) + "\n").encode(ENCODING))
                     first_data = True
