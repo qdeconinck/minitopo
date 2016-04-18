@@ -55,7 +55,7 @@ class  MpExperienceHTTPS(MpExperience):
 		return s
 
 	def getHTTPSClientCmd(self):
-		s = MpExperienceHTTPS.WGET_BIN + " https://" + self.mpConfig.getServerIP() + \
+		s = "time " +MpExperienceHTTPS.WGET_BIN + " https://" + self.mpConfig.getServerIP() + \
 				"/" + self.file + " --no-check-certificate &>" + MpExperienceHTTPS.CLIENT_LOG
 		print(s)
 		return s
