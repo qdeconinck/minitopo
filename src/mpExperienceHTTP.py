@@ -55,8 +55,8 @@ class  MpExperienceHTTP(MpExperience):
 		return s
 
 	def getHTTPClientCmd(self):
-		s = "(time " + MpExperienceHTTP.WGET_BIN + " http://" + self.mpConfig.getServerIP() + \
-				"/" + self.file + " --no-check-certificate) &>" + MpExperienceHTTP.CLIENT_LOG
+		s = "{time " + MpExperienceHTTP.WGET_BIN + " http://" + self.mpConfig.getServerIP() + \
+				"/" + self.file + " --no-check-certificate} &>" + MpExperienceHTTP.CLIENT_LOG
 		print(s)
 		return s
 
