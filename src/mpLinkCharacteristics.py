@@ -36,7 +36,7 @@ class MpLinkCharacteristics:
 			cmd = cmd + " tc qdisc change dev " + ifname + " "
 			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemParent
 			cmd = cmd + " handle " + MpLinkCharacteristics.tcNetemHandle
-			cmd = cmd + " netem " + n.cmd + " delay " + self.delay
+			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms"
 			cmd = cmd + " rate " + self.bandwidth + "mbit && "
 		cmd = cmd + " true &"
 		return cmd
