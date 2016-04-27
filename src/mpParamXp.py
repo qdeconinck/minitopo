@@ -47,6 +47,8 @@ class MpParamXp(MpParam):
 	SIRIMAXPAYLOADSIZE = "siriMaxPayloadSize"
 	SIRIINTERVALTIMEMS = "siriIntervalTimeMs"
 	SIRIBUFFERSIZE = "siriBufferSize"
+	VLCFILE = "vlcFile"
+	VLCTIME = "vlcTime"
 
 
 	# global sysctl
@@ -109,6 +111,8 @@ class MpParamXp(MpParam):
 	defaultValue[SIRIMAXPAYLOADSIZE] = "500"
 	defaultValue[SIRIINTERVALTIMEMS] = "333"
 	defaultValue[SIRIBUFFERSIZE] = "9"
+	defaultValue[VLCFILE] = "bunny_ibmff_360.mpd"
+	defaultValue[VLCTIME] = "0"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)

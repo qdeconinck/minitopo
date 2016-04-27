@@ -12,6 +12,7 @@ class MpExperience:
 	AB = "ab"
 	SIRI = "siri"
 	SENDFILE = "sendfile"
+	VLC = "vlc"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam

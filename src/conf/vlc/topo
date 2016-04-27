@@ -1,0 +1,11 @@
+desc:Simple configuration with two para link
+leftSubnet:10.0.
+rightSubnet:10.1.
+#path_x:delay,queueSize(may be calc),bw
+path_0:10,20,2
+path_1:40,5,1,True
+topoType:MultiIf
+changeNetem:yes
+#netem_{path_id}:at,cmd
+netemAt_0:10,delay 10ms limit 1
+#netemAt_0:5,delay 2ms limit 15 loss 10%
