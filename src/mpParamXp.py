@@ -7,6 +7,7 @@ class MpParamXp(MpParam):
 	SCHED      = "sched"
 	CC		   = "congctrl"
 	AUTOCORK   = "autocork"
+	EARLYRETRANS = "earlyRetrans"
 	KERNELPM   = "kpm"
 	KERNELPMC  = "kpmc" #kernel path manager client / server
 	KERNELPMS  = "kpms"
@@ -59,6 +60,8 @@ class MpParamXp(MpParam):
 	sysctlKey[SCHED] = "net.mptcp.mptcp_scheduler"
 	sysctlKey[CC] = "net.ipv4.tcp_congestion_control"
 	sysctlKey[AUTOCORK] = "net.ipv4.tcp_autocorking"
+	sysctlKey[EARLYRETRANS] = "net.ipv4.tcp_early_retrans"
+
 
 	sysctlKeyClient = {}
 	sysctlKeyClient[KERNELPMC] = "net.mptcp.mptcp_path_manager"
@@ -79,6 +82,7 @@ class MpParamXp(MpParam):
 	defaultValue[CC] = "olia"
 	defaultValue[SCHED] = "default"
 	defaultValue[AUTOCORK] = "1"
+	defaultValue[EARLYRETRANS] = "3"
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
