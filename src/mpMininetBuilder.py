@@ -20,7 +20,7 @@ class MpMininetBuilder(Topo):
 		return stdout
 
 	def startNetwork(self):
-		self.net = Mininet(topo=self,link=TCLink)
+		self.net = Mininet(topo=self,link=TCLink,autoStaticArp=True)
 		self.net.start()
 
 	def getCLI(self):
@@ -41,4 +41,3 @@ class MpMininetBuilder(Topo):
 			print("Could not stop network... Nothing to stop)")
 		else:
 			self.net.stop()
-
