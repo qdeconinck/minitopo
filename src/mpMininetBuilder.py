@@ -21,6 +21,7 @@ class MpMininetBuilder(Topo):
 
 	def startNetwork(self):
 		self.net = Mininet(topo=self,link=TCLink,autoStaticArp=True,autoSetMacs=True)
+		self.net.staticArp()
 		self.net.start()
 
 	def getCLI(self):
