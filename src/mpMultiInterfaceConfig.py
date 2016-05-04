@@ -37,13 +37,17 @@ class MpMultiInterfaceConfig(MpConfig):
 		self.server = self.topo.getHost(MpTopo.serverName)
 		self.router = self.topo.getHost(MpTopo.routerName)
 		i = 0
+		count = 0
 		netmask = "255.255.255.0"
+		startMac = "00:00:00:00:00:"
 		links = self.topo.getLinkCharacteristics()
 		for l in self.topo.switch:
 			cmd = self.interfaceUpCommand(
 					self.getClientInterface(i),
 					self.getClientIP(i), netmask)
 			self.topo.commandTo(self.client, cmd)
+			self.topo.commandTo(self.client, "arp -s " + self.getClientIP(i) + " " + startMac + hex(count).split('x')[1])
+			count += 1
 
 			if(links[i].back_up):
 				cmd = self.interfaceBUPCommand(
@@ -54,16 +58,22 @@ class MpMultiInterfaceConfig(MpConfig):
 					self.getRouterInterfaceSwitch(i),
 					self.getRouterIPSwitch(i), netmask)
 			self.topo.commandTo(self.router, cmd)
+			self.topo.commandTo(self.router, "arp -s " + self.getRouterIPSwitch(i) + " " + startMac + hex(count).split('x')[1])
+			count += 1
 			print(str(links[i]))
 			i = i + 1
 
 		cmd = self.interfaceUpCommand(self.getRouterInterfaceServer(),
 				self.getRouterIPServer(), netmask)
 		self.topo.commandTo(self.router, cmd)
+		self.topo.commandTo(self.router, "arp -s " + self.getRouterIPServer() + " " + startMac + hex(count).split('x')[1])
+		count += 1
 
 		cmd = self.interfaceUpCommand(self.getServerInterface(),
 				self.getServerIP(), netmask)
 		self.topo.commandTo(self.server, cmd)
+		self.topo.commandTo(self.router, "arp -s " + self.getServerIP() + " " + startMac + hex(count).split('x')[1])
+		count += 1
 
 	def getClientIP(self, interfaceID):
 		lSubnet = self.param.getParam(MpParamTopo.LSUBNET)
