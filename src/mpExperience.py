@@ -29,6 +29,7 @@ class MpExperience:
 	def prepare(self):
 		self.setupSysctl()
 		self.runUserspacePM()
+		self.mpConfig.configureNetwork()
 		self.runTcpDump()
 		self.runNetemAt()
 		pass
