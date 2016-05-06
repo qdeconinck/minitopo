@@ -1,5 +1,4 @@
 from mpParamXp import MpParamXp
-from mpTopo import MpTopo
 
 class MpExperience:
 	PING = "ping"
@@ -189,8 +188,5 @@ class MpExperience:
 		if spcap == "yes" :
 			self.mpTopo.commandTo(self.mpConfig.server,
 					"tcpdump -i any -s " + snaplenpcap + " -w server.pcap &")
-		if spcap == "yes" and cpcap == "yes":
-			router = self.mpTopo.getHost(MpTopo.routerName)
-			self.mpTopo.commandTo(router, "tcpdump -i any -s " + snaplenpcap + " -w router.pcap &")
 		if spcap == "yes" or cpcap == "yes":
 			self.mpTopo.commandTo(self.mpConfig.client,"sleep 5")
