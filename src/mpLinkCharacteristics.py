@@ -36,11 +36,11 @@ class MpLinkCharacteristics:
 			cmd = cmd + " tc qdisc change dev " + ifname + " "
 			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemParent
 			cmd = cmd + " handle " + MpLinkCharacteristics.tcNetemHandle
-			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms"
-			cmd = cmd + " rate " + self.bandwidth + "mbit && "
+			cmd = cmd + " htb rate " + self.bandwidth + "mbit"
+			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + " && "
 			cmd = cmd + " tc qdisc add dev " + ifname + " "
 			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemHandle
-			cmd = cmd + " pfifo limit " + self.queueSize + " && "
+			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms && "
 		cmd = cmd + " true &"
 		return cmd
 
