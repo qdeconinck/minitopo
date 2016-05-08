@@ -3,9 +3,9 @@
 
 class MpLinkCharacteristics:
 
-	tcNetemParent = "5:1"
+	tcNetemParent = "1:1"
 	tcHtbClassid = "10"
-	tcNetemHandle = "10:"
+	tcNetemHandle = "1:10"
 
 	def __init__(self, id, delay, queueSize, bandwidth, loss, back_up=False):
 		self.id = id
@@ -34,8 +34,8 @@ class MpLinkCharacteristics:
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
 			cmd = cmd + " && (( tc qdisc del dev " + ifname + " root "
-			cmd = cmd + " && tc qdisc add dev " + ifname + " root handle 5:1 htb direct_qlen " + self.queueSize + " && tc class add dev " + ifname + " "
-			cmd = cmd + " parent 5:1 "
+			cmd = cmd + " && tc qdisc add dev " + ifname + " root handle 1: htb default 10 direct_qlen " + self.queueSize + " && tc class add dev " + ifname + " "
+			cmd = cmd + " parent 1:1 "
 			cmd = cmd + " classid " + MpLinkCharacteristics.tcHtbClassid
 			cmd = cmd + " htb rate " + self.bandwidth + "mbit"
 			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + ") || "
