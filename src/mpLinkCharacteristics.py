@@ -46,7 +46,7 @@ class MpLinkCharacteristics:
 			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + ") && "
 			cmd = cmd + " tc qdisc add dev " + ifname + " "
 			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemHandle
-			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms && "
+			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms limit " + self.queueSize + " && "
 		cmd = cmd + " true &"
 		return cmd
 
