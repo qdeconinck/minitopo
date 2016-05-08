@@ -34,8 +34,8 @@ class MpLinkCharacteristics:
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
 			cmd = cmd + " && (( tc qdisc del dev " + ifname + " root "
-			cmd = cmd + " && tc class add dev " + ifname + " "
-			cmd = cmd + " parent root "
+			cmd = cmd + " && tc qdisc add dev " + ifname + " root handle 5:0 htb && tc class add dev " + ifname + " "
+			cmd = cmd + " parent 5:1 "
 			cmd = cmd + " classid " + MpLinkCharacteristics.tcHtbClassid
 			cmd = cmd + " htb rate " + self.bandwidth + "mbit"
 			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + ") || "
