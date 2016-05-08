@@ -4,6 +4,7 @@
 class MpLinkCharacteristics:
 
 	tcNetemParent = "5:1"
+	tcHtbClassid = "10"
 	tcNetemHandle = "10:"
 
 	def __init__(self, id, delay, queueSize, bandwidth, loss, back_up=False):
@@ -32,12 +33,17 @@ class MpLinkCharacteristics:
 		cmd = ""
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
-			cmd = cmd + " && "
-			cmd = cmd + " tc qdisc change dev " + ifname + " "
-			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemParent
-			cmd = cmd + " handle " + MpLinkCharacteristics.tcNetemHandle
+			cmd = cmd + " && (( tc qdisc del dev " + ifname + " root "
+			cmd = cmd + " && tc class add dev " + ifname + " "
+			cmd = cmd + " parent root "
+			cmd = cmd + " classid " + MpLinkCharacteristics.tcHtbClassid
 			cmd = cmd + " htb rate " + self.bandwidth + "mbit"
-			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + " && "
+			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + ") || "
+			cmd = cmd + " tc class change dev " + ifname + " "
+			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemParent
+			cmd = cmd + " classid " + MpLinkCharacteristics.tcHtbClassid
+			cmd = cmd + " htb rate " + self.bandwidth + "mbit"
+			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + ") && "
 			cmd = cmd + " tc qdisc add dev " + ifname + " "
 			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemHandle
 			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms && "
