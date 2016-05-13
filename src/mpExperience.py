@@ -41,14 +41,14 @@ class MpExperience:
 			prioPath0 = self.xpParam.getParam(MpParamXp.PRIOPATH0)
 			prioPath1 = self.xpParam.getParam(MpParamXp.PRIOPATH1)
 			if not prioPath0 == prioPath1:
-				self.mpTopo.commandTo(self.mpConfig.client, "ip link set dev " +
+				self.mpTopo.commandTo(self.mpConfig.client, "/home/mininet/iproute/ip/ip link set dev " +
 						  			  self.mpConfig.getClientInterface(0) + "priority" + str(prioPath0))
-				self.mpTopo.commandTo(self.mpConfig.router, "ip link set dev " +
+				self.mpTopo.commandTo(self.mpConfig.router, "/home/mininet/iproute/ip/ip link set dev " +
 									  self.mpConfig.getRouterInterfaceSwitch(0) + "priority" +
 									  str(prioPath0))
-				self.mpTopo.commandTo(self.mpConfig.client, "ip link set dev " +
+				self.mpTopo.commandTo(self.mpConfig.client, "/home/mininet/iproute/ip/ip link set dev " +
 									  self.mpConfig.getClientInterface(1) + "priority" + str(prioPath1))
-				self.mpTopo.commandTo(self.mpConfig.router, "ip link set dev " +
+				self.mpTopo.commandTo(self.mpConfig.router, "/home/mininet/iproute/ip/ip link set dev " +
 									  self.mpConfig.getRouterInterfaceSwitch(1) + "priority" +
 									  str(prioPath1))
 
