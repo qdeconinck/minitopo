@@ -50,6 +50,8 @@ class MpParamXp(MpParam):
 	SIRIBUFFERSIZE = "siriBufferSize"
 	VLCFILE = "vlcFile"
 	VLCTIME = "vlcTime"
+	PRIOPATH0 = "prioPath0"
+	PRIOPATH1 = "prioPath1"
 
 
 	# global sysctl
@@ -117,6 +119,8 @@ class MpParamXp(MpParam):
 	defaultValue[SIRIBUFFERSIZE] = "9"
 	defaultValue[VLCFILE] = "bunny_ibmff_360.mpd"
 	defaultValue[VLCTIME] = "0"
+	defaultValue[PRIOPATH0] = "0"
+	defaultValue[PRIOPATH1] = "0"
 
 	def __init__(self, paramFile):
 		MpParam.__init__(self, paramFile)

@@ -1,4 +1,5 @@
 from mpParamXp import MpParamXp
+from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 
 class MpExperience:
 	PING = "ping"
@@ -29,9 +30,26 @@ class MpExperience:
 		self.setupSysctl()
 		self.runUserspacePM()
 		self.mpConfig.configureNetwork()
+		self.putPriorityOnPaths()
 		self.runTcpDump()
 		self.runNetemAt()
 		pass
+
+	def putPriorityOnPaths(self):
+		# Only meaningful if mpTopo is instance of MpMultiInterfaceTopo
+		if isinstance(self.mpTopo, MpMultiInterfaceTopo):
+			prioPath0 = self.xpParam.getParam(MpParamXp.PRIOPATH0)
+			prioPath1 = self.xpParam.getParam(MpParamXp.PRIOPATH1)
+			self.mpTopo.commandTo(self.mpConfig.client, "ip link set dev " +
+					  			  self.mpConfig.getClientInterface(0) + "priority" + str(prioPath0))
+			self.mpTopo.commandTo(self.mpConfig.router, "ip link set dev " +
+								  self.mpConfig.getRouterInterfaceSwitch(0) + "priority" +
+								  str(prioPath0))
+			self.mpTopo.commandTo(self.mpConfig.client, "ip link set dev " +
+								  self.mpConfig.getClientInterface(1) + "priority" + str(prioPath1))
+			self.mpTopo.commandTo(self.mpConfig.router, "ip link set dev " +
+								  self.mpConfig.getRouterInterfaceSwitch(1) + "priority" +
+								  str(prioPath1))
 
 	def runUserspacePM(self):
 		if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
