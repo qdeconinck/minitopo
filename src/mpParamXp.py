@@ -52,6 +52,7 @@ class MpParamXp(MpParam):
 	VLCTIME = "vlcTime"
 	PRIOPATH0 = "prioPath0"
 	PRIOPATH1 = "prioPath1"
+	EXPIRATION = "expiration"
 
 
 	# global sysctl
@@ -63,6 +64,7 @@ class MpParamXp(MpParam):
 	sysctlKey[CC] = "net.ipv4.tcp_congestion_control"
 	sysctlKey[AUTOCORK] = "net.ipv4.tcp_autocorking"
 	sysctlKey[EARLYRETRANS] = "net.ipv4.tcp_early_retrans"
+	sysctlKey[EXPIRATION] = "net.mptcp.mptcp_sched_expiration"
 
 
 	sysctlKeyClient = {}
@@ -85,6 +87,7 @@ class MpParamXp(MpParam):
 	defaultValue[SCHED] = "default"
 	defaultValue[AUTOCORK] = "1"
 	defaultValue[EARLYRETRANS] = "3"
+	defaultValue[EXPIRATION] = "300"
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
