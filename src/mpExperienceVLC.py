@@ -6,7 +6,7 @@ import os
 class  MpExperienceVLC(MpExperience):
 	SERVER_LOG = "vlc_server.log"
 	CLIENT_LOG = "vlc_client.log"
-	VLC_BIN = "/home/mininet/git/vlc/vlc"
+	VLC_BIN = "/home/mininet/vlc/vlc"
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
@@ -52,7 +52,7 @@ class  MpExperienceVLC(MpExperience):
 				self.random_size)
 
 	def getVLCServerCmd(self):
-		s = "/etc/init.d/apache2 restart &>" + MpExperienceVLC.SERVER_LOG + " "
+		s = "cd /mnt/videos/DASHDataset2014/BigBuckBunny/2sec && /etc/init.d/apache2 restart &>" + MpExperienceVLC.SERVER_LOG + " "
 		print(s)
 		return s
 
