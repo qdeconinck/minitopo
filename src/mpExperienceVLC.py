@@ -57,7 +57,7 @@ class  MpExperienceVLC(MpExperience):
 		return s
 
 	def getVLCClientCmd(self):
-		s = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mininet/usr/lib/ && sudo ldconfig && "
+		s = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mininet/usr/lib/ && sudo ldconfig && " \
 				+ MpExperienceVLC.VLC_BIN + " -I dummy --x11-display :66" + \
 				" --adaptative-logic 3 --no-loop --play-and-exit " + \
 				" http://" + self.mpConfig.getServerIP() + \
