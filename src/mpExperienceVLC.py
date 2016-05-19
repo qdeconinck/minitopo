@@ -4,7 +4,7 @@ from mpPvAt import MpPvAt
 import os
 
 class  MpExperienceVLC(MpExperience):
-	SERVER_LOG = "vlc_server.log"
+	SERVER_LOG = "/home/mininet/git/minitopo/src/vlc_server.log"
 	CLIENT_LOG = "vlc_client.log"
 	VLC_BIN = "/home/mininet/vlc/vlc"
 	PING_OUTPUT = "ping.log"
@@ -57,7 +57,8 @@ class  MpExperienceVLC(MpExperience):
 		return s
 
 	def getVLCClientCmd(self):
-		s = MpExperienceVLC.VLC_BIN + " -I dummy --x11-display :66" + \
+		s = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mininet/usr/lib/ && sudo ldconfig && "
+				+ MpExperienceVLC.VLC_BIN + " -I dummy --x11-display :66" + \
 				" --adaptative-logic 3 --no-loop --play-and-exit " + \
 				" http://" + self.mpConfig.getServerIP() + \
 				"/" + self.file + " 2>&1 | grep -E '(Neb|halp|bandwidth)' > " + MpExperienceVLC.CLIENT_LOG
