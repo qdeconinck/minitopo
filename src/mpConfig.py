@@ -64,6 +64,11 @@ class MpConfig:
 		print(s)
 		return s
 
+	def arpCommand(self, ip, mac):
+		s = "arp -s " + ip + " " + mac
+		print(s)
+		return s
+
 	def addRouteDefaultSimple(self, via):
 		s = "ip route add default via " + via
 		print(s)

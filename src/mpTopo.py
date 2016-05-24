@@ -4,6 +4,7 @@ class MpTopo:
 	mininetBuilder = "mininet"
 	multiIfTopo = "MultiIf"
 	ECMPLikeTopo = "ECMPLike"
+	twoIfCongTopo = "twoIfCong"
 	topoAttr    = "topoType"
 	switchNamePrefix = "s"
 	routerNamePrefix = "r"

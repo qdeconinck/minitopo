@@ -4,6 +4,7 @@ from mpParamXp import MpParamXp
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 from mpMultiInterfaceConfig import MpMultiInterfaceConfig
 from mpECMPSingleInterfaceConfig import MpECMPSingleInterfaceConfig
+from mpTwoInterfaceCongestionConfig import MpTwoInterfaceCongestionConfig
 from mpMininetBuilder import MpMininetBuilder
 from mpExperiencePing import MpExperiencePing
 from mpExperienceNCPV import MpExperienceNCPV
@@ -19,6 +20,7 @@ from mpExperienceVLC import MpExperienceVLC
 from mpExperienceNone import MpExperienceNone
 from mpExperience import MpExperience
 from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
+from mpTwoInterfaceCongestionTopo import MpTwoInterfaceCongestionTopo
 
 class MpXpRunner:
 	def __init__(self, builderType, topoParamFile, xpParamFile):
@@ -49,6 +51,9 @@ class MpXpRunner:
 			self.mpTopo = MpECMPSingleInterfaceTopo(
 					self.topoBuilder,
 					self.topoParam)
+		elif t == MpTopo.twoIfCongTopo:
+			self.mpTopo = MpTwoInterfaceCongestionTopo(
+					self.topoBuilder, self.topoParam)
 		else:
 			raise Exception("Unfound Topo" + t)
 		print(self.mpTopo)
@@ -62,6 +67,9 @@ class MpXpRunner:
 			self.mpTopoConfig = MpECMPSingleInterfaceConfig(
 					self.mpTopo,
 					self.topoParam)
+		elif t == MpTopo.twoIfCongTopo:
+			self.mpTopoConfig = MpTwoInterfaceCongestionConfig(
+					self.mpTopo, self.topoParam)
 		else:
 			raise Exception("Unfound Topo" + t)
 
