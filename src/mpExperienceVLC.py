@@ -61,7 +61,7 @@ class  MpExperienceVLC(MpExperience):
 				+ MpExperienceVLC.VLC_BIN + " -I dummy --x11-display :66" + \
 				" --adaptive-logic 3 --no-loop --play-and-exit " + \
 				" http://" + self.mpConfig.getServerIP() + \
-				"/" + self.file + " 2>&1 | grep -E '(Neb|halp|bandwidth|late|Buffering)' > " + MpExperienceVLC.CLIENT_LOG
+				"/" + self.file + " 2>&1 | grep -E '(Neb|halp|bandwidth|late|Buffering|buffering)' > " + MpExperienceVLC.CLIENT_LOG
 		if self.time != "0" :
 			s = s + " &"
 		print(s)
