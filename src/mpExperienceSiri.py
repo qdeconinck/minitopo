@@ -81,4 +81,5 @@ class  MpExperienceSiri(MpExperience):
 		self.mpTopo.commandTo(self.mpConfig.client, cmd)
 		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
 		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
+		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f siri_server.py")
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
