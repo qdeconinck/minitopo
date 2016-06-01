@@ -17,6 +17,7 @@ from mpExperienceNetperf import MpExperienceNetperf
 from mpExperienceAb import MpExperienceAb
 from mpExperienceSiri import MpExperienceSiri
 from mpExperienceVLC import MpExperienceVLC
+from mpExperienceIperf import MpExperienceIperf
 from mpExperienceNone import MpExperienceNone
 from mpExperience import MpExperience
 from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
@@ -114,6 +115,9 @@ class MpXpRunner:
 					self.mpTopoConfig)
 		elif xp == MpExperience.VLC:
 			MpExperienceVLC(self.xpParam, self.mpTopo,
+					self.mpTopoConfig)
+		elif xp == MpExperience.IPERF:
+			MpExperienceIperf(self.xpParam, self.mpTopo,
 					self.mpTopoConfig)
 		else:
 			print("Unfound xp type..." + xp)
