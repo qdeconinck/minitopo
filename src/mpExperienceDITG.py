@@ -38,17 +38,18 @@ class MpExperienceDITG(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.bytes = self.xpParam.getParam(MpParamXp.DITGBYTES)
+		self.kbytes = self.xpParam.getParam(MpParamXp.DITGKBYTES)
 		self.mean_poisson_packets_sec = self.xpParam.getParam(MpParamXp.DITGMEANPOISSONPACKETSSEC)
 
 	def prepare(self):
 		MpExperience.prepare(self)
-		self.mpTopo.commandTo(self.mpConfig.client, "rm " + MpExperienceDITG.IPERF_LOG)
-		self.mpTopo.commandTo(self.mpConfig.server, "rm " + MpExperienceDITG.SERVER_LOG)
+		self.mpTopo.commandTo(self.mpConfig.client, "rm " + MpExperienceDITG.DITG_LOG)
+		self.mpTopo.commandTo(self.mpConfig.server, "rm " + MpExperienceDITG.DITG_SERVER_LOG)
+		self.mpTopo.commandTo(self.mpConfig.client, "rm " + MpExperienceDITG.DITG_TEMP_LOG)
 
 	def getClientCmd(self):
 		s = MpExperienceDITG.ITGSEND_BIN + " -a " + self.mpConfig.getServerIP() + \
-			" -T TCP -k " + self.bytes + " -O " + self.mean_poisson_packets_sec + " -l " + MpExperienceDITG.DITG_TEMP_LOG + " && " + \
+			" -T TCP -k " + self.kbytes + " -O " + self.mean_poisson_packets_sec + " -l " + MpExperienceDITG.DITG_TEMP_LOG + " && " + \
 			MpExperienceDITG.ITGDEC_BIN + " " + MpExperienceDITG.DITG_TEMP_LOG + " &> " + MpExperienceDITG.DITG_LOG
 		print(s)
 		return s
