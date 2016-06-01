@@ -9,7 +9,8 @@ class MpExperienceDITG(MpExperience):
 	ITGDEC_BIN = "/home/mininet/D-ITG-2.8.1-r1023/bin/ITGDec"
 	ITGRECV_BIN = "/home/mininet/D-ITG-2.8.1-r1023/bin/ITGRecv"
 	ITGSEND_BIN = "/home/mininet/D-ITG-2.8.1-r1023/bin/ITGSend"
-	DITG_TEMP_LOG = "recv_log_file"
+	DITG_TEMP_LOG = "snd_log_file"
+	DITG_SERVER_TEMP_LOG = "recv_log_file"
 	PING_OUTPUT = "ping.log"
 
 
@@ -55,7 +56,7 @@ class MpExperienceDITG(MpExperience):
 		return s
 
 	def getServerCmd(self):
-		s = MpExperienceDITG.ITGRECV_BIN + " &> " + MpExperienceDITG.DITG_SERVER_LOG + " &"
+		s = MpExperienceDITG.ITGRECV_BIN + " -l " + MpExperienceDITG.DITG_SERVER_TEMP_LOG + " &"
 		print(s)
 		return s
 
@@ -73,4 +74,5 @@ class MpExperienceDITG(MpExperience):
 		cmd = self.getClientCmd()
 		self.mpTopo.commandTo(self.mpConfig.client, cmd)
 		self.mpTopo.commandTo(self.mpConfig.server, "pkill -9 -f ITGRecv")
+		self.mpTopo.commandTo(self.mpConfig.server, MpExperienceDITG.ITGDEC_BIN + " " + MpExperienceDITG.DITG_SERVER_TEMP_LOG + " &> " + MpExperienceDITG.DITG_SERVER_LOG)
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
