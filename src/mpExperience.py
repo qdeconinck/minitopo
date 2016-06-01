@@ -15,6 +15,7 @@ class MpExperience:
 	SENDFILE = "sendfile"
 	VLC = "vlc"
 	IPERF = "iperf"
+	DITG = "ditg"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
