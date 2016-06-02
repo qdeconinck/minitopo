@@ -52,6 +52,8 @@ class MpParamXp(MpParam):
 	VLCTIME = "vlcTime"
 	DITGKBYTES = "ditgKBytes"
 	DITGMEANPOISSONPACKETSSEC = "ditgMeanPoissonPacketsSec"
+	BURSTSONPACKETSSEC = "burstsOnPacketsSec"
+	BURSTSOFFPACKETSSEC = "burstsOffPacketsSec"
 	PRIOPATH0 = "prioPath0"
 	PRIOPATH1 = "prioPath1"
 	EXPIRATION = "expiration"
@@ -128,6 +130,8 @@ class MpParamXp(MpParam):
 	defaultValue[VLCTIME] = "0"
 	defaultValue[DITGKBYTES] = "10000"
 	defaultValue[DITGMEANPOISSONPACKETSSEC] = "1500"
+	defaultValue[BURSTSONPACKETSSEC] = "2250"
+	defaultValue[BURSTSOFFPACKETSSEC] = "750"
 	defaultValue[PRIOPATH0] = "0"
 	defaultValue[PRIOPATH1] = "0"
 
