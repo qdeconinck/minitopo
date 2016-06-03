@@ -6,7 +6,7 @@ import os
 class MpExperienceIperf(MpExperience):
 	IPERF_LOG = "iperf.log"
 	SERVER_LOG = "server.log"
-	IPERF_BIN = "iperf"
+	IPERF_BIN = "iperf3"
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
