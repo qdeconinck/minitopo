@@ -45,12 +45,12 @@ class MpExperienceIperf(MpExperience):
 
 	def getClientCmd(self):
 		s = MpExperienceIperf.IPERF_BIN + " -c " + self.mpConfig.getServerIP() + \
-			" -t 10 -w " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 1000) + "K -l " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 1000) + "K &>" + MpExperienceIperf.IPERF_LOG
+			" -t 10 -w " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 2000) + "K &>" + MpExperienceIperf.IPERF_LOG
 		print(s)
 		return s
 
 	def getServerCmd(self):
-		s = "sudo " + MpExperienceIperf.IPERF_BIN + " -s -w " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 1000) + "K -l " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 1000) + "K &>" + \
+		s = "sudo " + MpExperienceIperf.IPERF_BIN + " -s -w " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 2000) + "K &>" + \
 			MpExperienceIperf.SERVER_LOG + "&"
 		print(s)
 		return s
