@@ -45,7 +45,7 @@ class MpExperienceIperf(MpExperience):
 
 	def getClientCmd(self):
 		s = MpExperienceIperf.IPERF_BIN + " -c " + self.mpConfig.getServerIP() + \
-			" -t 10 -w " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 2000) + "K &>" + MpExperienceIperf.IPERF_LOG
+			" -t 10 &>" + MpExperienceIperf.IPERF_LOG
 		print(s)
 		return s
 
