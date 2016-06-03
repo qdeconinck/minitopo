@@ -50,7 +50,7 @@ class MpExperienceIperf(MpExperience):
 		return s
 
 	def getServerCmd(self):
-		s = "sudo " + MpExperienceIperf.IPERF_BIN + " -s -w " + str(int(self.xpParam.getParam(MpParamXp.RMEM).split()[-1]) / 2000) + "K &>" + \
+		s = "sudo " + MpExperienceIperf.IPERF_BIN + " -s &>" + \
 			MpExperienceIperf.SERVER_LOG + "&"
 		print(s)
 		return s
