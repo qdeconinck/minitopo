@@ -1,4 +1,4 @@
-
+import math
 
 
 class MpLinkCharacteristics:
@@ -7,12 +7,19 @@ class MpLinkCharacteristics:
 	tcHtbClassid = "10"
 	tcNetemHandle = "1:10"
 
+	def bandwidthDelayProductDividedByMTU(self):
+	    rtt = 2 * float(self.delay)
+	    """ Since bandwidth is in Mbps and rtt in ms """
+	    bandwidthDelayProduct = (float(self.bandwidth) * 125000.0) * (rtt / 1000.0)
+	    return int(math.ceil(bandwidthDelayProduct * 1.0 / 1500.0))
+
 	def __init__(self, id, delay, queueSize, bandwidth, loss, back_up=False):
 		self.id = id
 		self.delay = delay
 		self.queueSize = queueSize
 		self.bandwidth = bandwidth
 		self.loss = loss
+		self.queuingDelay = str(int(1000.0 * int(queueSize) / self.bandwidthDelayProductDividedByMTU()))
 		self.netemAt = []
 		self.back_up = back_up
 
@@ -33,20 +40,13 @@ class MpLinkCharacteristics:
 		cmd = ""
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
-			cmd = cmd + " && (( tc qdisc del dev " + ifname + " root "
-			cmd = cmd + " && tc qdisc add dev " + ifname + " root handle 1: htb default 10 direct_qlen " + self.queueSize + " && tc class add dev " + ifname + " "
-			cmd = cmd + " parent 1:1 "
-			cmd = cmd + " classid " + MpLinkCharacteristics.tcHtbClassid
-			cmd = cmd + " htb rate " + self.bandwidth + "mbit"
-			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + ") || "
-			cmd = cmd + " tc class change dev " + ifname + " "
-			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemParent
-			cmd = cmd + " classid " + MpLinkCharacteristics.tcHtbClassid
-			cmd = cmd + " htb rate " + self.bandwidth + "mbit"
-			cmd = cmd + " burst " + str(int(self.queueSize) * 1500) + ") && "
+			cmd = cmd + " && tc qdisc del dev " + ifname + " root "
+			cmd = cmd + " && tc qdisc add dev " + ifname + " root handle 1:0 tbf rate " + self.bandwidth
+			cmd = cmd + "mbit burst " + str(int(self.queueSize) * 1500) + " latency " + self.queuingDelay
+			cmd = cmd + "ms && "
 			cmd = cmd + " tc qdisc add dev " + ifname + " "
-			cmd = cmd + " parent " + MpLinkCharacteristics.tcNetemHandle
-			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms limit " + self.queueSize + " && "
+			cmd = cmd + " parent 1:0 handle 10: "
+			cmd = cmd + " netem " + n.cmd + " delay " + self.delay + "ms && "
 		cmd = cmd + " true &"
 		return cmd
 

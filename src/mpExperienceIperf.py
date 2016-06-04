@@ -68,5 +68,4 @@ class MpExperienceIperf(MpExperience):
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
 		cmd = self.getClientCmd()
 		self.mpTopo.commandTo(self.mpConfig.client, cmd)
-		self.mpTopo.commandTo(self.mpConfig.server, "pkill -9 -f iperf")
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
