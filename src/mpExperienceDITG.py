@@ -41,8 +41,8 @@ class MpExperienceDITG(MpExperience):
 		"""
 		self.kbytes = self.xpParam.getParam(MpParamXp.DITGKBYTES)
 		self.mean_poisson_packets_sec = self.xpParam.getParam(MpParamXp.DITGMEANPOISSONPACKETSSEC)
-		self.bursts_on_packets_sec = self.xpParam.getParam(MpParamXp.BURSTSONPACKETSSEC)
-		self.bursts_off_packets_sec = self.xpParam.getParam(MpParamXp.BURSTSOFFPACKETSSEC)
+		self.bursts_on_packets_sec = self.xpParam.getParam(MpParamXp.DITGBURSTSONPACKETSSEC)
+		self.bursts_off_packets_sec = self.xpParam.getParam(MpParamXp.DITGBURSTSOFFPACKETSSEC)
 
 	def prepare(self):
 		MpExperience.prepare(self)
@@ -54,9 +54,9 @@ class MpExperienceDITG(MpExperience):
 		s = MpExperienceDITG.ITGSEND_BIN + " -a " + self.mpConfig.getServerIP() + \
 			" -T TCP -k " + self.kbytes + " -l " + MpExperienceDITG.DITG_TEMP_LOG
 
-		if self.mean_poisson_packets_sec:
+		if self.mean_poisson_packets_sec != "0":
 			s += " -O " + self.mean_poisson_packets_sec
-		elif self.bursts_on_packets_sec and self.bursts_off_packets_sec:
+		elif self.bursts_on_packets_sec != "0" and self.bursts_off_packets_sec != "0":
 			s += " -B C " + self.bursts_on_packets_sec + " C " + self.bursts_off_packets_sec
 
 		s += " && " + MpExperienceDITG.ITGDEC_BIN + " " + MpExperienceDITG.DITG_TEMP_LOG + " &> " + MpExperienceDITG.DITG_LOG
