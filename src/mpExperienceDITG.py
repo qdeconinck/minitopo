@@ -41,6 +41,7 @@ class MpExperienceDITG(MpExperience):
 		"""
 		self.kbytes = self.xpParam.getParam(MpParamXp.DITGKBYTES)
 		self.mean_poisson_packets_sec = self.xpParam.getParam(MpParamXp.DITGMEANPOISSONPACKETSSEC)
+		self.constant_packets_sec = self.xpParam.getParam(MpParamXp.DITGCONSTANTPACKETSSEC)
 		self.bursts_on_packets_sec = self.xpParam.getParam(MpParamXp.DITGBURSTSONPACKETSSEC)
 		self.bursts_off_packets_sec = self.xpParam.getParam(MpParamXp.DITGBURSTSOFFPACKETSSEC)
 
@@ -56,6 +57,8 @@ class MpExperienceDITG(MpExperience):
 
 		if self.mean_poisson_packets_sec != "0":
 			s += " -O " + self.mean_poisson_packets_sec
+		elif self.constant_packets_sec != "0":
+			s += " -C " + self.constant_packets_sec
 		elif self.bursts_on_packets_sec != "0" and self.bursts_off_packets_sec != "0":
 			s += " -B C " + self.bursts_on_packets_sec + " C " + self.bursts_off_packets_sec
 

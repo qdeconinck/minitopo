@@ -52,6 +52,7 @@ class MpParamXp(MpParam):
 	VLCTIME = "vlcTime"
 	DITGKBYTES = "ditgKBytes"
 	DITGMEANPOISSONPACKETSSEC = "ditgMeanPoissonPacketsSec"
+	DITGCONSTANTPACKETSSEC = "ditgConstantPacketsSec"
 	DITGBURSTSONPACKETSSEC = "ditgBurstsOnPacketsSec"
 	DITGBURSTSOFFPACKETSSEC = "ditgBurstsOffPacketsSec"
 	PRIOPATH0 = "prioPath0"
@@ -59,6 +60,7 @@ class MpParamXp(MpParam):
 	BACKUPPATH0 = "backupPath0"
 	BACKUPPATH1 = "backupPath1"
 	EXPIRATION = "expiration"
+	BUFFERAUTOTUNING = "bufferAutotuning"
 	METRIC = "metric"
 
 
@@ -72,6 +74,7 @@ class MpParamXp(MpParam):
 	sysctlKey[AUTOCORK] = "net.ipv4.tcp_autocorking"
 	sysctlKey[EARLYRETRANS] = "net.ipv4.tcp_early_retrans"
 	sysctlKey[EXPIRATION] = "net.mptcp.mptcp_sched_expiration"
+	sysctlKey[BUFFERAUTOTUNING] = "net.ipv4.tcp_moderate_rcvbuf"
 
 
 	sysctlKeyClient = {}
@@ -95,6 +98,7 @@ class MpParamXp(MpParam):
 	defaultValue[AUTOCORK] = "1"
 	defaultValue[EARLYRETRANS] = "3"
 	defaultValue[EXPIRATION] = "300"
+	defaultValue[BUFFERAUTOTUNING] = "1"
 	defaultValue[METRIC] = "-1"
 
 	defaultValue[CLIENTPCAP] = "no"
@@ -132,6 +136,7 @@ class MpParamXp(MpParam):
 	defaultValue[VLCTIME] = "0"
 	defaultValue[DITGKBYTES] = "10000"
 	defaultValue[DITGMEANPOISSONPACKETSSEC] = "0"
+	defaultValue[DITGCONSTANTPACKETSSEC] = "0"
 	defaultValue[DITGBURSTSONPACKETSSEC] = "0"
 	defaultValue[DITGBURSTSOFFPACKETSSEC] = "0"
 	defaultValue[PRIOPATH0] = "0"
