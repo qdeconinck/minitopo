@@ -40,6 +40,7 @@ class MpExperienceDITG(MpExperience):
 		todo : param LD_PRELOAD ??
 		"""
 		self.kbytes = self.xpParam.getParam(MpParamXp.DITGKBYTES)
+		self.constant_packet_size = self.xpParam.getParam(MpParamXp.DITGCONSTANTPACKETSIZE)
 		self.mean_poisson_packets_sec = self.xpParam.getParam(MpParamXp.DITGMEANPOISSONPACKETSSEC)
 		self.constant_packets_sec = self.xpParam.getParam(MpParamXp.DITGCONSTANTPACKETSSEC)
 		self.bursts_on_packets_sec = self.xpParam.getParam(MpParamXp.DITGBURSTSONPACKETSSEC)
@@ -55,7 +56,9 @@ class MpExperienceDITG(MpExperience):
 		s = MpExperienceDITG.ITGSEND_BIN + " -a " + self.mpConfig.getServerIP() + \
 			" -T TCP -k " + self.kbytes + " -l " + MpExperienceDITG.DITG_TEMP_LOG
 
-		if self.mean_poisson_packets_sec != "0":
+		if self.constant_packet_size != "0":
+			s += " -c " + self.constant_packet_size
+		elif self.mean_poisson_packets_sec != "0":
 			s += " -O " + self.mean_poisson_packets_sec
 		elif self.constant_packets_sec != "0":
 			s += " -C " + self.constant_packets_sec
