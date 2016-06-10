@@ -49,8 +49,7 @@ class  MpExperienceHTTP(MpExperience):
 				self.random_size)
 
 	def getHTTPServerCmd(self):
-		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/http.py &>" + MpExperienceHTTP.SERVER_LOG + "&"
+		s = "/etc/init.d/apache2 restart &>" + MpExperienceHTTP.SERVER_LOG + "&"
 		print(s)
 		return s
 
@@ -70,9 +69,13 @@ class  MpExperienceHTTP(MpExperience):
 
 	def run(self):
 		cmd = self.getHTTPServerCmd()
+		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_before")
 		self.mpTopo.commandTo(self.mpConfig.server, cmd)
 
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
 		cmd = self.getHTTPClientCmd()
+		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_before")
 		self.mpTopo.commandTo(self.mpConfig.client, cmd)
+		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
+		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
