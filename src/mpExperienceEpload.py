@@ -42,7 +42,7 @@ class  MpExperienceEpload(MpExperience):
 				MpExperienceEpload.SERVER_LOG )
 
 	def getHTTPServerCmd(self):
-		s = "python -m SimpleHTTPServer 8123 &>" + MpExperienceEpload.SERVER_LOG + " &"
+		s = "/etc/init.d/apache2 restart &>" + MpExperienceEpload.SERVER_LOG + " &"
 		print(s)
 		return s
 
@@ -63,14 +63,14 @@ class  MpExperienceEpload(MpExperience):
 			" sed -i 's/@host@/" + self.mpConfig.getServerIP() + "/' " + \
 			"$f; done"
 		print(s)
-		return s 
+		return s
 
 	def getSubBackHostCmd(self):
 		s = "for f in `ls " + self.epload_test_dir + "/*`; do " + \
 			" sed -i 's/" + self.mpConfig.getServerIP() + "/@host@/' " + \
 			"$f; done"
 		print(s)
-		return s 
+		return s
 
 	def clean(self):
 		MpExperience.clean(self)
