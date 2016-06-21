@@ -60,6 +60,11 @@ class MpExperience:
 									  self.mpConfig.getRouterInterfaceSwitch(1) + " priority " +
 									  str(prioPath1))
 
+			backupPath1 = self.xpParam.getParam(MpParamXp.BACKUPPATH1)
+			if int(backupPath1) > 0:
+				self.mpTopo.commandTo(self.mpConfig.client, self.mpConfig.interfaceBUPCommand(self.mpConfig.getClientInterface(1)))
+				self.mpTopo.commandTo(self.mpConfig.router, self.mpConfig.interfaceBUPCommand(self.mpConfig.getRouterInterfaceSwitch(1)))
+
 	def runUserspacePM(self):
 		if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
 			print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
