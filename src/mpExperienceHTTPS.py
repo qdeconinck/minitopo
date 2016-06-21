@@ -70,9 +70,13 @@ class  MpExperienceHTTPS(MpExperience):
 
 	def run(self):
 		cmd = self.getHTTPSServerCmd()
+		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_before")
 		self.mpTopo.commandTo(self.mpConfig.server, cmd)
 
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
 		cmd = self.getHTTPSClientCmd()
+		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_before")
 		self.mpTopo.commandTo(self.mpConfig.client, cmd)
+		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
+		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
