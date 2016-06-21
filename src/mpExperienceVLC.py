@@ -88,5 +88,4 @@ class  MpExperienceVLC(MpExperience):
 			self.mpTopo.commandTo(self.mpConfig.client, "sleep " + self.time)
 			self.mpTopo.commandTo(self.mpConfig.client, "pkill -9 vlc")
 
-		self.mpTopo.getCLI()
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
