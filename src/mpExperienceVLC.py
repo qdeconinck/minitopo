@@ -4,7 +4,7 @@ from mpPvAt import MpPvAt
 import os
 
 class  MpExperienceVLC(MpExperience):
-	SERVER_LOG = "/home/mininet/git/minitopo/src/vlc_server.log"
+	SERVER_LOG = "vlc_server.log"
 	CLIENT_LOG = "vlc_client.log"
 	VLC_BIN = "/home/mininet/vlc/vlc"
 	PING_OUTPUT = "ping.log"
@@ -52,7 +52,7 @@ class  MpExperienceVLC(MpExperience):
 				self.random_size)
 
 	def getVLCServerCmd(self):
-		s = "cd /mnt/videos/DASHDataset2014/BigBuckBunny/2sec && /etc/init.d/apache2 restart &>" + MpExperienceVLC.SERVER_LOG + " "
+		s = "/etc/init.d/apache2 restart &>" + MpExperienceVLC.SERVER_LOG + " "
 		print(s)
 		return s
 
