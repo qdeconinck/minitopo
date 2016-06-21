@@ -30,10 +30,16 @@ class MpExperience:
 		self.setupSysctl()
 		self.runUserspacePM()
 		self.mpConfig.configureNetwork()
+		self.changeMetric()
 		self.putPriorityOnPaths()
 		self.runTcpDump()
 		self.runNetemAt()
 		pass
+
+	def changeMetric(self):
+		metric = self.xpParam.getParam(MpParamXp.METRIC)
+		if int(metric) >= 0:
+			self.mpTopo.notNSCommand("echo " + metric + " > /sys/module/mptcp_sched_metric/parameters/metric")
 
 	def putPriorityOnPaths(self):
 		# Only meaningful if mpTopo is instance of MpMultiInterfaceTopo

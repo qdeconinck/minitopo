@@ -53,6 +53,7 @@ class MpParamXp(MpParam):
 	PRIOPATH0 = "prioPath0"
 	PRIOPATH1 = "prioPath1"
 	EXPIRATION = "expiration"
+	METRIC = "metric"
 
 
 	# global sysctl
@@ -88,6 +89,7 @@ class MpParamXp(MpParam):
 	defaultValue[AUTOCORK] = "1"
 	defaultValue[EARLYRETRANS] = "3"
 	defaultValue[EXPIRATION] = "300"
+	defaultValue[METRIC] = "-1"
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"
