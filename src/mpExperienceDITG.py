@@ -52,8 +52,14 @@ class MpExperienceDITG(MpExperience):
 
 	def getClientCmd(self):
 		s = MpExperienceDITG.ITGSEND_BIN + " -a " + self.mpConfig.getServerIP() + \
-			" -T TCP -k " + self.kbytes + " -l " + MpExperienceDITG.DITG_TEMP_LOG + " -B C " + self.bursts_on_packets_sec + " C " + self.bursts_off_packets_sec + " && " + \
-			MpExperienceDITG.ITGDEC_BIN + " " + MpExperienceDITG.DITG_TEMP_LOG + " &> " + MpExperienceDITG.DITG_LOG
+			" -T TCP -k " + self.kbytes + " -l " + MpExperienceDITG.DITG_TEMP_LOG
+
+		if self.mean_poisson_packets_sec:
+			s += " -O " + self.mean_poisson_packets_sec
+		elif self.bursts_on_packets_sec and self.bursts_off_packets_sec:
+			s += " -B C " + self.bursts_on_packets_sec + " C " + self.bursts_off_packets_sec
+
+		s += " && " + MpExperienceDITG.ITGDEC_BIN + " " + MpExperienceDITG.DITG_TEMP_LOG + " &> " + MpExperienceDITG.DITG_LOG
 		print(s)
 		return s
 
