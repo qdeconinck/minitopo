@@ -43,8 +43,6 @@ class  MpExperienceSiri(MpExperience):
 		self.max_payload_size = self.xpParam.getParam(MpParamXp.SIRIMAXPAYLOADSIZE)
 		self.interval_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALTIMEMS)
 		self.buffer_size = self.xpParam.getParam(MpParamXp.SIRIBUFFERSIZE)
-		# Little trick here
-		self.xpParam.defaultValue[MpParamXp.AUTOCORK] = "0"
 
 	def prepare(self):
 		MpExperience.prepare(self)
