@@ -6,6 +6,7 @@ import os
 class  MpExperienceSiri(MpExperience):
 	SERVER_LOG = "siri_server.log"
 	CLIENT_LOG = "siri_client.log"
+	CLIENT_ERR = "siri_client.err"
 	JAVA_BIN = "java"
 	PING_OUTPUT = "ping.log"
 
@@ -63,7 +64,7 @@ class  MpExperienceSiri(MpExperience):
 				" 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + \
-				" &>" + MpExperienceSiri.CLIENT_LOG
+				" >" + MpExperienceSiri.CLIENT_LOG + " 2>" + MpExperienceSiri.CLIENT_ERR
 		print(s)
 		return s
 
