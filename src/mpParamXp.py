@@ -56,6 +56,7 @@ class MpParamXp(MpParam):
 	BURSTSOFFPACKETSSEC = "burstsOffPacketsSec"
 	PRIOPATH0 = "prioPath0"
 	PRIOPATH1 = "prioPath1"
+	BACKUPPATH0 = "backupPath0"
 	BACKUPPATH1 = "backupPath1"
 	EXPIRATION = "expiration"
 	METRIC = "metric"
@@ -135,6 +136,7 @@ class MpParamXp(MpParam):
 	defaultValue[BURSTSOFFPACKETSSEC] = "750"
 	defaultValue[PRIOPATH0] = "0"
 	defaultValue[PRIOPATH1] = "0"
+	defaultValue[BACKUPPATH0] = "0"
 	defaultValue[BACKUPPATH1] = "0"
 
 	def __init__(self, paramFile):

@@ -60,6 +60,10 @@ class MpExperience:
 									  self.mpConfig.getRouterInterfaceSwitch(1) + " priority " +
 									  str(prioPath1))
 
+			backupPath0 = self.xpParam.getParam(MpParamXp.BACKUPPATH0)
+			if int(backupPath0) > 0:
+				self.mpTopo.commandTo(self.mpConfig.client, self.mpConfig.interfaceBUPCommand(self.mpConfig.getClientInterface(0)))
+				self.mpTopo.commandTo(self.mpConfig.router, self.mpConfig.interfaceBUPCommand(self.mpConfig.getRouterInterfaceSwitch(0)))
 			backupPath1 = self.xpParam.getParam(MpParamXp.BACKUPPATH1)
 			if int(backupPath1) > 0:
 				self.mpTopo.commandTo(self.mpConfig.client, self.mpConfig.interfaceBUPCommand(self.mpConfig.getClientInterface(1)))
