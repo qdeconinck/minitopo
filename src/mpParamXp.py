@@ -63,6 +63,7 @@ class MpParamXp(MpParam):
 	EXPIRATION = "expiration"
 	BUFFERAUTOTUNING = "bufferAutotuning"
 	METRIC = "metric"
+	OPENBUP = "openBup"
 
 
 	# global sysctl
@@ -101,6 +102,7 @@ class MpParamXp(MpParam):
 	defaultValue[EXPIRATION] = "300"
 	defaultValue[BUFFERAUTOTUNING] = "1"
 	defaultValue[METRIC] = "-1"
+	defaultValue[OPENBUP] = "-1"
 
 	defaultValue[CLIENTPCAP] = "no"
 	defaultValue[SERVERPCAP] = "no"

@@ -33,6 +33,7 @@ class MpExperience:
 		self.runUserspacePM()
 		self.mpConfig.configureNetwork()
 		self.changeMetric()
+		self.changeOpenBup()
 		self.putPriorityOnPaths()
 		self.runTcpDump()
 		self.runNetemAt()
@@ -42,6 +43,11 @@ class MpExperience:
 		metric = self.xpParam.getParam(MpParamXp.METRIC)
 		if int(metric) >= 0:
 			self.mpTopo.notNSCommand("echo " + metric + " > /sys/module/mptcp_sched_metric/parameters/metric")
+
+	def changeOpenBup(self):
+		openBup = self.xpParam.getParam(MpParamXp.OPENBUP)
+		if int(openBup) >= 0:
+			self.mpTopo.notNSCommand("echo" + openBup + " > /sys/module/mptcp_fullmesh/parameters/open_bup")
 
 	def putPriorityOnPaths(self):
 		# Only meaningful if mpTopo is instance of MpMultiInterfaceTopo
