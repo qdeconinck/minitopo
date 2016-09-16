@@ -58,8 +58,8 @@ class  MpExperienceSiri(MpExperience):
 		return s
 
 	def getSiriClientCmd(self):
-		s = MpExperienceSiri.JAVA_BIN + " -jar siriClient.jar " + self.mpConfig.getServerIP() + \
-				" 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
+		s = MpExperienceSiri.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
+				self.mpConfig.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + \
 				" >" + MpExperienceSiri.CLIENT_LOG + " 2>" + MpExperienceSiri.CLIENT_ERR
