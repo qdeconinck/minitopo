@@ -34,7 +34,7 @@ class MpExperienceIperf(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		pass
+		self.time = self.xpParam.getParam(MpParamXp.IPERFTIME)
 
 	def prepare(self):
 		MpExperience.prepare(self)
@@ -45,7 +45,7 @@ class MpExperienceIperf(MpExperience):
 
 	def getClientCmd(self):
 		s = MpExperienceIperf.IPERF_BIN + " -c " + self.mpConfig.getServerIP() + \
-			" -t 10 &>" + MpExperienceIperf.IPERF_LOG
+			" -t " + self.time + " &>" + MpExperienceIperf.IPERF_LOG
 		print(s)
 		return s
 
