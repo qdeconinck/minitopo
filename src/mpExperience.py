@@ -16,6 +16,7 @@ class MpExperience:
 	VLC = "vlc"
 	IPERF = "iperf"
 	DITG = "ditg"
+	MSG = "msg"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
