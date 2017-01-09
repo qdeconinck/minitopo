@@ -50,7 +50,7 @@ class  MpExperienceMsg(MpExperience):
 
 	def getSiriClientCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_client.py &>" + MpExperienceMsg.CLIENT_LOG + "&"
+				"/msg_client.py &>" + MpExperienceMsg.CLIENT_LOG
 		print(s)
 		return s
 
