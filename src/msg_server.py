@@ -50,7 +50,7 @@ class HandleClientConnectionThread(threading.Thread):
                     time.sleep(5.0)
                     response = string_generator(size=self.msg_size, chars=string.digits)
                     start_time = datetime.datetime.now()
-                    self.connection.sendall(response).encode(ENCODING)
+                    self.connection.sendall(response.encode(ENCODING))
                     buffer_data = ""
 
                 elif len(buffer_data) > self.msg_size:

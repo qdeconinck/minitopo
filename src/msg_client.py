@@ -34,7 +34,7 @@ try:
         time.sleep(5.0)
         request = string_generator(size=MSG_SIZE, chars=string.digits)
         start_time = datetime.datetime.now()
-        sock.sendall(request).encode(ENCODING)
+        sock.sendall(request.encode(ENCODING))
 
         buffer_data = ""
         while len(buffer_data) < MSG_SIZE:
