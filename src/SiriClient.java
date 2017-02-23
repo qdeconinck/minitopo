@@ -13,7 +13,7 @@ import java.util.Collections;
 public class SiriClient {
 
     private String serverMessage;
-    
+
     /* Client parameters */
     public final String SERVERIP; //your computer IP address
     public final int SERVERPORT;
@@ -25,7 +25,9 @@ public class SiriClient {
     public final int MAX_PAYLOAD_SIZE;
     public final int INTERVAL_TIME_MS;
     public final int BUFFER_SIZE;
-    
+    public final int BURST_SIZE;
+    public final int INTERVAL_BURST_TIME_MS;
+
     private boolean mRun = false;
     private int messageId = 0;
     private static final int MAX_ID = 100;
@@ -41,18 +43,20 @@ public class SiriClient {
     OutputStream outputStream;
     OutputStreamWriter osw;
     Socket socket;
+    private int pktCounter;
 
     /**
      *  Constructor of the class. OnMessagedReceived listens for the messages received from server
      */
     public SiriClient(String serverIp, int serverPort, int runTime, int querySize, int responseSize,
     				  int delayQueryResponse, int minPayloadSize, int maxPayloadSize, int intervalTimeMs,
-    				  int bufferSize) {
+    				  int bufferSize, int burstSize, int intervalBurstTimeMs) {
         random = new Random();
         sentTime = new long[MAX_ID];
         delayTime = new ArrayList<>();
         counter = 0;
         missed = 0;
+        pktCounter = 0;
         /* Client parameters */
         SERVERIP = serverIp;
         SERVERPORT = serverPort;
@@ -64,10 +68,12 @@ public class SiriClient {
         MAX_PAYLOAD_SIZE = maxPayloadSize;
         INTERVAL_TIME_MS = intervalTimeMs;
         BUFFER_SIZE = bufferSize;
+        BURST_SIZE = burstSize;
+        INTERVAL_BURST_TIME_MS = intervalBurstTimeMs;
     }
-    
+
     public SiriClient(String serverIp, int serverPort, int runTime) {
-    	this(serverIp, serverPort, runTime, 2500, 750, 0, 85, 500, 333, 9);
+    	this(serverIp, serverPort, runTime, 2500, 750, 0, 85, 500, 333, 9, 0, 0);
     }
 
     protected String getStringWithLengthAndFilledWithCharacter(int length, char charToFill) {
@@ -257,11 +263,17 @@ public class SiriClient {
                 	final long startTime = System.currentTimeMillis();
                     while (socket != null && !socket.isClosed()) {
                         try {
-                            Thread.sleep(INTERVAL_TIME_MS); //* getPoisson(3));
+                            if (BURST_SIZE > 0 && pktCounter == BURST_SIZE) {
+                              Thread.sleep(INTERVAL_BURST_TIME_MS);
+                              pktCounter = 0;
+                            } else {
+                              Thread.sleep(INTERVAL_TIME_MS); //* getPoisson(3));
+                            }
                             if ((System.currentTimeMillis() - startTime) >= RUN_TIME * 1000) {
                             	stopClient();
                             } else if (!socket.isClosed() && counter <= QUERY_SIZE * BUFFER_SIZE) {
                                 sendMessage();
+                                pktCounter++;
                             } else if (!socket.isClosed()) {
                                 missed++;
                             }
@@ -325,14 +337,14 @@ public class SiriClient {
         }
 
     }
-    
+
     public static void usage() {
     	System.out.println("Usage: siriClient serverIP serverPort runTime [querySize responseSize delayQueryResponse "
-    					   + "minPayloadSize maxPayloadSize intervalTimeMs bufferSize]");
+    					   + "minPayloadSize maxPayloadSize intervalTimeMs bufferSize burstSize intervalBurstTimeMs]");
     }
-    
+
     public static void main(String[] args) {
-    	if (args.length != 3 && args.length != 10) {
+    	if (args.length != 3 && args.length != 12) {
     		usage();
     		System.exit(1);
     	}
@@ -340,8 +352,8 @@ public class SiriClient {
     	int serverPort = Integer.parseInt(args[1]);
     	int runTime = Integer.parseInt(args[2]);
     	SiriClient siriClient;
-    	
-    	if (args.length == 10) {
+
+    	if (args.length == 12) {
     		int querySize = Integer.parseInt(args[3]);
     		int responseSize = Integer.parseInt(args[4]);
     		int delayQueryResponse = Integer.parseInt(args[5]);
@@ -349,12 +361,14 @@ public class SiriClient {
     		int maxPayloadSize = Integer.parseInt(args[7]);
     		int intervalTimeMs = Integer.parseInt(args[8]);
     		int bufferSize = Integer.parseInt(args[9]);
+        int burstSize = Integer.parseInt(args[10]);
+        int intervalBurstTimeMs = Integer.parseInt(args[11]);
     		siriClient = new SiriClient(serverIp, serverPort, runTime, querySize, responseSize, delayQueryResponse,
-    									minPayloadSize, maxPayloadSize, intervalTimeMs, bufferSize);
+    									minPayloadSize, maxPayloadSize, intervalTimeMs, bufferSize, burstSize, intervalBurstTimeMs);
     	} else {
     		siriClient = new SiriClient(serverIp, serverPort, runTime);
     	}
-    	
+
     	String mac = "00:00:00:00:00:00";
     	siriClient.run(mac);
     	System.out.println("missed: " + siriClient.missed);

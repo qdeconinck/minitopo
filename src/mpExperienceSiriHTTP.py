@@ -46,6 +46,8 @@ class  MpExperienceSiriHTTP(MpExperience):
 		self.max_payload_size = self.xpParam.getParam(MpParamXp.SIRIMAXPAYLOADSIZE)
 		self.interval_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALTIMEMS)
 		self.buffer_size = self.xpParam.getParam(MpParamXp.SIRIBUFFERSIZE)
+		self.burst_size = self.xpParam.getParam(MpParamXp.SIRIBURSTSIZE)
+		self.interval_burst_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALBURSTTIMEMS)
 		self.file = self.xpParam.getParam(MpParamXp.HTTPFILE)
 		self.random_size = self.xpParam.getParam(MpParamXp.HTTPRANDOMSIZE)
 
@@ -75,7 +77,7 @@ class  MpExperienceSiriHTTP(MpExperience):
 		s = MpExperienceSiriHTTP.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
 				self.mpConfig.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
-				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + \
+				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \
 				" >" + MpExperienceSiriHTTP.CLIENT_LOG + " 2>" + MpExperienceSiriHTTP.CLIENT_ERR
 		print(s)
 		return s
