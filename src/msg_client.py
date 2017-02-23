@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import random
 import socket
@@ -10,6 +11,13 @@ MSG_SIZE = 1200
 
 threads = {}
 to_join = []
+
+parser = argparse.ArgumentParser(description="Msg client")
+parser.add_argument("-s", "--sleep", type=float, help="sleep time between two sendings", default=5.0)
+parser.add_argument("-n", "--nb", type=int, help="number of requests done", default=5)
+parser.add_argument("-B", "--bulk", type=bool, help="if set, don't wait for reply to send another packet", default=False)
+
+args = parser.parse_args()
 
 
 def string_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -30,11 +38,14 @@ sock.connect(server_address)
 delays = []
 
 try:
-    for i in range(5):
-        time.sleep(5.0)
+    for i in range(args.nb):
+        time.sleep(args.sleep)
         request = string_generator(size=MSG_SIZE, chars=string.digits)
         start_time = datetime.datetime.now()
         sock.sendall(request.encode(ENCODING))
+
+        if args.bulk:
+            continue
 
         buffer_data = ""
         while len(buffer_data) < MSG_SIZE:

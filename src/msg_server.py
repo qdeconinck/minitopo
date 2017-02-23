@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import random
 import socket
@@ -10,6 +11,11 @@ ENCODING = 'ascii'
 
 threads = {}
 to_join = []
+
+parser = argparse.ArgumentParser(description="Msg server")
+parser.add_argument("-s", "--sleep", type=float, help="sleep time between reception and sending", default=5.0)
+
+args = parser.parse_args()
 
 
 def string_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -47,10 +53,10 @@ class HandleClientConnectionThread(threading.Thread):
                     stop_time = datetime.datetime.now()
                     if start_time:
                         self.delays.append(stop_time - start_time)
-                    time.sleep(5.0)
+                    time.sleep(args.sleep)
                     response = string_generator(size=self.msg_size, chars=string.digits)
                     start_time = datetime.datetime.now()
-                    self.connection.sendall(response.encode(ENCODING))
+                    self.connection.sendall(response).encode(ENCODING)
                     buffer_data = ""
 
                 elif len(buffer_data) > self.msg_size:

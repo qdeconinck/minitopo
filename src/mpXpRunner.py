@@ -21,6 +21,7 @@ from mpExperienceIperf import MpExperienceIperf
 from mpExperienceDITG import MpExperienceDITG
 from mpExperienceMsg import MpExperienceMsg
 from mpExperienceSiriHTTP import MpExperienceSiriHTTP
+from mpExperienceSiriMsg import MpExperienceSiriMsg
 from mpExperienceNone import MpExperienceNone
 from mpExperience import MpExperience
 from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
@@ -128,6 +129,8 @@ class MpXpRunner:
 			MpExperienceMsg(self.xpParam, self.mpTopo, self.mpTopoConfig)
 		elif xp == MpExperience.SIRIHTTP:
 			MpExperienceSiriHTTP(self.xpParam, self.mpTopo, self.mpTopoConfig)
+		elif xp == MpExperience.SIRIMSG:
+			MpExperienceSiriMsg(self.xpParam, self.mpTopo, self.mpTopoConfig)
 		else:
 			print("Unfound xp type..." + xp)
 

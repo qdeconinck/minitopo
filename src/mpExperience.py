@@ -18,6 +18,7 @@ class MpExperience:
 	DITG = "ditg"
 	MSG = "msg"
 	SIRIHTTP = "sirihttp"
+	SIRIMSG = "sirimsg"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
