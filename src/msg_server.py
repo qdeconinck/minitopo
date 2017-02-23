@@ -49,7 +49,7 @@ class HandleClientConnectionThread(threading.Thread):
 
                 buffer_data += data
 
-                if len(buffer_data) == self.msg_size:
+                if len(buffer_data) >= self.msg_size:
                     stop_time = datetime.datetime.now()
                     if start_time:
                         self.delays.append(stop_time - start_time)
@@ -57,11 +57,7 @@ class HandleClientConnectionThread(threading.Thread):
                     response = string_generator(size=self.msg_size, chars=string.digits)
                     start_time = datetime.datetime.now()
                     self.connection.sendall(response.encode(ENCODING))
-                    buffer_data = ""
-
-                elif len(buffer_data) > self.msg_size:
-                    print("Too much data; break")
-                    break
+                    buffer_data = buffer_data[self.msg_size:]
 
         finally:
             # Clean up the connection
