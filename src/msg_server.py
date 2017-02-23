@@ -79,6 +79,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Handle reusing the same 5-tuple if the previous one is still in TIME_WAIT
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_CORK, 0)
 
 # Bind the socket to the port
 server_address = ('0.0.0.0', 8000)
