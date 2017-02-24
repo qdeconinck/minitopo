@@ -68,4 +68,5 @@ finally:
     # Clean up the connection
     print("Closing connection")
     sock.close()
-    print(delays)
+    for delay in delays:
+        print(delay)

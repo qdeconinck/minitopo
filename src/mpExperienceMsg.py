@@ -33,7 +33,9 @@ class  MpExperienceMsg(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		pass
+		self.client_sleep = self.xpParam.getParam(MpParamXp.MSGCLIENTSLEEP)
+		self.server_sleep = self.xpParam.getParam(MpParamXp.MSGSERVERSLEEP)
+		self.nb_requests = self.xpParam.getParam(MpParamXp.MSGNBREQUESTS)
 
 	def prepare(self):
 		MpExperience.prepare(self)
@@ -42,15 +44,16 @@ class  MpExperienceMsg(MpExperience):
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
 				MpExperienceMsg.SERVER_LOG)
 
-	def getSiriServerCmd(self):
+	def getMsgServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_server.py &>" + MpExperienceMsg.SERVER_LOG + "&"
+				"/msg_server.py --sleep " + self.server_sleep + " &>" + MpExperienceMsg.SERVER_LOG + "&"
 		print(s)
 		return s
 
-	def getSiriClientCmd(self):
+	def getMsgClientCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_client.py &>" + MpExperienceMsg.CLIENT_LOG
+				"/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
+				" >" + MpExperienceMsg.CLIENT_LOG + " 2>" + MpExperienceSiriMsg.CLIENT_ERR + "&"
 		print(s)
 		return s
 
@@ -59,15 +62,15 @@ class  MpExperienceMsg(MpExperience):
 
 
 	def run(self):
-		cmd = self.getSiriServerCmd()
+		cmd = self.getMsgServerCmd()
 		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_before")
 		self.mpTopo.commandTo(self.mpConfig.server, cmd)
 
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
-		cmd = self.getSiriClientCmd()
+		cmd = self.getMsgClientCmd()
 		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_before")
 		self.mpTopo.commandTo(self.mpConfig.client, cmd)
 		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
 		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
-		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f siri_server.py")
+		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f msg_server.py")
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
