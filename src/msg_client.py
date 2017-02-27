@@ -69,4 +69,4 @@ finally:
     print("Closing connection")
     sock.close()
     for delay in delays:
-        print(delay)
+        print(delay.total_seconds())

@@ -45,15 +45,15 @@ class  MpExperienceMsg(MpExperience):
 				MpExperienceMsg.SERVER_LOG)
 
 	def getMsgServerCmd(self):
-		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
+		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
 				"/msg_server.py --sleep " + self.server_sleep + " &>" + MpExperienceMsg.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getMsgClientCmd(self):
-		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
+		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
 				"/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
-				" >" + MpExperienceMsg.CLIENT_LOG + " 2>" + MpExperienceSiriMsg.CLIENT_ERR + "&"
+				" >" + MpExperienceMsg.CLIENT_LOG + " 2>" + MpExperienceMsg.CLIENT_ERR
 		print(s)
 		return s
 
