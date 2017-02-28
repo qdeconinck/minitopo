@@ -36,6 +36,7 @@ class  MpExperienceMsg(MpExperience):
 		self.client_sleep = self.xpParam.getParam(MpParamXp.MSGCLIENTSLEEP)
 		self.server_sleep = self.xpParam.getParam(MpParamXp.MSGSERVERSLEEP)
 		self.nb_requests = self.xpParam.getParam(MpParamXp.MSGNBREQUESTS)
+		self.bytes = self.xpParam.getParam(MpParamXp.MSGBYTES)
 
 	def prepare(self):
 		MpExperience.prepare(self)
@@ -46,14 +47,14 @@ class  MpExperienceMsg(MpExperience):
 
 	def getMsgServerCmd(self):
 		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_server.py --sleep " + self.server_sleep + " &>" + MpExperienceMsg.SERVER_LOG + "&"
+				"/msg_server.py --sleep " + self.server_sleep + " --bytes " + self.bytes + " &>" + MpExperienceMsg.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getMsgClientCmd(self):
 		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
 				"/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
-				" >" + MpExperienceMsg.CLIENT_LOG + " 2>" + MpExperienceMsg.CLIENT_ERR
+				" --bytes " + self.bytes + " >" + MpExperienceMsg.CLIENT_LOG + " 2>" + MpExperienceMsg.CLIENT_ERR
 		print(s)
 		return s
 

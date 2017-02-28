@@ -7,7 +7,6 @@ import time
 
 BUFFER_SIZE = 2048
 ENCODING = 'ascii'
-MSG_SIZE = 1200
 
 threads = {}
 to_join = []
@@ -16,6 +15,7 @@ parser = argparse.ArgumentParser(description="Msg client")
 parser.add_argument("-s", "--sleep", type=float, help="sleep time between two sendings", default=5.0)
 parser.add_argument("-n", "--nb", type=int, help="number of requests done", default=5)
 parser.add_argument("-B", "--bulk", help="if set, don't wait for reply to send another packet", action="store_true")
+parser.add_argument("-b", "--bytes", type=float, help="number of bytes to send and receive", default=1200)
 
 args = parser.parse_args()
 
@@ -41,7 +41,7 @@ delays = []
 try:
     for i in range(args.nb):
         time.sleep(args.sleep)
-        request = string_generator(size=MSG_SIZE, chars=string.digits)
+        request = string_generator(size=args.bytes, chars=string.digits)
         start_time = datetime.datetime.now()
         sock.sendall(request.encode(ENCODING))
 
@@ -49,7 +49,7 @@ try:
             continue
 
         buffer_data = ""
-        while len(buffer_data) < MSG_SIZE:
+        while len(buffer_data) < args.bytes:
             data = sock.recv(BUFFER_SIZE).decode(ENCODING)
 
             if len(data) == 0:
@@ -58,7 +58,7 @@ try:
 
             buffer_data += data
 
-        if len(buffer_data) == MSG_SIZE:
+        if len(buffer_data) == args.bytes:
             stop_time = datetime.datetime.now()
             delays.append(stop_time - start_time)
         else:

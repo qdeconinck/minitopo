@@ -14,6 +14,7 @@ to_join = []
 
 parser = argparse.ArgumentParser(description="Msg server")
 parser.add_argument("-s", "--sleep", type=float, help="sleep time between reception and sending", default=5.0)
+parser.add_argument("-b", "--bytes", type=float, help="number of bytes to send and receive", default=1200)
 
 args = parser.parse_args()
 
@@ -95,7 +96,7 @@ conn_id = 0
 while True:
     # Wait for a connection
     connection, client_address = sock.accept()
-    thread = HandleClientConnectionThread(connection, client_address, conn_id, 1200)
+    thread = HandleClientConnectionThread(connection, client_address, conn_id, args.bytes)
     threads[conn_id] = thread
     conn_id += 1
     thread.start()
