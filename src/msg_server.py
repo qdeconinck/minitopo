@@ -14,7 +14,7 @@ to_join = []
 
 parser = argparse.ArgumentParser(description="Msg server")
 parser.add_argument("-s", "--sleep", type=float, help="sleep time between reception and sending", default=5.0)
-parser.add_argument("-b", "--bytes", type=float, help="number of bytes to send and receive", default=1200)
+parser.add_argument("-b", "--bytes", type=int, help="number of bytes to send and receive", default=1200)
 
 args = parser.parse_args()
 

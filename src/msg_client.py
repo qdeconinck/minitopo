@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description="Msg client")
 parser.add_argument("-s", "--sleep", type=float, help="sleep time between two sendings", default=5.0)
 parser.add_argument("-n", "--nb", type=int, help="number of requests done", default=5)
 parser.add_argument("-B", "--bulk", help="if set, don't wait for reply to send another packet", action="store_true")
-parser.add_argument("-b", "--bytes", type=float, help="number of bytes to send and receive", default=1200)
+parser.add_argument("-b", "--bytes", type=int, help="number of bytes to send and receive", default=1200)
 
 args = parser.parse_args()
 
