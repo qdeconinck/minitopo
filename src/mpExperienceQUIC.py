@@ -4,6 +4,7 @@ import os
 
 
 class MpExperienceQUIC(MpExperience):
+	GO_BIN = "/usr/local/go"
 	SERVER_LOG = "quic_server.log"
 	CLIENT_LOG = "quic_client.log"
 	CLIENT_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/client_benchmarker/main.go"
@@ -52,14 +53,14 @@ class MpExperienceQUIC(MpExperience):
 				self.random_size)
 
 	def getQUICServerCmd(self):
-		s = "go run " + MpExperienceQUIC.SERVER_GO_FILE + " -www . "
-		s += "-certpath " + MpExperienceQUIC.CERTPATH + " &>"
+		s = MpExperienceQUIC.GO_BIN + " run " + MpExperienceQUIC.SERVER_GO_FILE
+		s += " -www . -certpath " + MpExperienceQUIC.CERTPATH + " &>"
 		s += MpExperienceQUIC.SERVER_LOG + " &"
 		print(s)
 		return s
 
 	def getQUICClientCmd(self):
-		s = "go run " + MpExperienceQUIC.CLIENT_GO_FILE
+		s = MpExperienceQUIC.GO_BIN + " run " + MpExperienceQUIC.CLIENT_GO_FILE
 		if int(self.multipath) > 0:
 			s += " -m"
 		s += " https://" + self.mpConfig.getServerIP() + ":6121/random &>" + MpExperienceQUIC.CLIENT_LOG
