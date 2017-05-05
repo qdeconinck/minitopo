@@ -4,7 +4,7 @@ import os
 
 
 class MpExperienceQUIC(MpExperience):
-	GO_BIN = "/usr/local/go"
+	GO_BIN = "/usr/local/go/bin/go"
 	SERVER_LOG = "quic_server.log"
 	CLIENT_LOG = "quic_client.log"
 	CLIENT_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/client_benchmarker/main.go"
