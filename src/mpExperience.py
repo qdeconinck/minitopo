@@ -19,6 +19,7 @@ class MpExperience:
 	MSG = "msg"
 	SIRIHTTP = "sirihttp"
 	SIRIMSG = "sirimsg"
+	QUIC = "quic"
 
 	def __init__(self, xpParam, mpTopo, mpConfig):
 		self.xpParam  = xpParam
