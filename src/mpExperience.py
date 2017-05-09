@@ -38,6 +38,7 @@ class MpExperience:
 		self.mpConfig.configureNetwork()
 		self.changeMetric()
 		self.putPriorityOnPaths()
+		self.disableTSO()
 		self.runTcpDump()
 		self.runNetemAt()
 		pass
@@ -72,6 +73,36 @@ class MpExperience:
 			if int(backupPath1) > 0:
 				self.mpTopo.commandTo(self.mpConfig.client, self.mpConfig.interfaceBUPCommand(self.mpConfig.getClientInterface(1)))
 				self.mpTopo.commandTo(self.mpConfig.router, self.mpConfig.interfaceBUPCommand(self.mpConfig.getRouterInterfaceSwitch(1)))
+
+	def disableTSO(self):
+		links = self.mpTopo.getLinkCharacteristics()
+		i = 0
+		for l in links:
+			lname = self.mpConfig.getMidLeftName(i)
+			rname = self.mpConfig.getMidRightName(i)
+			lbox = self.mpTopo.getHost(lname)
+			lif = self.mpConfig.getMidL2RInterface(i)
+			rif = self.mpConfig.getMidR2LInterface(i)
+			rbox = self.mpTopo.getHost(rname)
+			print(str(lname) + " " + str(lif))
+			print(str(rname) + " " + str(rif))
+			print("boxes " + str(lbox) + " " + str(rbox))
+			cmd = "ethtool -K " + lif + " tso off"
+			print(cmd)
+			self.mpTopo.commandTo(lbox, cmd)
+			cmd = "ethtool -K " + rif + " tso off"
+			print(cmd)
+			self.mpTopo.commandTo(rbox, cmd)
+			i = i + 1
+
+		# And for the server
+		cmd = "ethtool -K " + self.mpConfig.getServerInterface() + " tso off"
+		print(cmd)
+		self.mpTopo.commandTo(self.mpConfig.server, cmd)
+
+		cmd = "ethtool -K " + self.mpConfig.getRouterInterfaceSwitch(self.mpConfig.getClientInterfaceCount()) + " tso off"
+		print(cmd)
+		self.mpTopo.commandTo(self.mpConfig.router, cmd)
 
 	def runUserspacePM(self):
 		if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
