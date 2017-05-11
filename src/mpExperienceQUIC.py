@@ -89,4 +89,4 @@ class MpExperienceQUIC(MpExperience):
 		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + MpExperienceQUIC.SERVER_GO_FILE)
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
 		# Need to delete the go-build directory in tmp; could lead to no more space left error
-		self.mpTopo.commandTo(self.mpConfig.client, "rm /tmp/go-build*")
+		self.mpTopo.commandTo(self.mpConfig.client, "rm -r /tmp/go-build*")
