@@ -65,6 +65,7 @@ class MpParamXp(MpParam):
 	MSGNBREQUESTS = "msgNbRequests"
 	MSGBYTES = "msgBytes"
 	QUICMULTIPATH = "quicMultipath"
+	QUICSIRIRUNTIME = "quicSiriRunTime"
 	PRIOPATH0 = "prioPath0"
 	PRIOPATH1 = "prioPath1"
 	BACKUPPATH0 = "backupPath0"
