@@ -52,7 +52,7 @@ class MpExperienceQUICSiri(MpExperience):
 		print(s)
 		return s
 
-	def getQUICClientCmd(self):
+	def getQUICSiriClientCmd(self):
 		s = MpExperienceQUICSiri.GO_BIN + " run " + MpExperienceQUICSiri.CLIENT_GO_FILE
 		s += " -addr " + self.mpConfig.getServerIP() + ":8080 -runTime " + self.run_time + "s"
 		if int(self.multipath) > 0:
