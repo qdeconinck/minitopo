@@ -1,5 +1,5 @@
 from mpConfig import MpConfig
-from mpMultiInterfaceTopo import MpMultiInterfaceTopo
+from mpMultiInterfaceCongTopo import MpMultiInterfaceCongTopo
 from mpParamTopo import MpParamTopo
 from mpTopo import MpTopo
 
@@ -176,7 +176,7 @@ class MpMultiInterfaceCongConfig(MpConfig):
 		return  MpTopo.clientName + "-eth" + str(interfaceID)
 
 	def getCongClientInterface(self, interfaceID):
-		return "CongClient-" + str(interfaceID) + "-eth0"
+		return MpMultiInterfaceCongTopo.congClientName + "-" + str(interfaceID) + "-eth0"
 
 	def getRouterInterfaceSwitch(self, interfaceID):
 		return  MpTopo.routerName + "-eth" + str(interfaceID)
@@ -185,7 +185,7 @@ class MpMultiInterfaceCongConfig(MpConfig):
 		return  MpTopo.serverName + "-eth0"
 
 	def getCongServerInterface(self, interfaceID):
-		return "CongServer-" + str(interfaceID) + "-eth0"
+		return MpMultiInterfaceCongTopo.congServerName + "-" + str(interfaceID) + "-eth0"
 
 	def getMidLeftName(self, id):
 		return MpTopo.switchNamePrefix + str(id)
