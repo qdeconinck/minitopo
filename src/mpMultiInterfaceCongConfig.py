@@ -45,11 +45,22 @@ class MpMultiInterfaceCongConfig(MpConfig):
 				self.getClientInterface(0))
 		self.topo.commandTo(self.client, cmd)
 
+		# Congestion Client
+		i = 0
+		for c in self.cong_clients:
+			cmd = self.addRouteDefaultGlobalCommand(self.getRouterIPSwitch(i),
+				self.getCongClientInterface(i))
+			self.topo.commandTo(c, cmd)
+			i = i + 1
+
 		cmd = self.addRouteDefaultSimple(self.getRouterIPServer())
 		self.topo.commandTo(self.server, cmd)
-		# Do the same command for all congestion servers
+		# Congestion servers
+		i = 0
 		for s in self.cong_servers:
+			cmd = self.addRouteDefaultSimple(self.getRouterIPCongServer(i))
 			self.topo.commandTo(s, cmd)
+			i += 1
 
 
 	def configureInterfaces(self):
@@ -70,7 +81,6 @@ class MpMultiInterfaceCongConfig(MpConfig):
 		i = 0
 		netmask = "255.255.255.0"
 		links = self.topo.getLinkCharacteristics()
-		# TODO CONGGESTION CONTROL XXX
 		for l in self.topo.switch:
 			cmd = self.interfaceUpCommand(
 					self.getClientInterface(i),
