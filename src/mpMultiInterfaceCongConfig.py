@@ -57,8 +57,16 @@ class MpMultiInterfaceCongConfig(MpConfig):
 		self.client = self.topo.getHost(MpTopo.clientName)
 		self.server = self.topo.getHost(MpTopo.serverName)
 		self.router = self.topo.getHost(MpTopo.routerName)
-		self.cong_clients = self.topo.getCongClients()
-		self.cong_servers = self.topo.getCongServers()
+		cong_client_names = self.topo.getCongClients()
+		self.cong_clients = []
+		for cn in cong_client_names:
+			self.cong_clients.append(self.topo.getHost(cn))
+
+		cong_server_names = self.topo.getCongServers()
+		self.cong_servers = []
+		for sn in cong_server_names:
+			self.cong_servers.append(self.topo.getHost(sn))
+
 		i = 0
 		netmask = "255.255.255.0"
 		links = self.topo.getLinkCharacteristics()
