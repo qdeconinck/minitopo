@@ -13,7 +13,7 @@ class MpMultiInterfaceCongTopo(MpTopo):
 		for l in self.topoParam.linkCharacteristics:
 			self.switch.append(self.addOneSwitchPerLink(l))
 			self.addLink(self.client,self.switch[-1])
-			self.cong_clients.append(self.addHost("CongClient-" + str(len(self.cong_clients)))
+			self.cong_clients.append(self.addHost("CongClient-" + str(len(self.cong_clients))))
 			self.addLink(self.cong_clients[-1], self.switch[-1])
 			self.addLink(self.switch[-1],self.router, **l.asDict())
 		self.addLink(self.router, self.server)
