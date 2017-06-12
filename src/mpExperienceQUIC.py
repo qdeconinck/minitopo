@@ -76,7 +76,7 @@ class MpExperienceQUIC(MpExperience):
 		return s
 
 	def getCongClientCmd(self, congID):
-		s = "(time " + MpExperienceQUIC.WGET + " https://" + self.mpConfig.getServerCongIP(congID) +\
+		s = "(time " + MpExperienceQUIC.WGET + " https://" + self.mpConfig.getCongServerIP(congID) +\
 		 		"/" + self.file + " --no-check-certificate --disable-mptcp) &> https_client" + str(congID) + ".log &"
 		print(s)
 		return s
