@@ -5,6 +5,7 @@ class MpTopo:
 	multiIfTopo = "MultiIf"
 	ECMPLikeTopo = "ECMPLike"
 	twoIfCongTopo = "twoIfCong"
+	multiIfCongTopo = "MultiIfCong"
 	topoAttr    = "topoType"
 	switchNamePrefix = "s"
 	routerNamePrefix = "r"

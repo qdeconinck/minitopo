@@ -3,6 +3,8 @@ from mpParamTopo import MpParamTopo
 from mpParamXp import MpParamXp
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 from mpMultiInterfaceConfig import MpMultiInterfaceConfig
+from mpMultiInterfaceCongConfig import MpMultiInterfaceCongConfig
+from mpMultiInterfaceCongTopo import MpMultiInterfaceCongTopo
 from mpECMPSingleInterfaceConfig import MpECMPSingleInterfaceConfig
 from mpTwoInterfaceCongestionConfig import MpTwoInterfaceCongestionConfig
 from mpMininetBuilder import MpMininetBuilder
@@ -61,6 +63,9 @@ class MpXpRunner:
 		elif t == MpTopo.twoIfCongTopo:
 			self.mpTopo = MpTwoInterfaceCongestionTopo(
 					self.topoBuilder, self.topoParam)
+		elif t == MpTopo.multiIfCongTopo:
+			self.mpTopo = MpMultiInterfaceCongTopo(self.topoBuilder,
+					self.topoParam)
 		else:
 			raise Exception("Unfound Topo" + t)
 		print(self.mpTopo)
@@ -77,6 +82,9 @@ class MpXpRunner:
 		elif t == MpTopo.twoIfCongTopo:
 			self.mpTopoConfig = MpTwoInterfaceCongestionConfig(
 					self.mpTopo, self.topoParam)
+		elif t == MpTopo.multiIfCongTopo:
+			self.mpTopoConfig = MpMultiInterfaceCongConfig(self.mpTopo,
+				self.topoParam)
 		else:
 			raise Exception("Unfound Topo" + t)
 
