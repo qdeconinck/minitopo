@@ -18,7 +18,7 @@ class MpMultiInterfaceCongTopo(MpTopo):
 			self.addLink(self.switch[-1],self.router, **l.asDict())
 		self.addLink(self.router, self.server)
 		for i in range(len(self.cong_clients)):
-			self.cong_servers.append(self.addHost("CongServer-" + str(len(self.conf_servers))))
+			self.cong_servers.append(self.addHost("CongServer-" + str(len(self.cong_servers))))
 			self.addLink(self.router, self.cong_servers[-1])
 
 	def getCongClients(self):
