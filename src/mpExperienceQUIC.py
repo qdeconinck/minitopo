@@ -9,7 +9,7 @@ class MpExperienceQUIC(MpExperience):
 	WGET = "~/git/wget/src/wget"
 	SERVER_LOG = "quic_server.log"
 	CLIENT_LOG = "quic_client.log"
-	CLIENT_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/client_benchmarker/main.go"
+	CLIENT_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/client_benchmarker_cached/main.go"
 	SERVER_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/main.go"
 	CERTPATH = "~/go/src/github.com/lucas-clemente/quic-go/example/"
 	PING_OUTPUT = "ping.log"
@@ -129,3 +129,5 @@ class MpExperienceQUIC(MpExperience):
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
 		# Need to delete the go-build directory in tmp; could lead to no more space left error
 		self.mpTopo.commandTo(self.mpConfig.client, "rm -r /tmp/go-build*")
+		# Remove cache data
+		self.mpTopo.commandTo(self.mpConfig.client, "rm cache_*")
