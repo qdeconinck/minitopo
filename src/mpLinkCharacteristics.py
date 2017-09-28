@@ -29,7 +29,7 @@ class MpLinkCharacteristics:
 		self.queueSize = queueSize
 		self.bandwidth = bandwidth
 		self.loss = loss
-		self.queuingDelay = str(extractQueuingDelay(queueSize, bandwidth, delay))
+		self.queuingDelay = str(self.extractQueuingDelay(queueSize, bandwidth, delay))
 		self.netemAt = []
 		self.back_up = back_up
 
