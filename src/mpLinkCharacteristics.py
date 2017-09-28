@@ -13,13 +13,23 @@ class MpLinkCharacteristics:
 	    bandwidthDelayProduct = (float(self.bandwidth) * 125000.0) * (rtt / 1000.0)
 	    return int(math.ceil(bandwidthDelayProduct * 1.0 / 1500.0))
 
+	def extractQueuingDelay(queueSize, bandwidth, delay, mtu=1500):
+		rtt = 2 * float(delay)
+		bdp_queue_size = int(rtt * bandwidth * 1024 * 1024 / (mtu * 8 * 1000))
+		if int(queueSize) <= bdp_queue_size:
+			return 0
+
+		queuingQueueSize = int(queueSize) - bdp_queue_size
+		queuingDelay = (queuingQueueSize * mtu * 8 * 1000) / (bandwidth * 1024 * 1024)
+		return int(queuingDelay)
+
 	def __init__(self, id, delay, queueSize, bandwidth, loss, back_up=False):
 		self.id = id
 		self.delay = delay
 		self.queueSize = queueSize
 		self.bandwidth = bandwidth
 		self.loss = loss
-		self.queuingDelay = str(int(1000.0 * int(queueSize) / self.bandwidthDelayProductDividedByMTU()))
+		self.queuingDelay = str(extractQueuingDelay(queueSize, bandwidth, delay))
 		self.netemAt = []
 		self.back_up = back_up
 
