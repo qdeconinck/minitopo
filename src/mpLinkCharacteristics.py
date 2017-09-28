@@ -13,7 +13,7 @@ class MpLinkCharacteristics:
 	    bandwidthDelayProduct = (float(self.bandwidth) * 125000.0) * (rtt / 1000.0)
 	    return int(math.ceil(bandwidthDelayProduct * 1.0 / 1500.0))
 
-	def extractQueuingDelay(queueSize, bandwidth, delay, mtu=1500):
+	def extractQueuingDelay(self, queueSize, bandwidth, delay, mtu=1500):
 		rtt = 2 * float(delay)
 		bdp_queue_size = int((float(rtt) * float(bandwidth) * 1024 * 1024) / (int(mtu) * 8 * 1000))
 		if int(queueSize) <= bdp_queue_size:
