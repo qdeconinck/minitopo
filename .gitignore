@@ -1,0 +1,14 @@
+*.pdf
+*.aux
+*.backup
+*.log
+*.bbl
+*.out
+*.blg
+*.pyc
+*.log
+*~
+*.swp
+*.pcap
+*.xpl
+*.patch
