@@ -53,11 +53,11 @@ class MpLinkCharacteristics:
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
 			cmd = cmd + " && tc qdisc del dev " + ifname + " root "
-			cmd = cmd + " && tc qdisc add dev {} root handle 5:0 tbf rate {}mbit burst {} latency {}ms".format(ifname, self.bandwidth, 1500 * int(self.queueSize), self.queuingDelay)
-			cmd = cmd + " && tc qdisc add dev {} handle ffff: ingress".format(ifname)
-			cmd = cmd + " && tc filter add dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop".format(ifname, self.bandwidth, int(self.queueSize) * 1500)
+			cmd = cmd + " && tc filter add dev {} root handle 5:0 u32 match u32 0 0 police rate {}mbit burst {} drop".format(ifname, self.bandwidth, int(self.queueSize) * 1500)
+			cmd = cmd + " && tc qdisc add dev {} parent 5:0 handle 5:1 tbf rate {}mbit burst 15000 latency {}ms".format(ifname, self.bandwidth, self.queuingDelay)
+			# cmd = cmd + " && tc qdisc add dev {} handle ffff: ingress".format(ifname)
 
-			cmd = cmd + " && tc qdisc add dev {} parent 5:0 handle 10: netem {} delay {}ms limit 1000000 &&".format(ifname, n.cmd, self.delay)
+			cmd = cmd + " && tc qdisc add dev {} parent 5:1 handle 10: netem {} delay {}ms limit 1000000 &&".format(ifname, n.cmd, self.delay)
 
 		cmd = cmd + " true &"
 		return cmd
