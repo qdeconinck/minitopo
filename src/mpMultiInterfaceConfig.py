@@ -130,13 +130,13 @@ class MpMultiInterfaceConfig(MpConfig):
 		return self.getSwitchServerName(id)
 
 	def getMidL2RInterface(self, id):
-		return self.getMidLeftName(id) + "-eth2"
+		return self.getMidRightName(id) + "-eth2"
 
 	def getMidR2LInterface(self, id):
 		return self.getMidRightName(id) + "-eth1"
 
 	def getMidL2RIncomingInterface(self, id):
-		return self.getMidLeftName(id) + "-eth1"
+		return self.getMidRightName(id) + "-eth1"
 
 	def getMidR2LIncomingInterface(self, id):
 		return self.getMidRightName(id) + "-eth2"
