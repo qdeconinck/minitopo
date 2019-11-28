@@ -9,7 +9,7 @@ class MpMultiInterfaceConfig(MpConfig):
 
 	def configureRoute(self):
 		i = 0
-		for l in self.topo.switch:
+		for l in self.topo.switchClient:
 			cmd = self.addRouteTableCommand(self.getClientIP(i), i)
 			self.topo.commandTo(self.client, cmd)
 
@@ -39,7 +39,7 @@ class MpMultiInterfaceConfig(MpConfig):
 		i = 0
 		netmask = "255.255.255.0"
 		links = self.topo.getLinkCharacteristics()
-		for l in self.topo.switch:
+		for l in self.topo.switchClient:
 			cmd = self.interfaceUpCommand(
 					self.getClientInterface(i),
 					self.getClientIP(i), netmask)
@@ -52,6 +52,10 @@ class MpMultiInterfaceConfig(MpConfig):
 						self.getClientInterface(i))
 				self.topo.commandTo(self.client, cmd)
 
+			i = i + 1
+
+		i = 0
+		for l in self.topo.switchServer:
 			cmd = self.interfaceUpCommand(
 					self.getRouterInterfaceSwitch(i),
 					self.getRouterIPSwitch(i), netmask)
@@ -99,10 +103,10 @@ class MpMultiInterfaceConfig(MpConfig):
 		return serverIP
 
 	def getClientInterfaceCount(self):
-		return len(self.topo.switch)
+		return len(self.topo.switchClient)
 
 	def getRouterInterfaceServer(self):
-		return self.getRouterInterfaceSwitch(len(self.topo.switch))
+		return self.getRouterInterfaceSwitch(len(self.topo.switchServer))
 
 	def getClientInterface(self, interfaceID):
 		return  MpTopo.clientName + "-eth" + str(interfaceID)
@@ -113,14 +117,26 @@ class MpMultiInterfaceConfig(MpConfig):
 	def getServerInterface(self):
 		return  MpTopo.serverName + "-eth0"
 
+	def getSwitchClientName(self, id):
+		return MpTopo.switchNamePrefix + str(2 * id)
+
+	def getSwitchServerName(self, id):
+		return MpTopo.switchNamePrefix + str(2 * id + 1)
+
 	def getMidLeftName(self, id):
-		return MpTopo.switchNamePrefix + str(id)
+		return self.getSwitchClientName(id)
 
 	def getMidRightName(self, id):
-		return MpTopo.routerName
+		return self.getSwitchServerName(id)
 
 	def getMidL2RInterface(self, id):
 		return self.getMidLeftName(id) + "-eth2"
 
 	def getMidR2LInterface(self, id):
-		return self.getMidRightName(id) + "-eth" + str(id)
+		return self.getMidRightName(id) + "-eth1"
+
+	def getMidL2RIncomingInterface(self, id):
+		return self.getMidLeftName(id) + "-eth1"
+
+	def getMidR2LIncomingInterface(self, id):
+		return self.getMidRightName(id) + "-eth2"

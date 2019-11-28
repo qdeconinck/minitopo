@@ -156,6 +156,15 @@ class MpExperience:
 			cmd = l.buildNetemCmd(rif)
 			print(cmd)
 			self.mpTopo.commandTo(rbox, cmd)
+			ilif = self.mpConfig.getMidL2RIncomingInterface(i)
+			irif = self.mpConfig.getMidR2LIncomingInterface(i)
+			cmd = l.buildPolicingCmd(ilif)
+			print(cmd)
+			self.mpTopo.commandTo(lbox, cmd)
+			cmd = l.buildPolicingCmd(irif)
+			print(cmd)
+			self.mpTopo.commandTo(rbox, cmd)
+
 			i = i + 1
 
 	def run(self):
