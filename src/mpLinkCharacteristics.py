@@ -13,6 +13,9 @@ class MpLinkCharacteristics:
 	    bandwidthDelayProduct = (float(self.bandwidth) * 125000.0) * (rtt / 1000.0)
 	    return int(math.ceil(bandwidthDelayProduct * 1.0 / 1500.0))
 
+	def bufferSize(self):
+		return (1500.0 * self.bandwidthDelayProductDividedByMTU()) + (float(self.bandwidth) * 1000.0 * float(self.queuingDelay) / 8)
+
 	def extractQueuingDelay(self, queueSize, bandwidth, delay, mtu=1500):
 		rtt = 2 * float(delay)
 		bdp_queue_size = int((float(rtt) * float(bandwidth) * 1024 * 1024) / (int(mtu) * 8 * 1000))
@@ -48,14 +51,21 @@ class MpLinkCharacteristics:
 						"because ooo !")
 			pass
 
+	def buildBwCmd(self, ifname):
+		cmd = ""
+		for n in self.netemAt:
+			cmd = cmd + "sleep {}".format(n.delta)
+			cmd = cmd + " && tc qdisc add dev {} root handle 5:0 tbf rate {}mbit burst 15000 limit {} &&".format(ifname, self.bandwidth, self.bufferSize())
+
+		cmd = cmd + " true &"
+		return cmd
+
 	def buildNetemCmd(self, ifname):
 		cmd = ""
 		for n in self.netemAt:
 			cmd = cmd + "sleep " + str(n.delta)
 			cmd = cmd + " && tc qdisc del dev " + ifname + " root "
-			cmd = cmd + " && tc qdisc add dev {} root handle 5:0 tbf rate {}mbit burst 15000 latency {}ms".format(ifname, self.bandwidth, self.queuingDelay)
-
-			cmd = cmd + " && tc qdisc add dev {} parent 5:0 handle 10: netem {} delay {}ms limit 1000000 &&".format(ifname, n.cmd, self.delay)
+			cmd = cmd + " && tc qdisc add dev {} root handle 10: netem {} delay {}ms limit {} &&".format(ifname, n.cmd, self.delay, 2 * self.bufferSize() // 1500)
 
 		cmd = cmd + " true &"
 		return cmd
@@ -66,7 +76,7 @@ class MpLinkCharacteristics:
 			cmd = cmd + "sleep {}".format(n.delta)
 			cmd = cmd + " && tc qdisc del dev {} ingress".format(ifname)
 			cmd = cmd + " ; tc qdisc add dev {} handle ffff: ingress".format(ifname)
-			cmd = cmd + " && tc filter add dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop && ".format(ifname, self.bandwidth, int(self.queueSize) * 1500)
+			cmd = cmd + " && tc filter add dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop && ".format(ifname, self.bandwidth, self.bufferSize())
 
 		cmd = cmd + " true &"
 		return cmd

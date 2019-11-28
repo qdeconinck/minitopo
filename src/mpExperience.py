@@ -150,10 +150,10 @@ class MpExperience:
 			print(str(lname) + " " + str(lif))
 			print(str(rname) + " " + str(rif))
 			print("boxes " + str(lbox) + " " + str(rbox))
-			cmd = l.buildNetemCmd(lif)
+			cmd = l.buildBwCmd(lif)
 			print(cmd)
 			self.mpTopo.commandTo(lbox, cmd)
-			cmd = l.buildNetemCmd(rif)
+			cmd = l.buildBwCmd(rif)
 			print(cmd)
 			self.mpTopo.commandTo(rbox, cmd)
 			ilif = self.mpConfig.getMidL2RIncomingInterface(i)
@@ -164,6 +164,12 @@ class MpExperience:
 			cmd = l.buildPolicingCmd(irif)
 			print(cmd)
 			self.mpTopo.commandTo(rbox, cmd)
+			cmd = l.buildNetemCmd(irif)
+			print(cmd)
+			self.mpTopo.commandTo(rbox, cmd)
+			cmd = l.buildNetemCmd(ilif)
+			print(cmd)
+			self.mpTopo.commandTo(lbox, cmd)
 
 			i = i + 1
 
