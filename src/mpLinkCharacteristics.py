@@ -17,15 +17,15 @@ class MpLinkCharacteristics:
 		return (1500.0 * self.bandwidthDelayProductDividedByMTU()) + (float(self.bandwidth) * 1000.0 * float(self.queuingDelay) / 8)
 
 	def extractQueuingDelay(self, queueSize, bandwidth, delay, mtu=1500):
-		rtt = 2 * float(delay)
-		bdp_queue_size = int((float(rtt) * float(bandwidth) * 1024 * 1024) / (int(mtu) * 8 * 1000))
-		if int(queueSize) <= bdp_queue_size:
+		# rtt = 2 * float(delay)
+		# bdp_queue_size = int((float(rtt) * float(bandwidth) * 1024 * 1024) / (int(mtu) * 8 * 1000))
+		# if int(queueSize) <= bdp_queue_size:
 			# Returning 0 seems to bypass everything, then only limited by CPU.
 			# This is not what we want...
-			return 1
+		# 	return 1
 
-		queuingQueueSize = int(queueSize) - bdp_queue_size
-		queuingDelay = (queuingQueueSize * int(mtu) * 8 * 1000) / (float(bandwidth) * 1024 * 1024)
+		# queuingQueueSize = int(queueSize) - bdp_queue_size
+		queuingDelay = (int(queueSize) * int(mtu) * 8.0 * 1000.0) / (float(bandwidth) * 1024 * 1024)
 		return max(int(queuingDelay), 1)
 
 	def __init__(self, id, delay, queueSize, bandwidth, loss, back_up=False):
