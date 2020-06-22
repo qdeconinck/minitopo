@@ -1,6 +1,7 @@
 from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.link import TCLink
+from mininet.node import OVSBridge
 from mininet.cli import CLI
 from subprocess import Popen, PIPE
 
@@ -20,7 +21,7 @@ class MpMininetBuilder(Topo):
 		return stdout
 
 	def startNetwork(self):
-		self.net = Mininet(topo=self,link=TCLink)
+		self.net = Mininet(topo=self,link=TCLink,switch=OVSBridge)
 		self.net.start()
 
 	def getCLI(self):
