@@ -210,6 +210,9 @@ class MpExperience:
             if val == "Error":
                 print("oooops can't get sysctl " + sysctlKey)
             else:
+                # For Python3 compatibility
+                if type(val) is bytes:
+                    val = val.decode()
                 sysctlBUP[k] = val.split(" ",2)[2][:-1]
 
 
