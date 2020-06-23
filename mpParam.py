@@ -19,7 +19,7 @@ class MpParam:
 			tab = l.split(":")
 			if len(tab) == 2:
 				k = tab[0]
-				val = tab[1][:-1]
+				val = tab[1].rstrip()
 				if k in self.paramDic:
 					if not isinstance(self.paramDic[k], list):
 						self.paramDic[k] = [self.paramDic[k]]
