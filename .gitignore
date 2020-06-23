@@ -6,9 +6,9 @@
 *.out
 *.blg
 *.pyc
-*.log
 *~
 *.swp
 *.pcap
 *.xpl
 *.patch
+__pycache__
