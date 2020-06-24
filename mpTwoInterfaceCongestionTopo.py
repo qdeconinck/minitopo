@@ -2,7 +2,7 @@ from core.topo import Topo
 
 class MpTwoInterfaceCongestionTopo(Topo):
     def __init__(self, topoBuilder, parameterFile):
-        super().__init__(topoBuilder, parameterFile)
+        super(MpTwoInterfaceCongestionTopo, self).__init__(topoBuilder, parameterFile)
 
         print("Hello from topo two ifs cong")
         print("Expected topo:")

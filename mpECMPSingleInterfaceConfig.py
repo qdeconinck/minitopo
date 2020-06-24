@@ -4,7 +4,7 @@ from struct import *
 
 class MpECMPSingleInterfaceConfig(TopoConfig):
     def __init__(self, topo, param):
-        super().__init__(topo, param)
+        super(MpECMPSingleInterfaceConfig, self).__init__(topo, param)
 
     def configureRoute(self):
         i = 0

@@ -5,7 +5,7 @@ class MpMultiInterfaceCongTopo(Topo):
     congServerName = "CSer"
 
     def __init__(self, topoBuilder, parameterFile):
-        super().__init__(topoBuilder, parameterFile)
+        super(MpMultiInterfaceCongTopo, self).__init__(topoBuilder, parameterFile)
         print("Hello from topo multi if")
         self.client = self.addHost(Topo.clientName)
         self.server = self.addHost(Topo.serverName)

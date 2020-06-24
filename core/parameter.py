@@ -1,5 +1,5 @@
 
-class Parameter:
+class Parameter(object):
 	def __init__(self, paramFile):
 		self.paramDic = {}
 		print("Create the param Object")
@@ -208,10 +208,10 @@ class ExperienceParameter(Parameter):
     defaultValue[BACKUPPATH1] = "0"
 
     def __init__(self, paramFile):
-        super().__init__(paramFile)
+        super(ExperienceParameter, self).__init__(paramFile)
 
     def getParam(self, key):
-        val = super().getParam(key)
+        val = super(ExperienceParameter, self).getParam(key)
         if val is None:
             if key in ExperienceParameter.defaultValue:
                 return ExperienceParameter.defaultValue[key]

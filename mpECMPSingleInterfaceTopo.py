@@ -2,7 +2,7 @@ from core.topo import Topo
 
 class MpECMPSingleInterfaceTopo(Topo):
     def __init__(self, topoBuilder, parameterFile):
-        super().__init__(topoBuilder, parameterFile)
+        super(MpECMPSingleInterfaceTopo, self).__init__(topoBuilder, parameterFile)
 
         print("Hello ECMP topo")
 

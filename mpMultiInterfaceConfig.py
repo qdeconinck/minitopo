@@ -3,7 +3,7 @@ from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 
 class MpMultiInterfaceConfig(TopoConfig):
     def __init__(self, topo, param):
-        super().__init__(topo, param)
+        super(MpMultiInterfaceConfig, self).__init__(topo, param)
 
     def configureRoute(self):
         i = 0

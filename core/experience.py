@@ -1,7 +1,7 @@
 from .parameter import ExperienceParameter
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 
-class Experience:
+class Experience(object):
     PING = "ping"
     NCPV = "ncpv"
     NC = "nc"

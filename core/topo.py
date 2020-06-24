@@ -89,7 +89,7 @@ class TopoParameter(Parameter):
 		s = s + self.linkCharacteristics[-1].__str__()
 		return s
 
-class Topo:
+class Topo(object):
 	mininetBuilder = "mininet"
 	multiIfTopo = "MultiIf"
 	ECMPLikeTopo = "ECMPLike"
@@ -149,7 +149,7 @@ class Topo:
 		self.topoBuilder.stopNetwork()
 
 
-class TopoConfig:
+class TopoConfig(object):
 
     PING_OUTPUT = "ping.log"
 
