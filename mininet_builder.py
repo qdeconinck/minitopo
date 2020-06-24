@@ -5,7 +5,7 @@ from mininet.node import OVSBridge
 from mininet.cli import CLI
 from subprocess import Popen, PIPE
 
-class MpMininetBuilder(Topo):
+class MininetBuilder(Topo):
     def __init__(self):
         Topo.__init__( self )
         self.net = None

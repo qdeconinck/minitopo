@@ -1,5 +1,4 @@
 from core.experience import Experience, ExperienceParameter
-from mpPvAt import MpPvAt
 import os
 
 class  ExperienceSiri(Experience):
@@ -54,12 +53,12 @@ class  ExperienceSiri(Experience):
 
 	def getSiriServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/siri_server.py &>" + ExperienceSiri.SERVER_LOG + "&"
+				"/utils/siri_server.py &>" + ExperienceSiri.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getSiriClientCmd(self):
-		s = ExperienceSiri.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
+		s = ExperienceSiri.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/utils/siriClient.jar " + \
 				self.mpConfig.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \

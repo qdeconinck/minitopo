@@ -1,13 +1,14 @@
 from core.experience import Experience, ExperienceParameter, ExperienceParameter
 from core.topo import Topo, TopoParameter
 
+from mininet_builder import MininetBuilder
+
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 from mpMultiInterfaceConfig import MpMultiInterfaceConfig
 from mpMultiInterfaceCongConfig import MpMultiInterfaceCongConfig
 from mpMultiInterfaceCongTopo import MpMultiInterfaceCongTopo
 from mpECMPSingleInterfaceConfig import MpECMPSingleInterfaceConfig
 from mpTwoInterfaceCongestionConfig import MpTwoInterfaceCongestionConfig
-from mpMininetBuilder import MpMininetBuilder
 from mpExperiencePing import ExperiencePing
 from mpExperienceNCPV import ExperienceNCPV
 from mpExperienceNC import ExperienceNC
@@ -46,7 +47,7 @@ class MpXpRunner:
 
 	def defBuilder(self, builderType):
 		if builderType == Topo.mininetBuilder:
-			self.topoBuilder = MpMininetBuilder()
+			self.topoBuilder = MininetBuilder()
 		else:
 			raise Exception("I can not find the builder " +
 					builderType)

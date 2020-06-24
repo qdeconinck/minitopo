@@ -46,13 +46,13 @@ class  ExperienceMsg(Experience):
 
 	def getMsgServerCmd(self):
 		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_server.py --sleep " + self.server_sleep + " --bytes " + self.bytes + " &>" + ExperienceMsg.SERVER_LOG + "&"
+				"/utils/msg_server.py --sleep " + self.server_sleep + " --bytes " + self.bytes + " &>" + ExperienceMsg.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getMsgClientCmd(self):
 		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
+				"/utils/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
 				" --bytes " + self.bytes + " >" + ExperienceMsg.CLIENT_LOG + " 2>" + ExperienceMsg.CLIENT_ERR
 		print(s)
 		return s

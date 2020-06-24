@@ -1,5 +1,4 @@
 from core.experience import Experience, ExperienceParameter
-from mpPvAt import MpPvAt
 import os
 
 class  ExperienceSiriMsg(Experience):
@@ -21,7 +20,7 @@ class  ExperienceSiriMsg(Experience):
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
 				ExperienceSiriMsg.PING_OUTPUT )
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -37,19 +36,19 @@ class  ExperienceSiriMsg(Experience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.run_time = self.xpParam.getParam(MpParamXp.SIRIRUNTIME)
-		self.query_size = self.xpParam.getParam(MpParamXp.SIRIQUERYSIZE)
-		self.response_size = self.xpParam.getParam(MpParamXp.SIRIRESPONSESIZE)
-		self.delay_query_response = self.xpParam.getParam(MpParamXp.SIRIDELAYQUERYRESPONSE)
-		self.min_payload_size = self.xpParam.getParam(MpParamXp.SIRIMINPAYLOADSIZE)
-		self.max_payload_size = self.xpParam.getParam(MpParamXp.SIRIMAXPAYLOADSIZE)
-		self.interval_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALTIMEMS)
-		self.buffer_size = self.xpParam.getParam(MpParamXp.SIRIBUFFERSIZE)
-		self.burst_size = self.xpParam.getParam(MpParamXp.SIRIBURSTSIZE)
-		self.interval_burst_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALBURSTTIMEMS)
-		self.client_sleep = self.xpParam.getParam(MpParamXp.MSGCLIENTSLEEP)
-		self.server_sleep = self.xpParam.getParam(MpParamXp.MSGSERVERSLEEP)
-		self.nb_requests = self.xpParam.getParam(MpParamXp.MSGNBREQUESTS)
+		self.run_time = self.xpParam.getParam(ExperienceParameter.SIRIRUNTIME)
+		self.query_size = self.xpParam.getParam(ExperienceParameter.SIRIQUERYSIZE)
+		self.response_size = self.xpParam.getParam(ExperienceParameter.SIRIRESPONSESIZE)
+		self.delay_query_response = self.xpParam.getParam(ExperienceParameter.SIRIDELAYQUERYRESPONSE)
+		self.min_payload_size = self.xpParam.getParam(ExperienceParameter.SIRIMINPAYLOADSIZE)
+		self.max_payload_size = self.xpParam.getParam(ExperienceParameter.SIRIMAXPAYLOADSIZE)
+		self.interval_time_ms = self.xpParam.getParam(ExperienceParameter.SIRIINTERVALTIMEMS)
+		self.buffer_size = self.xpParam.getParam(ExperienceParameter.SIRIBUFFERSIZE)
+		self.burst_size = self.xpParam.getParam(ExperienceParameter.SIRIBURSTSIZE)
+		self.interval_burst_time_ms = self.xpParam.getParam(ExperienceParameter.SIRIINTERVALBURSTTIMEMS)
+		self.client_sleep = self.xpParam.getParam(ExperienceParameter.MSGCLIENTSLEEP)
+		self.server_sleep = self.xpParam.getParam(ExperienceParameter.MSGSERVERSLEEP)
+		self.nb_requests = self.xpParam.getParam(ExperienceParameter.MSGNBREQUESTS)
 
 	def prepare(self):
 		Experience.prepare(self)
@@ -68,12 +67,12 @@ class  ExperienceSiriMsg(Experience):
 
 	def getSiriServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/siri_server.py &>" + ExperienceSiriMsg.SERVER_LOG + "&"
+				"/utils/siri_server.py &>" + ExperienceSiriMsg.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getSiriClientCmd(self):
-		s = ExperienceSiriMsg.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
+		s = ExperienceSiriMsg.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/utils/siriClient.jar " + \
 				self.mpConfig.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \
@@ -83,13 +82,13 @@ class  ExperienceSiriMsg(Experience):
 
 	def getMsgServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_server.py --sleep " + self.server_sleep + " &>" + ExperienceSiriMsg.MSG_SERVER_LOG + "&"
+				"/utils/msg_server.py --sleep " + self.server_sleep + " &>" + ExperienceSiriMsg.MSG_SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getMsgClientCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
+				"/utils/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
 				" --bulk >" + ExperienceSiriMsg.MSG_CLIENT_LOG + " 2>" + ExperienceSiriMsg.MSG_CLIENT_ERR + "&"
 		print(s)
 		return s

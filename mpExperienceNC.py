@@ -1,5 +1,4 @@
 from core.experience import Experience, ExperienceParameter
-from mpPvAt import MpPvAt
 
 """
 Should be the mother of ExperienceNCPV, shame on me, should rewrite

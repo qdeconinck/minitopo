@@ -1,5 +1,4 @@
 from core.experience import Experience, ExperienceParameter
-from mpPvAt import MpPvAt
 import os
 
 class ExperienceDITG(Experience):
