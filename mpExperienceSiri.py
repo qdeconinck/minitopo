@@ -1,9 +1,8 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 from mpPvAt import MpPvAt
 import os
 
-class  MpExperienceSiri(MpExperience):
+class  ExperienceSiri(Experience):
 	SERVER_LOG = "siri_server.log"
 	CLIENT_LOG = "siri_client.log"
 	CLIENT_ERR = "siri_client.err"
@@ -11,15 +10,15 @@ class  MpExperienceSiri(MpExperience):
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiri.PING_OUTPUT )
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+				ExperienceSiri.PING_OUTPUT )
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -27,7 +26,7 @@ class  MpExperienceSiri(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceSiri.PING_OUTPUT
+				  " >> " + ExperienceSiri.PING_OUTPUT
 		print(s)
 		return s
 
@@ -35,41 +34,41 @@ class  MpExperienceSiri(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.run_time = self.xpParam.getParam(MpParamXp.SIRIRUNTIME)
-		self.query_size = self.xpParam.getParam(MpParamXp.SIRIQUERYSIZE)
-		self.response_size = self.xpParam.getParam(MpParamXp.SIRIRESPONSESIZE)
-		self.delay_query_response = self.xpParam.getParam(MpParamXp.SIRIDELAYQUERYRESPONSE)
-		self.min_payload_size = self.xpParam.getParam(MpParamXp.SIRIMINPAYLOADSIZE)
-		self.max_payload_size = self.xpParam.getParam(MpParamXp.SIRIMAXPAYLOADSIZE)
-		self.interval_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALTIMEMS)
-		self.buffer_size = self.xpParam.getParam(MpParamXp.SIRIBUFFERSIZE)
-		self.burst_size = self.xpParam.getParam(MpParamXp.SIRIBURSTSIZE)
-		self.interval_burst_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALBURSTTIMEMS)
+		self.run_time = self.xpParam.getParam(ExperienceParameter.SIRIRUNTIME)
+		self.query_size = self.xpParam.getParam(ExperienceParameter.SIRIQUERYSIZE)
+		self.response_size = self.xpParam.getParam(ExperienceParameter.SIRIRESPONSESIZE)
+		self.delay_query_response = self.xpParam.getParam(ExperienceParameter.SIRIDELAYQUERYRESPONSE)
+		self.min_payload_size = self.xpParam.getParam(ExperienceParameter.SIRIMINPAYLOADSIZE)
+		self.max_payload_size = self.xpParam.getParam(ExperienceParameter.SIRIMAXPAYLOADSIZE)
+		self.interval_time_ms = self.xpParam.getParam(ExperienceParameter.SIRIINTERVALTIMEMS)
+		self.buffer_size = self.xpParam.getParam(ExperienceParameter.SIRIBUFFERSIZE)
+		self.burst_size = self.xpParam.getParam(ExperienceParameter.SIRIBURSTSIZE)
+		self.interval_burst_time_ms = self.xpParam.getParam(ExperienceParameter.SIRIINTERVALBURSTTIMEMS)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiri.CLIENT_LOG)
+				ExperienceSiri.CLIENT_LOG)
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceSiri.SERVER_LOG)
+				ExperienceSiri.SERVER_LOG)
 
 	def getSiriServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/siri_server.py &>" + MpExperienceSiri.SERVER_LOG + "&"
+				"/siri_server.py &>" + ExperienceSiri.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getSiriClientCmd(self):
-		s = MpExperienceSiri.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
+		s = ExperienceSiri.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
 				self.mpConfig.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \
-				" >" + MpExperienceSiri.CLIENT_LOG + " 2>" + MpExperienceSiri.CLIENT_ERR
+				" >" + ExperienceSiri.CLIENT_LOG + " 2>" + ExperienceSiri.CLIENT_ERR
 		print(s)
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 
 
 	def run(self):

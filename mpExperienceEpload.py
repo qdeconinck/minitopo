@@ -1,9 +1,8 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 from mpPvAt import MpPvAt
 import os
 
-class  MpExperienceEpload(MpExperience):
+class ExperienceEpload(Experience):
 	SERVER_LOG = "http_server.log"
 	EPLOAD_LOG = "epload.log"
 	NODE_BIN = "/usr/local/nodejs/bin/node"
@@ -11,15 +10,15 @@ class  MpExperienceEpload(MpExperience):
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceEpload.PING_OUTPUT )
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+				ExperienceEpload.PING_OUTPUT )
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -27,22 +26,22 @@ class  MpExperienceEpload(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceEpload.PING_OUTPUT
+				  " >> " + ExperienceEpload.PING_OUTPUT
 		print(s)
 		return s
 
 	def loadParam(self):
-		self.epload_test_dir = self.xpParam.getParam(MpParamXp.EPLOADTESTDIR)
+		self.epload_test_dir = self.xpParam.getParam(ExperienceParameter.EPLOADTESTDIR)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceEpload.EPLOAD_LOG )
+				ExperienceEpload.EPLOAD_LOG )
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceEpload.SERVER_LOG )
+				ExperienceEpload.SERVER_LOG )
 
 	def getHTTPServerCmd(self):
-		s = "/etc/init.d/apache2 restart &>" + MpExperienceEpload.SERVER_LOG + " &"
+		s = "/etc/init.d/apache2 restart &>" + ExperienceEpload.SERVER_LOG + " &"
 		print(s)
 		return s
 
@@ -52,9 +51,9 @@ class  MpExperienceEpload(MpExperience):
 		return s
 
 	def getEploadClientCmd(self):
-		s = MpExperienceEpload.NODE_BIN + " " + MpExperienceEpload.EPLOAD_EMULATOR + \
+		s = ExperienceEpload.NODE_BIN + " " + ExperienceEpload.EPLOAD_EMULATOR + \
 				" http " + \
-				self.epload_test_dir + " &>" + MpExperienceEpload.EPLOAD_LOG
+				self.epload_test_dir + " &>" + ExperienceEpload.EPLOAD_LOG
 		print(s)
 		return s
 
@@ -73,7 +72,7 @@ class  MpExperienceEpload(MpExperience):
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 
 	def run(self):
 		cmd = self.getHTTPServerCmd()

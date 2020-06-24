@@ -2,7 +2,7 @@
 
 import sys, getopt
 from mpXpRunner import MpXpRunner
-from mpTopo import MpTopo
+from core.topo import Topo
 
 topoParamFile = None
 xpParamFile   = None
@@ -35,4 +35,4 @@ def parseArgs(argv):
 
 if __name__ == '__main__':
 	parseArgs(sys.argv[1:])
-	MpXpRunner(MpTopo.mininetBuilder, topoParamFile, xpParamFile)
+	MpXpRunner(Topo.mininetBuilder, topoParamFile, xpParamFile)

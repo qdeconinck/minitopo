@@ -1,9 +1,8 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 from mpPvAt import MpPvAt
 import os
 
-class MpExperienceDITG(MpExperience):
+class ExperienceDITG(Experience):
 	DITG_LOG = "ditg.log"
 	DITG_SERVER_LOG = "ditg_server.log"
 	ITGDEC_BIN = "/home/mininet/D-ITG-2.8.1-r1023/bin/ITGDec"
@@ -15,15 +14,15 @@ class MpExperienceDITG(MpExperience):
 
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceDITG.PING_OUTPUT)
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+				ExperienceDITG.PING_OUTPUT)
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -31,7 +30,7 @@ class MpExperienceDITG(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceDITG.PING_OUTPUT
+				  " >> " + ExperienceDITG.PING_OUTPUT
 		print(s)
 		return s
 
@@ -39,22 +38,22 @@ class MpExperienceDITG(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.kbytes = self.xpParam.getParam(MpParamXp.DITGKBYTES)
-		self.constant_packet_size = self.xpParam.getParam(MpParamXp.DITGCONSTANTPACKETSIZE)
-		self.mean_poisson_packets_sec = self.xpParam.getParam(MpParamXp.DITGMEANPOISSONPACKETSSEC)
-		self.constant_packets_sec = self.xpParam.getParam(MpParamXp.DITGCONSTANTPACKETSSEC)
-		self.bursts_on_packets_sec = self.xpParam.getParam(MpParamXp.DITGBURSTSONPACKETSSEC)
-		self.bursts_off_packets_sec = self.xpParam.getParam(MpParamXp.DITGBURSTSOFFPACKETSSEC)
+		self.kbytes = self.xpParam.getParam(ExperienceParameter.DITGKBYTES)
+		self.constant_packet_size = self.xpParam.getParam(ExperienceParameter.DITGCONSTANTPACKETSIZE)
+		self.mean_poisson_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGMEANPOISSONPACKETSSEC)
+		self.constant_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGCONSTANTPACKETSSEC)
+		self.bursts_on_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGBURSTSONPACKETSSEC)
+		self.bursts_off_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGBURSTSOFFPACKETSSEC)
 
 	def prepare(self):
-		MpExperience.prepare(self)
-		self.mpTopo.commandTo(self.mpConfig.client, "rm " + MpExperienceDITG.DITG_LOG)
-		self.mpTopo.commandTo(self.mpConfig.server, "rm " + MpExperienceDITG.DITG_SERVER_LOG)
-		self.mpTopo.commandTo(self.mpConfig.client, "rm " + MpExperienceDITG.DITG_TEMP_LOG)
+		Experience.prepare(self)
+		self.mpTopo.commandTo(self.mpConfig.client, "rm " + ExperienceDITG.DITG_LOG)
+		self.mpTopo.commandTo(self.mpConfig.server, "rm " + ExperienceDITG.DITG_SERVER_LOG)
+		self.mpTopo.commandTo(self.mpConfig.client, "rm " + ExperienceDITG.DITG_TEMP_LOG)
 
 	def getClientCmd(self):
-		s = MpExperienceDITG.ITGSEND_BIN + " -a " + self.mpConfig.getServerIP() + \
-			" -T TCP -k " + self.kbytes + " -l " + MpExperienceDITG.DITG_TEMP_LOG
+		s = ExperienceDITG.ITGSEND_BIN + " -a " + self.mpConfig.getServerIP() + \
+			" -T TCP -k " + self.kbytes + " -l " + ExperienceDITG.DITG_TEMP_LOG
 
 		if self.constant_packet_size != "0":
 			s += " -c " + self.constant_packet_size
@@ -65,17 +64,17 @@ class MpExperienceDITG(MpExperience):
 		elif self.bursts_on_packets_sec != "0" and self.bursts_off_packets_sec != "0":
 			s += " -B C " + self.bursts_on_packets_sec + " C " + self.bursts_off_packets_sec
 
-		s += " && " + MpExperienceDITG.ITGDEC_BIN + " " + MpExperienceDITG.DITG_TEMP_LOG + " &> " + MpExperienceDITG.DITG_LOG
+		s += " && " + ExperienceDITG.ITGDEC_BIN + " " + ExperienceDITG.DITG_TEMP_LOG + " &> " + ExperienceDITG.DITG_LOG
 		print(s)
 		return s
 
 	def getServerCmd(self):
-		s = MpExperienceDITG.ITGRECV_BIN + " -l " + MpExperienceDITG.DITG_SERVER_TEMP_LOG + " &"
+		s = ExperienceDITG.ITGRECV_BIN + " -l " + ExperienceDITG.DITG_SERVER_TEMP_LOG + " &"
 		print(s)
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 		#todo use cst
 		#self.mpTopo.commandTo(self.mpConfig.server, "killall netcat")
 
@@ -88,5 +87,5 @@ class MpExperienceDITG(MpExperience):
 		cmd = self.getClientCmd()
 		self.mpTopo.commandTo(self.mpConfig.client, cmd)
 		self.mpTopo.commandTo(self.mpConfig.server, "pkill -9 -f ITGRecv")
-		self.mpTopo.commandTo(self.mpConfig.server, MpExperienceDITG.ITGDEC_BIN + " " + MpExperienceDITG.DITG_SERVER_TEMP_LOG + " &> " + MpExperienceDITG.DITG_SERVER_LOG)
+		self.mpTopo.commandTo(self.mpConfig.server, ExperienceDITG.ITGDEC_BIN + " " + ExperienceDITG.DITG_SERVER_TEMP_LOG + " &> " + ExperienceDITG.DITG_SERVER_LOG)
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")

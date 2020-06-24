@@ -1,6 +1,48 @@
-from mpParam import MpParam
 
-class MpParamXp(MpParam):
+class Parameter:
+	def __init__(self, paramFile):
+		self.paramDic = {}
+		print("Create the param Object")
+		if paramFile is None:
+			print("default param...")
+		else:
+			self.loadParamFile(paramFile)
+
+	def loadParamFile(self, paramFile):
+		f = open(paramFile)
+		i = 0
+		for l in f:
+			i = i + 1
+			if l.startswith("#"):
+				continue
+
+			tab = l.split(":")
+			if len(tab) == 2:
+				k = tab[0]
+				val = tab[1].rstrip()
+				if k in self.paramDic:
+					if not isinstance(self.paramDic[k], list):
+						self.paramDic[k] = [self.paramDic[k]]
+					self.paramDic[k].append(val)
+				else:
+					self.paramDic[k] = val
+			else:
+				print("Ignored Line " + str(i))
+				print(l),
+				print("In file " + paramFile)
+		f.close()
+
+	def getParam(self, key):
+		if key in self.paramDic:
+			return self.paramDic[key]
+		return None
+
+	def __str__(self):
+		s = self.paramDic.__str__()
+		return s
+
+
+class ExperienceParameter(Parameter):
 
     RMEM       = "rmem"
     WMEM       = "wmem"
@@ -166,18 +208,16 @@ class MpParamXp(MpParam):
     defaultValue[BACKUPPATH1] = "0"
 
     def __init__(self, paramFile):
-        MpParam.__init__(self, paramFile)
+        super().__init__(paramFile)
 
     def getParam(self, key):
-        val = MpParam.getParam(self, key)
+        val = super().getParam(key)
         if val is None:
-            if key in MpParamXp.defaultValue:
-                return MpParamXp.defaultValue[key]
+            if key in ExperienceParameter.defaultValue:
+                return ExperienceParameter.defaultValue[key]
             else:
-                raise Exception("Param not found " + key)
+                raise Exception("Parameter not found " + key)
         else:
             return val
 
-    def __str__(self):
-        s = MpParam.__str__(self)
-        return s
+

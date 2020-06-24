@@ -1,24 +1,23 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 from mpPvAt import MpPvAt
 import os
 
-class  MpExperienceHTTPS(MpExperience):
+class ExperienceHTTPS(Experience):
 	SERVER_LOG = "https_server.log"
 	CLIENT_LOG = "https_client.log"
 	WGET_BIN = "wget"
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceHTTPS.PING_OUTPUT )
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+				ExperienceHTTPS.PING_OUTPUT )
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -26,7 +25,7 @@ class  MpExperienceHTTPS(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceHTTPS.PING_OUTPUT
+				  " >> " + ExperienceHTTPS.PING_OUTPUT
 		print(s)
 		return s
 
@@ -34,15 +33,15 @@ class  MpExperienceHTTPS(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.file = self.xpParam.getParam(MpParamXp.HTTPSFILE)
-		self.random_size = self.xpParam.getParam(MpParamXp.HTTPSRANDOMSIZE)
+		self.file = self.xpParam.getParam(ExperienceParameter.HTTPSFILE)
+		self.random_size = self.xpParam.getParam(ExperienceParameter.HTTPSRANDOMSIZE)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceHTTPS.CLIENT_LOG )
+				ExperienceHTTPS.CLIENT_LOG )
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceHTTPS.SERVER_LOG )
+				ExperienceHTTPS.SERVER_LOG )
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client,
 				"dd if=/dev/urandom of=random bs=1K count=" + \
@@ -50,18 +49,18 @@ class  MpExperienceHTTPS(MpExperience):
 
 	def getHTTPSServerCmd(self):
 		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/https.py &>" + MpExperienceHTTPS.SERVER_LOG + "&"
+				"/https.py &>" + ExperienceHTTPS.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getHTTPSClientCmd(self):
-		s = "(time " +MpExperienceHTTPS.WGET_BIN + " https://" + self.mpConfig.getServerIP() + \
-				"/" + self.file + " --no-check-certificate) &>" + MpExperienceHTTPS.CLIENT_LOG
+		s = "(time " +ExperienceHTTPS.WGET_BIN + " https://" + self.mpConfig.getServerIP() + \
+				"/" + self.file + " --no-check-certificate) &>" + ExperienceHTTPS.CLIENT_LOG
 		print(s)
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client, "rm random*")
 		#todo use cst

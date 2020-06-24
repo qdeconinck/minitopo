@@ -1,16 +1,15 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 
-class  MpExperienceNone(MpExperience):
+class  ExperienceNone(Experience):
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
-		MpExperience.classicRun(self)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.classicRun(self)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 
 	def run(self):
 		self.mpTopo.getCLI()

@@ -1,10 +1,9 @@
-from mpExperience import MpExperience
+from core.experience import Experience, ExperienceParameter
 from mpMultiInterfaceCongConfig import MpMultiInterfaceCongConfig
-from mpParamXp import MpParamXp
 import os
 
 
-class MpExperienceQUIC(MpExperience):
+class ExperienceQUIC(Experience):
 	GO_BIN = "/usr/local/go/bin/go"
 	WGET = "~/git/wget/src/wget"
 	SERVER_LOG = "quic_server.log"
@@ -15,15 +14,15 @@ class MpExperienceQUIC(MpExperience):
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceQUIC.PING_OUTPUT )
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+				ExperienceQUIC.PING_OUTPUT )
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -31,7 +30,7 @@ class MpExperienceQUIC(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceQUIC.PING_OUTPUT
+				  " >> " + ExperienceQUIC.PING_OUTPUT
 		print(s)
 		return s
 
@@ -39,33 +38,33 @@ class MpExperienceQUIC(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.file = self.xpParam.getParam(MpParamXp.HTTPSFILE)
-		self.random_size = self.xpParam.getParam(MpParamXp.HTTPSRANDOMSIZE)
-		self.multipath = self.xpParam.getParam(MpParamXp.QUICMULTIPATH)
+		self.file = self.xpParam.getParam(ExperienceParameter.HTTPSFILE)
+		self.random_size = self.xpParam.getParam(ExperienceParameter.HTTPSRANDOMSIZE)
+		self.multipath = self.xpParam.getParam(ExperienceParameter.QUICMULTIPATH)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceQUIC.CLIENT_LOG )
+				ExperienceQUIC.CLIENT_LOG )
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceQUIC.SERVER_LOG )
+				ExperienceQUIC.SERVER_LOG )
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client,
 				"dd if=/dev/urandom of=random bs=1K count=" + \
 				self.random_size)
 
 	def getQUICServerCmd(self):
-		s = MpExperienceQUIC.GO_BIN + " run " + MpExperienceQUIC.SERVER_GO_FILE
-		s += " -www . -certpath " + MpExperienceQUIC.CERTPATH + " &>"
-		s += MpExperienceQUIC.SERVER_LOG + " &"
+		s = ExperienceQUIC.GO_BIN + " run " + ExperienceQUIC.SERVER_GO_FILE
+		s += " -www . -certpath " + ExperienceQUIC.CERTPATH + " &>"
+		s += ExperienceQUIC.SERVER_LOG + " &"
 		print(s)
 		return s
 
 	def getQUICClientCmd(self):
-		s = MpExperienceQUIC.GO_BIN + " run " + MpExperienceQUIC.CLIENT_GO_FILE
+		s = ExperienceQUIC.GO_BIN + " run " + ExperienceQUIC.CLIENT_GO_FILE
 		if int(self.multipath) > 0:
 			s += " -m"
-		s += " https://" + self.mpConfig.getServerIP() + ":6121/random &>" + MpExperienceQUIC.CLIENT_LOG
+		s += " https://" + self.mpConfig.getServerIP() + ":6121/random &>" + ExperienceQUIC.CLIENT_LOG
 		print(s)
 		return s
 
@@ -76,13 +75,13 @@ class MpExperienceQUIC(MpExperience):
 		return s
 
 	def getCongClientCmd(self, congID):
-		s = "(time " + MpExperienceQUIC.WGET + " https://" + self.mpConfig.getCongServerIP(congID) +\
+		s = "(time " + ExperienceQUIC.WGET + " https://" + self.mpConfig.getCongServerIP(congID) +\
 		 		"/" + self.file + " --no-check-certificate --disable-mptcp) &> https_client" + str(congID) + ".log &"
 		print(s)
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client, "rm random*")
 		#todo use cst
@@ -121,7 +120,7 @@ class MpExperienceQUIC(MpExperience):
 			for cc in self.mpConfig.cong_clients:
 				self.mpTopo.commandTo(cc, "while pkill -f wget -0; do sleep 0.5; done")
 
-		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + MpExperienceQUIC.SERVER_GO_FILE)
+		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + ExperienceQUIC.SERVER_GO_FILE)
 		if isinstance(self.mpConfig, MpMultiInterfaceCongConfig):
 			for cs in self.mpConfig.cong_servers:
 				self.mpTopo.commandTo(cs, "pkill -f https.py")

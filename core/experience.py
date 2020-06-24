@@ -1,7 +1,7 @@
-from mpParamXp import MpParamXp
+from .parameter import ExperienceParameter
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 
-class MpExperience:
+class Experience:
     PING = "ping"
     NCPV = "ncpv"
     NC = "nc"
@@ -45,15 +45,15 @@ class MpExperience:
         pass
 
     def changeMetric(self):
-        metric = self.xpParam.getParam(MpParamXp.METRIC)
+        metric = self.xpParam.getParam(ExperienceParameter.METRIC)
         if int(metric) >= 0:
             self.mpTopo.notNSCommand("echo " + metric + " > /sys/module/mptcp_sched_metric/parameters/metric")
 
     def putPriorityOnPaths(self):
         # Only meaningful if mpTopo is instance of MpMultiInterfaceTopo
         if isinstance(self.mpTopo, MpMultiInterfaceTopo):
-            prioPath0 = self.xpParam.getParam(MpParamXp.PRIOPATH0)
-            prioPath1 = self.xpParam.getParam(MpParamXp.PRIOPATH1)
+            prioPath0 = self.xpParam.getParam(ExperienceParameter.PRIOPATH0)
+            prioPath1 = self.xpParam.getParam(ExperienceParameter.PRIOPATH1)
             if not prioPath0 == prioPath1:
                 self.mpTopo.commandTo(self.mpConfig.client, "/home/mininet/iproute/ip/ip link set dev " +
                                         self.mpConfig.getClientInterface(0) + " priority " + str(prioPath0))
@@ -66,11 +66,11 @@ class MpExperience:
                                       self.mpConfig.getRouterInterfaceSwitch(1) + " priority " +
                                       str(prioPath1))
 
-            backupPath0 = self.xpParam.getParam(MpParamXp.BACKUPPATH0)
+            backupPath0 = self.xpParam.getParam(ExperienceParameter.BACKUPPATH0)
             if int(backupPath0) > 0:
                 self.mpTopo.commandTo(self.mpConfig.client, self.mpConfig.interfaceBUPCommand(self.mpConfig.getClientInterface(0)))
                 self.mpTopo.commandTo(self.mpConfig.router, self.mpConfig.interfaceBUPCommand(self.mpConfig.getRouterInterfaceSwitch(0)))
-            backupPath1 = self.xpParam.getParam(MpParamXp.BACKUPPATH1)
+            backupPath1 = self.xpParam.getParam(ExperienceParameter.BACKUPPATH1)
             if int(backupPath1) > 0:
                 self.mpTopo.commandTo(self.mpConfig.client, self.mpConfig.interfaceBUPCommand(self.mpConfig.getClientInterface(1)))
                 self.mpTopo.commandTo(self.mpConfig.router, self.mpConfig.interfaceBUPCommand(self.mpConfig.getRouterInterfaceSwitch(1)))
@@ -106,31 +106,31 @@ class MpExperience:
         self.mpTopo.commandTo(self.mpConfig.router, cmd)
 
     def runUserspacePM(self):
-        if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
+        if self.xpParam.getParam(ExperienceParameter.KERNELPMC) != "netlink":
             print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upmc = self.xpParam.getParam(MpParamXp.USERPMC)
-            upmca = self.xpParam.getParam(MpParamXp.USERPMCARGS)
+            upmc = self.xpParam.getParam(ExperienceParameter.USERPMC)
+            upmca = self.xpParam.getParam(ExperienceParameter.USERPMCARGS)
             self.mpTopo.commandTo(self.mpConfig.client, upmc + \
                     " " + upmca + " &>upmc.log &")
-        if self.xpParam.getParam(MpParamXp.KERNELPMS) != "netlink":
+        if self.xpParam.getParam(ExperienceParameter.KERNELPMS) != "netlink":
             print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upms = self.xpParam.getParam(MpParamXp.USERPMS)
-            upmsa = self.xpParam.getParam(MpParamXp.USERPMSARGS)
+            upms = self.xpParam.getParam(ExperienceParameter.USERPMS)
+            upmsa = self.xpParam.getParam(ExperienceParameter.USERPMSARGS)
             self.mpTopo.commandTo(self.mpConfig.server, upms + \
                     " " + upmsa + " &>upms.log &")
 
     def cleanUserspacePM(self):
-        if self.xpParam.getParam(MpParamXp.KERNELPMC) != "netlink":
+        if self.xpParam.getParam(ExperienceParameter.KERNELPMC) != "netlink":
             print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upmc = self.xpParam.getParam(MpParamXp.USERPMC)
+            upmc = self.xpParam.getParam(ExperienceParameter.USERPMC)
             self.mpTopo.commandTo(self.mpConfig.client, "killall " + upmc)
-        if self.xpParam.getParam(MpParamXp.KERNELPMS) != "netlink":
+        if self.xpParam.getParam(ExperienceParameter.KERNELPMS) != "netlink":
             print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upms = self.xpParam.getParam(MpParamXp.USERPMS)
+            upms = self.xpParam.getParam(ExperienceParameter.USERPMS)
             self.mpTopo.commandTo(self.mpConfig.server, "killall " + upms)
 
     def runNetemAt(self):
@@ -191,12 +191,12 @@ class MpExperience:
 
     def saveSysctl(self):
         self.sysctlBUP = {}
-        self._saveSysctl(MpParamXp.sysctlKey, self.sysctlBUP)
+        self._saveSysctl(ExperienceParameter.sysctlKey, self.sysctlBUP)
         self.sysctlBUPC = {}
-        self._saveSysctl(MpParamXp.sysctlKeyClient, self.sysctlBUPC,
+        self._saveSysctl(ExperienceParameter.sysctlKeyClient, self.sysctlBUPC,
                 ns = True, who = self.mpConfig.client)
         self.sysctlBUPS = {}
-        self._saveSysctl(MpParamXp.sysctlKeyServer, self.sysctlBUPS,
+        self._saveSysctl(ExperienceParameter.sysctlKeyServer, self.sysctlBUPS,
                 ns = True, who = self.mpConfig.server)
 
     def _saveSysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
@@ -226,10 +226,10 @@ class MpExperience:
         return s
 
     def writeSysctl(self):
-        self._writeSysctl(MpParamXp.sysctlKey, self.sysctlBUP)
-        self._writeSysctl(MpParamXp.sysctlKeyClient, self.sysctlBUPC,
+        self._writeSysctl(ExperienceParameter.sysctlKey, self.sysctlBUP)
+        self._writeSysctl(ExperienceParameter.sysctlKeyClient, self.sysctlBUPC,
                 ns = True, who = self.mpConfig.client)
-        self._writeSysctl(MpParamXp.sysctlKeyServer, self.sysctlBUPS,
+        self._writeSysctl(ExperienceParameter.sysctlKeyServer, self.sysctlBUPS,
                 ns = True, who = self.mpConfig.server)
 
     def _writeSysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
@@ -246,10 +246,10 @@ class MpExperience:
 
 
     def backUpSysctl(self):
-        self._backUpSysctl(MpParamXp.sysctlKey, self.sysctlBUP)
-        self._backUpSysctl(MpParamXp.sysctlKeyClient, self.sysctlBUPC,
+        self._backUpSysctl(ExperienceParameter.sysctlKey, self.sysctlBUP)
+        self._backUpSysctl(ExperienceParameter.sysctlKeyClient, self.sysctlBUPC,
                 ns = True, who = self.mpConfig.client)
-        self._backUpSysctl(MpParamXp.sysctlKeyServer, self.sysctlBUPS,
+        self._backUpSysctl(ExperienceParameter.sysctlKeyServer, self.sysctlBUPS,
                 ns = True, who = self.mpConfig.server)
 
 
@@ -269,9 +269,9 @@ class MpExperience:
 
     def runTcpDump(self):
         #todo : replace filename by cst
-        cpcap = self.xpParam.getParam(MpParamXp.CLIENTPCAP)
-        spcap = self.xpParam.getParam(MpParamXp.SERVERPCAP)
-        snaplenpcap = self.xpParam.getParam(MpParamXp.SNAPLENPCAP)
+        cpcap = self.xpParam.getParam(ExperienceParameter.CLIENTPCAP)
+        spcap = self.xpParam.getParam(ExperienceParameter.SERVERPCAP)
+        snaplenpcap = self.xpParam.getParam(ExperienceParameter.SNAPLENPCAP)
         if cpcap == "yes" :
             self.mpTopo.commandTo(self.mpConfig.client,
                     "tcpdump -i any -s " + snaplenpcap + " -w client.pcap &")

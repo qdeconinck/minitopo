@@ -1,9 +1,8 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 from mpPvAt import MpPvAt
 import os
 
-class  MpExperienceSiriHTTP(MpExperience):
+class  ExperienceSiriHTTP(Experience):
 	HTTP_SERVER_LOG = "http_server.log"
 	HTTP_CLIENT_LOG = "http_client.log"
 	WGET_BIN = "wget"
@@ -14,15 +13,15 @@ class  MpExperienceSiriHTTP(MpExperience):
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriHTTP.PING_OUTPUT )
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+				ExperienceSiriHTTP.PING_OUTPUT )
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -30,7 +29,7 @@ class  MpExperienceSiriHTTP(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceSiriHTTP.PING_OUTPUT
+				  " >> " + ExperienceSiriHTTP.PING_OUTPUT
 		print(s)
 		return s
 
@@ -38,29 +37,29 @@ class  MpExperienceSiriHTTP(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.run_time = self.xpParam.getParam(MpParamXp.SIRIRUNTIME)
-		self.query_size = self.xpParam.getParam(MpParamXp.SIRIQUERYSIZE)
-		self.response_size = self.xpParam.getParam(MpParamXp.SIRIRESPONSESIZE)
-		self.delay_query_response = self.xpParam.getParam(MpParamXp.SIRIDELAYQUERYRESPONSE)
-		self.min_payload_size = self.xpParam.getParam(MpParamXp.SIRIMINPAYLOADSIZE)
-		self.max_payload_size = self.xpParam.getParam(MpParamXp.SIRIMAXPAYLOADSIZE)
-		self.interval_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALTIMEMS)
-		self.buffer_size = self.xpParam.getParam(MpParamXp.SIRIBUFFERSIZE)
-		self.burst_size = self.xpParam.getParam(MpParamXp.SIRIBURSTSIZE)
-		self.interval_burst_time_ms = self.xpParam.getParam(MpParamXp.SIRIINTERVALBURSTTIMEMS)
-		self.file = self.xpParam.getParam(MpParamXp.HTTPFILE)
-		self.random_size = self.xpParam.getParam(MpParamXp.HTTPRANDOMSIZE)
+		self.run_time = self.xpParam.getParam(ExperienceParameter.SIRIRUNTIME)
+		self.query_size = self.xpParam.getParam(ExperienceParameter.SIRIQUERYSIZE)
+		self.response_size = self.xpParam.getParam(ExperienceParameter.SIRIRESPONSESIZE)
+		self.delay_query_response = self.xpParam.getParam(ExperienceParameter.SIRIDELAYQUERYRESPONSE)
+		self.min_payload_size = self.xpParam.getParam(ExperienceParameter.SIRIMINPAYLOADSIZE)
+		self.max_payload_size = self.xpParam.getParam(ExperienceParameter.SIRIMAXPAYLOADSIZE)
+		self.interval_time_ms = self.xpParam.getParam(ExperienceParameter.SIRIINTERVALTIMEMS)
+		self.buffer_size = self.xpParam.getParam(ExperienceParameter.SIRIBUFFERSIZE)
+		self.burst_size = self.xpParam.getParam(ExperienceParameter.SIRIBURSTSIZE)
+		self.interval_burst_time_ms = self.xpParam.getParam(ExperienceParameter.SIRIINTERVALBURSTTIMEMS)
+		self.file = self.xpParam.getParam(ExperienceParameter.HTTPFILE)
+		self.random_size = self.xpParam.getParam(ExperienceParameter.HTTPRANDOMSIZE)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriHTTP.CLIENT_LOG)
+				ExperienceSiriHTTP.CLIENT_LOG)
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceSiriHTTP.SERVER_LOG)
+				ExperienceSiriHTTP.SERVER_LOG)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriHTTP.HTTP_CLIENT_LOG)
+				ExperienceSiriHTTP.HTTP_CLIENT_LOG)
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceSiriHTTP.HTTP_SERVER_LOG)
+				ExperienceSiriHTTP.HTTP_SERVER_LOG)
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client,
 				"dd if=/dev/urandom of=random bs=1K count=" + \
@@ -69,32 +68,32 @@ class  MpExperienceSiriHTTP(MpExperience):
 
 	def getSiriServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/siri_server.py &>" + MpExperienceSiriHTTP.SERVER_LOG + "&"
+				"/siri_server.py &>" + ExperienceSiriHTTP.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getSiriClientCmd(self):
-		s = MpExperienceSiriHTTP.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
+		s = ExperienceSiriHTTP.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
 				self.mpConfig.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \
-				" >" + MpExperienceSiriHTTP.CLIENT_LOG + " 2>" + MpExperienceSiriHTTP.CLIENT_ERR
+				" >" + ExperienceSiriHTTP.CLIENT_LOG + " 2>" + ExperienceSiriHTTP.CLIENT_ERR
 		print(s)
 		return s
 
 	def getHTTPServerCmd(self):
-		s = "/etc/init.d/apache2 restart &>" + MpExperienceSiriHTTP.SERVER_LOG + "&"
+		s = "/etc/init.d/apache2 restart &>" + ExperienceSiriHTTP.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getHTTPClientCmd(self):
-		s = MpExperienceSiriHTTP.WGET_BIN + " http://" + self.mpConfig.getServerIP() + \
+		s = ExperienceSiriHTTP.WGET_BIN + " http://" + self.mpConfig.getServerIP() + \
 				"/" + self.file + " --no-check-certificate"
 		print(s)
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client, "rm random*")
 

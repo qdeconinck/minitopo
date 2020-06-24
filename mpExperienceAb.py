@@ -1,24 +1,23 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 from mpPvAt import MpPvAt
 import os
 
-class  MpExperienceAb(MpExperience):
+class ExperienceAb(Experience):
 	SERVER_LOG = "ab_server.log"
 	CLIENT_LOG = "ab_client.log"
 	AB_BIN = "ab"
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client,
-						"rm " + MpExperienceAb.PING_OUTPUT)
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+						"rm " + ExperienceAb.PING_OUTPUT)
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -26,7 +25,7 @@ class  MpExperienceAb(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceAb.PING_OUTPUT
+				  " >> " + ExperienceAb.PING_OUTPUT
 		print(s)
 		return s
 
@@ -34,17 +33,17 @@ class  MpExperienceAb(MpExperience):
 		"""
 		todo : param LD_PRELOAD ??
 		"""
-		self.file = self.xpParam.getParam(MpParamXp.HTTPFILE)
-		self.random_size = self.xpParam.getParam(MpParamXp.HTTPRANDOMSIZE)
-		self.concurrent_requests = self.xpParam.getParam(MpParamXp.ABCONCURRENTREQUESTS)
-		self.timelimit = self.xpParam.getParam(MpParamXp.ABTIMELIMIT)
+		self.file = self.xpParam.getParam(ExperienceParameter.HTTPFILE)
+		self.random_size = self.xpParam.getParam(ExperienceParameter.HTTPRANDOMSIZE)
+		self.concurrent_requests = self.xpParam.getParam(ExperienceParameter.ABCONCURRENTREQUESTS)
+		self.timelimit = self.xpParam.getParam(ExperienceParameter.ABTIMELIMIT)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceAb.CLIENT_LOG )
+				ExperienceAb.CLIENT_LOG )
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceAb.SERVER_LOG )
+				ExperienceAb.SERVER_LOG )
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client,
 				"dd if=/dev/urandom of=random bs=1K count=" + \
@@ -52,19 +51,19 @@ class  MpExperienceAb(MpExperience):
 
 	def getAbServerCmd(self):
 		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/http.py &>" + MpExperienceAb.SERVER_LOG + "&"
+				"/http.py &>" + ExperienceAb.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getAbClientCmd(self):
-		s = MpExperienceAb.AB_BIN + " -c " + self.concurrent_requests + " -t " + \
+		s = ExperienceAb.AB_BIN + " -c " + self.concurrent_requests + " -t " + \
 		 	self.timelimit + " http://" + self.mpConfig.getServerIP() + "/" + self.file + \
-			" &>" + MpExperienceAb.CLIENT_LOG
+			" &>" + ExperienceAb.CLIENT_LOG
 		print(s)
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 		if self.file  == "random":
 			self.mpTopo.commandTo(self.mpConfig.client, "rm random*")
 		#todo use cst

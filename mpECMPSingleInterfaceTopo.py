@@ -1,15 +1,15 @@
-from mpTopo import MpTopo
+from core.topo import Topo
 
-class MpECMPSingleInterfaceTopo(MpTopo):
+class MpECMPSingleInterfaceTopo(Topo):
     def __init__(self, topoBuilder, parameterFile):
-        MpTopo.__init__(self,topoBuilder, parameterFile)
+        super().__init__(topoBuilder, parameterFile)
 
         print("Hello ECMP topo")
 
-        self.client = self.addHost(MpTopo.clientName)
-        self.server = self.addHost(MpTopo.serverName)
-        self.lswitch = self.addSwitch(MpTopo.switchNamePrefix + "0")
-        self.rswitch = self.addSwitch(MpTopo.switchNamePrefix + "1")
+        self.client = self.addHost(Topo.clientName)
+        self.server = self.addHost(Topo.serverName)
+        self.lswitch = self.addSwitch(Topo.switchNamePrefix + "0")
+        self.rswitch = self.addSwitch(Topo.switchNamePrefix + "1")
 
         self.addLink( self.client, self.lswitch)
         self.addLink( self.server, self.rswitch)
@@ -22,7 +22,7 @@ class MpECMPSingleInterfaceTopo(MpTopo):
             self.addLink(self.rswitch, self.routers[-1], **l.asDict())
 
     def addOneRouterPerLink(self, link):
-        return self.addHost(MpTopo.routerNamePrefix +
+        return self.addHost(Topo.routerNamePrefix +
                 str(link.id))
 
     def __str__(self):

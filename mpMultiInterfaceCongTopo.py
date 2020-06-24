@@ -1,15 +1,15 @@
-from mpTopo import MpTopo
+from core.topo import Topo
 
-class MpMultiInterfaceCongTopo(MpTopo):
+class MpMultiInterfaceCongTopo(Topo):
     congClientName = "CCli"
     congServerName = "CSer"
 
     def __init__(self, topoBuilder, parameterFile):
-        MpTopo.__init__(self,topoBuilder, parameterFile)
+        super().__init__(topoBuilder, parameterFile)
         print("Hello from topo multi if")
-        self.client = self.addHost(MpTopo.clientName)
-        self.server = self.addHost(MpTopo.serverName)
-        self.router = self.addHost(MpTopo.routerName)
+        self.client = self.addHost(Topo.clientName)
+        self.server = self.addHost(Topo.serverName)
+        self.router = self.addHost(Topo.routerName)
         self.cong_clients = []
         self.cong_servers = []
         self.switch = []

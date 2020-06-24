@@ -1,6 +1,6 @@
-from mpTopo import MpTopo
-from mpParamTopo import MpParamTopo
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter, ExperienceParameter
+from core.topo import Topo, TopoParameter
+
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
 from mpMultiInterfaceConfig import MpMultiInterfaceConfig
 from mpMultiInterfaceCongConfig import MpMultiInterfaceCongConfig
@@ -8,33 +8,32 @@ from mpMultiInterfaceCongTopo import MpMultiInterfaceCongTopo
 from mpECMPSingleInterfaceConfig import MpECMPSingleInterfaceConfig
 from mpTwoInterfaceCongestionConfig import MpTwoInterfaceCongestionConfig
 from mpMininetBuilder import MpMininetBuilder
-from mpExperiencePing import MpExperiencePing
-from mpExperienceNCPV import MpExperienceNCPV
-from mpExperienceNC import MpExperienceNC
-from mpExperienceHTTPS import MpExperienceHTTPS
-from mpExperienceHTTP import MpExperienceHTTP
-from mpExperienceSendFile import MpExperienceSendFile
-from mpExperienceEpload import MpExperienceEpload
-from mpExperienceNetperf import MpExperienceNetperf
-from mpExperienceAb import MpExperienceAb
-from mpExperienceSiri import MpExperienceSiri
-from mpExperienceVLC import MpExperienceVLC
-from mpExperienceIperf import MpExperienceIperf
-from mpExperienceDITG import MpExperienceDITG
-from mpExperienceMsg import MpExperienceMsg
-from mpExperienceSiriHTTP import MpExperienceSiriHTTP
-from mpExperienceSiriMsg import MpExperienceSiriMsg
-from mpExperienceQUIC import MpExperienceQUIC
-from mpExperienceQUICSiri import MpExperienceQUICSiri
-from mpExperienceNone import MpExperienceNone
-from mpExperience import MpExperience
+from mpExperiencePing import ExperiencePing
+from mpExperienceNCPV import ExperienceNCPV
+from mpExperienceNC import ExperienceNC
+from mpExperienceHTTPS import ExperienceHTTPS
+from mpExperienceHTTP import ExperienceHTTP
+from mpExperienceSendFile import ExperienceSendFile
+from mpExperienceEpload import ExperienceEpload
+from mpExperienceNetperf import ExperienceNetperf
+from mpExperienceAb import ExperienceAb
+from mpExperienceSiri import ExperienceSiri
+from mpExperienceVLC import ExperienceVLC
+from mpExperienceIperf import ExperienceIperf
+from mpExperienceDITG import ExperienceDITG
+from mpExperienceMsg import ExperienceMsg
+from mpExperienceSiriHTTP import ExperienceSiriHTTP
+from mpExperienceSiriMsg import ExperienceSiriMsg
+from mpExperienceQUIC import ExperienceQUIC
+from mpExperienceQUICSiri import ExperienceQUICSiri
+from mpExperienceNone import ExperienceNone
 from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
 from mpTwoInterfaceCongestionTopo import MpTwoInterfaceCongestionTopo
 
 class MpXpRunner:
 	def __init__(self, builderType, topoParamFile, xpParamFile):
 		self.defParamXp(xpParamFile)
-		self.topoParam = MpParamTopo(topoParamFile)
+		self.topoParam = TopoParameter(topoParamFile)
 		self.defBuilder(builderType)
 		self.defTopo()
 		self.defConfig()
@@ -43,110 +42,110 @@ class MpXpRunner:
 		self.stopTopo()
 
 	def defParamXp(self, xpParamFile):
-		self.xpParam = MpParamXp(xpParamFile)
+		self.xpParam = ExperienceParameter(xpParamFile)
 
 	def defBuilder(self, builderType):
-		if builderType == MpTopo.mininetBuilder:
+		if builderType == Topo.mininetBuilder:
 			self.topoBuilder = MpMininetBuilder()
 		else:
 			raise Exception("I can not find the builder " +
 					builderType)
 	def defTopo(self):
-		t = self.topoParam.getParam(MpTopo.topoAttr)
-		if t == MpTopo.multiIfTopo:
-			self.mpTopo = MpMultiInterfaceTopo(self.topoBuilder,
+		t = self.topoParam.getParam(Topo.topoAttr)
+		if t == Topo.multiIfTopo:
+			self.Topo = MpMultiInterfaceTopo(self.topoBuilder,
 					self.topoParam)
-		elif t == MpTopo.ECMPLikeTopo:
-			self.mpTopo = MpECMPSingleInterfaceTopo(
+		elif t == Topo.ECMPLikeTopo:
+			self.Topo = MpECMPSingleInterfaceTopo(
 					self.topoBuilder,
 					self.topoParam)
-		elif t == MpTopo.twoIfCongTopo:
-			self.mpTopo = MpTwoInterfaceCongestionTopo(
+		elif t == Topo.twoIfCongTopo:
+			self.Topo = MpTwoInterfaceCongestionTopo(
 					self.topoBuilder, self.topoParam)
-		elif t == MpTopo.multiIfCongTopo:
-			self.mpTopo = MpMultiInterfaceCongTopo(self.topoBuilder,
+		elif t == Topo.multiIfCongTopo:
+			self.Topo = MpMultiInterfaceCongTopo(self.topoBuilder,
 					self.topoParam)
 		else:
 			raise Exception("Unfound Topo" + t)
-		print(self.mpTopo)
+		print(self.Topo)
 
 	def defConfig(self):
-		t = self.topoParam.getParam(MpTopo.topoAttr)
-		if t == MpTopo.multiIfTopo:
-			self.mpTopoConfig = MpMultiInterfaceConfig(self.mpTopo,
+		t = self.topoParam.getParam(Topo.topoAttr)
+		if t == Topo.multiIfTopo:
+			self.TopoConfig = MpMultiInterfaceConfig(self.Topo,
 				self.topoParam)
-		elif t == MpTopo.ECMPLikeTopo:
-			self.mpTopoConfig = MpECMPSingleInterfaceConfig(
-					self.mpTopo,
+		elif t == Topo.ECMPLikeTopo:
+			self.TopoConfig = MpECMPSingleInterfaceConfig(
+					self.Topo,
 					self.topoParam)
-		elif t == MpTopo.twoIfCongTopo:
-			self.mpTopoConfig = MpTwoInterfaceCongestionConfig(
-					self.mpTopo, self.topoParam)
-		elif t == MpTopo.multiIfCongTopo:
-			self.mpTopoConfig = MpMultiInterfaceCongConfig(self.mpTopo,
+		elif t == Topo.twoIfCongTopo:
+			self.TopoConfig = MpTwoInterfaceCongestionConfig(
+					self.Topo, self.topoParam)
+		elif t == Topo.multiIfCongTopo:
+			self.TopoConfig = MpMultiInterfaceCongConfig(self.Topo,
 				self.topoParam)
 		else:
 			raise Exception("Unfound Topo" + t)
 
 	def startTopo(self):
-		self.mpTopo.startNetwork()
-		self.mpTopoConfig.configureNetwork()
+		self.Topo.startNetwork()
+		self.TopoConfig.configureNetwork()
 
 	def runXp(self):
-		xp = self.xpParam.getParam(MpParamXp.XPTYPE)
-		if xp == MpExperience.PING:
-			MpExperiencePing(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.NCPV:
-			MpExperienceNCPV(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.NC:
-			MpExperienceNC(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.NONE:
-			MpExperienceNone(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.HTTPS:
-			MpExperienceHTTPS(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.HTTP:
-			MpExperienceHTTP(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.EPLOAD:
-			MpExperienceEpload(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.NETPERF:
-			MpExperienceNetperf(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.AB:
-			MpExperienceAb(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.SIRI:
-			MpExperienceSiri(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.SENDFILE:
-			MpExperienceSendFile(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.VLC:
-			MpExperienceVLC(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.IPERF:
-			MpExperienceIperf(self.xpParam, self.mpTopo,
-					self.mpTopoConfig)
-		elif xp == MpExperience.DITG:
-			MpExperienceDITG(self.xpParam, self.mpTopo, self.mpTopoConfig)
-		elif xp == MpExperience.MSG:
-			MpExperienceMsg(self.xpParam, self.mpTopo, self.mpTopoConfig)
-		elif xp == MpExperience.SIRIHTTP:
-			MpExperienceSiriHTTP(self.xpParam, self.mpTopo, self.mpTopoConfig)
-		elif xp == MpExperience.SIRIMSG:
-			MpExperienceSiriMsg(self.xpParam, self.mpTopo, self.mpTopoConfig)
-		elif xp == MpExperience.QUIC:
-			MpExperienceQUIC(self.xpParam, self.mpTopo, self.mpTopoConfig)
-		elif xp == MpExperience.QUICSIRI:
-			MpExperienceQUICSiri(self.xpParam, self.mpTopo, self.mpTopoConfig)
+		xp = self.xpParam.getParam(ExperienceParameter.XPTYPE)
+		if xp ==Experience.PING:
+			ExperiencePing(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.NCPV:
+			ExperienceNCPV(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.NC:
+			ExperienceNC(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.NONE:
+			ExperienceNone(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.HTTPS:
+			ExperienceHTTPS(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.HTTP:
+			ExperienceHTTP(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.EPLOAD:
+			ExperienceEpload(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.NETPERF:
+			ExperienceNetperf(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.AB:
+			ExperienceAb(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.SIRI:
+			ExperienceSiri(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.SENDFILE:
+			ExperienceSendFile(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.VLC:
+			ExperienceVLC(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.IPERF:
+			ExperienceIperf(self.xpParam, self.Topo,
+					self.TopoConfig)
+		elif xp ==Experience.DITG:
+			ExperienceDITG(self.xpParam, self.Topo, self.TopoConfig)
+		elif xp ==Experience.MSG:
+			ExperienceMsg(self.xpParam, self.Topo, self.TopoConfig)
+		elif xp ==Experience.SIRIHTTP:
+			ExperienceSiriHTTP(self.xpParam, self.Topo, self.TopoConfig)
+		elif xp ==Experience.SIRIMSG:
+			ExperienceSiriMsg(self.xpParam, self.Topo, self.TopoConfig)
+		elif xp ==Experience.QUIC:
+			ExperienceQUIC(self.xpParam, self.Topo, self.TopoConfig)
+		elif xp ==Experience.QUICSIRI:
+			ExperienceQUICSiri(self.xpParam, self.Topo, self.TopoConfig)
 		else:
 			print("Unfound xp type..." + xp)
 
 	def stopTopo(self):
-		self.mpTopo.stopNetwork()
+		self.Topo.stopNetwork()

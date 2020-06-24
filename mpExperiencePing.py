@@ -1,23 +1,22 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 
-class  MpExperiencePing(MpExperience):
+class  ExperiencePing(Experience):
 
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
-		MpExperience.classicRun(self)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.classicRun(self)
 	def prepapre(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 
 	def run(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperiencePing.PING_OUTPUT )
-		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
+				ExperiencePing.PING_OUTPUT )
+		count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
 				 self.mpConfig.getServerIP(), n = count)
@@ -25,6 +24,6 @@ class  MpExperiencePing(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperiencePing.PING_OUTPUT
+				  " >> " + ExperiencePing.PING_OUTPUT
 		print(s)
 		return s

@@ -1,9 +1,8 @@
-from mpExperience import MpExperience
-from mpParamXp import MpParamXp
+from core.experience import Experience, ExperienceParameter
 from mpPvAt import MpPvAt
 import os
 
-class  MpExperienceSiriMsg(MpExperience):
+class  ExperienceSiriMsg(Experience):
 	MSG_SERVER_LOG = "msg_server.log"
 	MSG_CLIENT_LOG = "msg_client.log"
 	MSG_CLIENT_ERR = "msg_client.err"
@@ -14,14 +13,14 @@ class  MpExperienceSiriMsg(MpExperience):
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
-		MpExperience.__init__(self, xpParamFile, mpTopo, mpConfig)
+		Experience.__init__(self, xpParamFile, mpTopo, mpConfig)
 		self.loadParam()
 		self.ping()
-		MpExperience.classicRun(self)
+		Experience.classicRun(self)
 
 	def ping(self):
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriMsg.PING_OUTPUT )
+				ExperienceSiriMsg.PING_OUTPUT )
 		count = self.xpParam.getParam(MpParamXp.PINGCOUNT)
 		for i in range(0, self.mpConfig.getClientInterfaceCount()):
 			 cmd = self.pingCommand(self.mpConfig.getClientIP(i),
@@ -30,7 +29,7 @@ class  MpExperienceSiriMsg(MpExperience):
 
 	def pingCommand(self, fromIP, toIP, n=5):
 		s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-				  " >> " + MpExperienceSiriMsg.PING_OUTPUT
+				  " >> " + ExperienceSiriMsg.PING_OUTPUT
 		print(s)
 		return s
 
@@ -53,50 +52,50 @@ class  MpExperienceSiriMsg(MpExperience):
 		self.nb_requests = self.xpParam.getParam(MpParamXp.MSGNBREQUESTS)
 
 	def prepare(self):
-		MpExperience.prepare(self)
+		Experience.prepare(self)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriMsg.CLIENT_LOG)
+				ExperienceSiriMsg.CLIENT_LOG)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriMsg.CLIENT_ERR)
+				ExperienceSiriMsg.CLIENT_ERR)
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceSiriMsg.SERVER_LOG)
+				ExperienceSiriMsg.SERVER_LOG)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriMsg.MSG_CLIENT_LOG)
+				ExperienceSiriMsg.MSG_CLIENT_LOG)
 		self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
-				MpExperienceSiriMsg.MSG_CLIENT_ERR)
+				ExperienceSiriMsg.MSG_CLIENT_ERR)
 		self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
-				MpExperienceSiriMsg.MSG_SERVER_LOG)
+				ExperienceSiriMsg.MSG_SERVER_LOG)
 
 	def getSiriServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/siri_server.py &>" + MpExperienceSiriMsg.SERVER_LOG + "&"
+				"/siri_server.py &>" + ExperienceSiriMsg.SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getSiriClientCmd(self):
-		s = MpExperienceSiriMsg.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
+		s = ExperienceSiriMsg.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/siriClient.jar " + \
 				self.mpConfig.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
 				" " + self.delay_query_response + " " + self.min_payload_size + " " + \
 				self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \
-				" >" + MpExperienceSiriMsg.CLIENT_LOG + " 2>" + MpExperienceSiriMsg.CLIENT_ERR
+				" >" + ExperienceSiriMsg.CLIENT_LOG + " 2>" + ExperienceSiriMsg.CLIENT_ERR
 		print(s)
 		return s
 
 	def getMsgServerCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/msg_server.py --sleep " + self.server_sleep + " &>" + MpExperienceSiriMsg.MSG_SERVER_LOG + "&"
+				"/msg_server.py --sleep " + self.server_sleep + " &>" + ExperienceSiriMsg.MSG_SERVER_LOG + "&"
 		print(s)
 		return s
 
 	def getMsgClientCmd(self):
 		s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
 				"/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
-				" --bulk >" + MpExperienceSiriMsg.MSG_CLIENT_LOG + " 2>" + MpExperienceSiriMsg.MSG_CLIENT_ERR + "&"
+				" --bulk >" + ExperienceSiriMsg.MSG_CLIENT_LOG + " 2>" + ExperienceSiriMsg.MSG_CLIENT_ERR + "&"
 		print(s)
 		return s
 
 	def clean(self):
-		MpExperience.clean(self)
+		Experience.clean(self)
 
 
 	def run(self):

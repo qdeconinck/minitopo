@@ -1,11 +1,9 @@
-from mpConfig import MpConfig
+from core.topo import Topo, TopoConfig, TopoParameter
 from mpMultiInterfaceTopo import MpMultiInterfaceTopo
-from mpParamTopo import MpParamTopo
-from mpTopo import MpTopo
 
-class MpMultiInterfaceConfig(MpConfig):
+class MpMultiInterfaceConfig(TopoConfig):
     def __init__(self, topo, param):
-        MpConfig.__init__(self, topo, param)
+        super().__init__(topo, param)
 
     def configureRoute(self):
         i = 0
@@ -33,9 +31,9 @@ class MpMultiInterfaceConfig(MpConfig):
 
     def configureInterfaces(self):
         print("Configure interfaces for multi inf")
-        self.client = self.topo.getHost(MpTopo.clientName)
-        self.server = self.topo.getHost(MpTopo.serverName)
-        self.router = self.topo.getHost(MpTopo.routerName)
+        self.client = self.topo.getHost(Topo.clientName)
+        self.server = self.topo.getHost(Topo.serverName)
+        self.router = self.topo.getHost(Topo.routerName)
         i = 0
         netmask = "255.255.255.0"
         links = self.topo.getLinkCharacteristics()
@@ -78,27 +76,27 @@ class MpMultiInterfaceConfig(MpConfig):
         self.topo.commandTo(self.router, "arp -s " + self.getServerIP() + " " + serverIntfMac)
 
     def getClientIP(self, interfaceID):
-        lSubnet = self.param.getParam(MpParamTopo.LSUBNET)
+        lSubnet = self.param.getParam(TopoParameter.LSUBNET)
         clientIP = lSubnet + str(interfaceID) + ".1"
         return clientIP
 
     def getClientSubnet(self, interfaceID):
-        lSubnet = self.param.getParam(MpParamTopo.LSUBNET)
+        lSubnet = self.param.getParam(TopoParameter.LSUBNET)
         clientSubnet = lSubnet + str(interfaceID) + ".0/24"
         return clientSubnet
 
     def getRouterIPSwitch(self, interfaceID):
-        lSubnet = self.param.getParam(MpParamTopo.LSUBNET)
+        lSubnet = self.param.getParam(TopoParameter.LSUBNET)
         routerIP = lSubnet + str(interfaceID) + ".2"
         return routerIP
 
     def getRouterIPServer(self):
-        rSubnet = self.param.getParam(MpParamTopo.RSUBNET)
+        rSubnet = self.param.getParam(TopoParameter.RSUBNET)
         routerIP = rSubnet + "0.2"
         return routerIP
 
     def getServerIP(self):
-        rSubnet = self.param.getParam(MpParamTopo.RSUBNET)
+        rSubnet = self.param.getParam(TopoParameter.RSUBNET)
         serverIP = rSubnet + "0.1"
         return serverIP
 
@@ -109,19 +107,19 @@ class MpMultiInterfaceConfig(MpConfig):
         return self.getRouterInterfaceSwitch(len(self.topo.switchServer))
 
     def getClientInterface(self, interfaceID):
-        return  MpTopo.clientName + "-eth" + str(interfaceID)
+        return  Topo.clientName + "-eth" + str(interfaceID)
 
     def getRouterInterfaceSwitch(self, interfaceID):
-        return  MpTopo.routerName + "-eth" + str(interfaceID)
+        return  Topo.routerName + "-eth" + str(interfaceID)
 
     def getServerInterface(self):
-        return  MpTopo.serverName + "-eth0"
+        return  Topo.serverName + "-eth0"
 
     def getSwitchClientName(self, id):
-        return MpTopo.switchNamePrefix + str(2 * id)
+        return Topo.switchNamePrefix + str(2 * id)
 
     def getSwitchServerName(self, id):
-        return MpTopo.switchNamePrefix + str(2 * id + 1)
+        return Topo.switchNamePrefix + str(2 * id + 1)
 
     def getMidLeftName(self, id):
         return self.getSwitchClientName(id)
