@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from core.experience import Experience, ExperienceParameter, ExperienceParameter
 from core.topo import Topo, TopoParameter
 
@@ -7,7 +9,7 @@ from experiences import EXPERIENCES
 from topos import TOPO_CONFIGS, TOPOS
 
 
-class MpXpRunner:
+class Runner(object):
     def __init__(self, builderType, topoParamFile, xpParamFile):
         self.defParamXp(xpParamFile)
         self.topoParam = TopoParameter(topoParamFile)
@@ -55,3 +57,19 @@ class MpXpRunner:
 
     def stopTopo(self):
         self.Topo.stopNetwork()
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Minitopo, a wrapper of Mininet to run multipath experiments")
+
+    parser.add_argument("--topo_param_file", "-t", required=True,
+        help="path to the topo parameter file")
+    parser.add_argument("--experience_param_file", "-x", required=True,
+        help="path to the experience parameter file")
+
+    args = parser.parse_args()
+    # XXX Currently, there is no alternate topo builder...
+    Runner(Topo.mininetBuilder, args.topo_param_file, args.experience_param_file)
