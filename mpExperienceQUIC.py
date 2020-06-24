@@ -1,5 +1,5 @@
 from core.experience import Experience, ExperienceParameter
-from mpMultiInterfaceCongConfig import MpMultiInterfaceCongConfig
+from topos.multi_interface_cong import MultiInterfaceCongConfig
 import os
 
 
@@ -93,7 +93,7 @@ class ExperienceQUIC(Experience):
 		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_before")
 		self.mpTopo.commandTo(self.mpConfig.server, cmd)
 
-		if isinstance(self.mpConfig, MpMultiInterfaceCongConfig):
+		if isinstance(self.mpConfig, MultiInterfaceCongConfig):
 			i = 0
 			for cs in self.mpConfig.cong_servers:
 				cmd = self.getCongServerCmd(i)
@@ -104,7 +104,7 @@ class ExperienceQUIC(Experience):
 
 		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_before")
 		# First run congestion clients, then the main one
-		if isinstance(self.mpConfig, MpMultiInterfaceCongConfig):
+		if isinstance(self.mpConfig, MultiInterfaceCongConfig):
 			i = 0
 			for cc in self.mpConfig.cong_clients:
 				cmd = self.getCongClientCmd(i)
@@ -116,12 +116,12 @@ class ExperienceQUIC(Experience):
 		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
 		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
 		# Wait for congestion traffic to end
-		if isinstance(self.mpConfig, MpMultiInterfaceCongConfig):
+		if isinstance(self.mpConfig, MultiInterfaceCongConfig):
 			for cc in self.mpConfig.cong_clients:
 				self.mpTopo.commandTo(cc, "while pkill -f wget -0; do sleep 0.5; done")
 
 		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + ExperienceQUIC.SERVER_GO_FILE)
-		if isinstance(self.mpConfig, MpMultiInterfaceCongConfig):
+		if isinstance(self.mpConfig, MultiInterfaceCongConfig):
 			for cs in self.mpConfig.cong_servers:
 				self.mpTopo.commandTo(cs, "pkill -f https.py")
 

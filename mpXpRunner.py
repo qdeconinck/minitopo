@@ -3,12 +3,8 @@ from core.topo import Topo, TopoParameter
 
 from mininet_builder import MininetBuilder
 
-from mpMultiInterfaceTopo import MpMultiInterfaceTopo
-from mpMultiInterfaceConfig import MpMultiInterfaceConfig
-from mpMultiInterfaceCongConfig import MpMultiInterfaceCongConfig
-from mpMultiInterfaceCongTopo import MpMultiInterfaceCongTopo
-from mpECMPSingleInterfaceConfig import MpECMPSingleInterfaceConfig
-from mpTwoInterfaceCongestionConfig import MpTwoInterfaceCongestionConfig
+import topos
+
 from mpExperiencePing import ExperiencePing
 from mpExperienceNCPV import ExperienceNCPV
 from mpExperienceNC import ExperienceNC
@@ -28,8 +24,6 @@ from mpExperienceSiriMsg import ExperienceSiriMsg
 from mpExperienceQUIC import ExperienceQUIC
 from mpExperienceQUICSiri import ExperienceQUICSiri
 from mpExperienceNone import ExperienceNone
-from mpECMPSingleInterfaceTopo import MpECMPSingleInterfaceTopo
-from mpTwoInterfaceCongestionTopo import MpTwoInterfaceCongestionTopo
 
 class MpXpRunner:
 	def __init__(self, builderType, topoParamFile, xpParamFile):
@@ -53,40 +47,18 @@ class MpXpRunner:
 					builderType)
 	def defTopo(self):
 		t = self.topoParam.getParam(Topo.topoAttr)
-		if t == Topo.multiIfTopo:
-			self.Topo = MpMultiInterfaceTopo(self.topoBuilder,
-					self.topoParam)
-		elif t == Topo.ECMPLikeTopo:
-			self.Topo = MpECMPSingleInterfaceTopo(
-					self.topoBuilder,
-					self.topoParam)
-		elif t == Topo.twoIfCongTopo:
-			self.Topo = MpTwoInterfaceCongestionTopo(
-					self.topoBuilder, self.topoParam)
-		elif t == Topo.multiIfCongTopo:
-			self.Topo = MpMultiInterfaceCongTopo(self.topoBuilder,
-					self.topoParam)
+		if t in topos.topos:
+			self.Topo = topos.topos[t](self.topoBuilder, self.topoParam)
 		else:
-			raise Exception("Unfound Topo" + t)
+			raise Exception("Unknown topo: {}".format(t))
 		print(self.Topo)
 
 	def defConfig(self):
 		t = self.topoParam.getParam(Topo.topoAttr)
-		if t == Topo.multiIfTopo:
-			self.TopoConfig = MpMultiInterfaceConfig(self.Topo,
-				self.topoParam)
-		elif t == Topo.ECMPLikeTopo:
-			self.TopoConfig = MpECMPSingleInterfaceConfig(
-					self.Topo,
-					self.topoParam)
-		elif t == Topo.twoIfCongTopo:
-			self.TopoConfig = MpTwoInterfaceCongestionConfig(
-					self.Topo, self.topoParam)
-		elif t == Topo.multiIfCongTopo:
-			self.TopoConfig = MpMultiInterfaceCongConfig(self.Topo,
-				self.topoParam)
+		if t in topos.configs:
+			self.TopoConfig = topos.configs[t](self.Topo, self.topoParam)
 		else:
-			raise Exception("Unfound Topo" + t)
+			raise Exception("Unknown topo config: {}".format(t))
 
 	def startTopo(self):
 		self.Topo.startNetwork()

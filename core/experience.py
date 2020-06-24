@@ -1,5 +1,5 @@
 from .parameter import ExperienceParameter
-from mpMultiInterfaceTopo import MpMultiInterfaceTopo
+from topos.multi_interface import MultiInterfaceTopo
 
 class Experience(object):
     PING = "ping"
@@ -50,8 +50,8 @@ class Experience(object):
             self.mpTopo.notNSCommand("echo " + metric + " > /sys/module/mptcp_sched_metric/parameters/metric")
 
     def putPriorityOnPaths(self):
-        # Only meaningful if mpTopo is instance of MpMultiInterfaceTopo
-        if isinstance(self.mpTopo, MpMultiInterfaceTopo):
+        # Only meaningful if mpTopo is instance of MultiInterfaceTopo
+        if isinstance(self.mpTopo, MultiInterfaceTopo):
             prioPath0 = self.xpParam.getParam(ExperienceParameter.PRIOPATH0)
             prioPath1 = self.xpParam.getParam(ExperienceParameter.PRIOPATH1)
             if not prioPath0 == prioPath1:
