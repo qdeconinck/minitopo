@@ -4,14 +4,14 @@ import math
 
 
 class NetemAt(object):
-	def __init__(self, at, cmd):
-		self.at = at
-		self.cmd = cmd
-		self.delta = 0
+    def __init__(self, at, cmd):
+        self.at = at
+        self.cmd = cmd
+        self.delta = 0
 
-	def __str__(self):
-		return "Netem... at " + str(self.at) + "(" + str(self.delta) + \
-				") will be " + self.cmd
+    def __str__(self):
+        return "Netem... at " + str(self.at) + "(" + str(self.delta) + \
+                ") will be " + self.cmd
 
 
 class LinkCharacteristics(object):
@@ -115,149 +115,149 @@ class LinkCharacteristics(object):
 
 
 class TopoParameter(Parameter):
-	LSUBNET = "leftSubnet"
-	RSUBNET = "rightSubnet"
-	netemAt = "netemAt_"
-	changeNetem = "changeNetem"
-	defaultValue = {}
-	defaultValue[LSUBNET] = "10.1."
-	defaultValue[RSUBNET] = "10.2."
-	defaultValue[changeNetem] = "false"
+    LSUBNET = "leftSubnet"
+    RSUBNET = "rightSubnet"
+    netemAt = "netemAt_"
+    changeNetem = "changeNetem"
+    defaultValue = {}
+    defaultValue[LSUBNET] = "10.1."
+    defaultValue[RSUBNET] = "10.2."
+    defaultValue[changeNetem] = "false"
 
-	def __init__(self, paramFile):
-		Parameter.__init__(self, paramFile)
-		self.linkCharacteristics = []
-		self.loadLinkCharacteristics()
-		self.loadNetemAt()
-		print(self.__str__())
+    def __init__(self, paramFile):
+        Parameter.__init__(self, paramFile)
+        self.linkCharacteristics = []
+        self.loadLinkCharacteristics()
+        self.loadNetemAt()
+        print(self.__str__())
 
-	def loadNetemAt(self):
-		if not self.getParam(TopoParameter.changeNetem) == "yes":
-			return
-		for k in sorted(self.paramDic):
-			if k.startswith(TopoParameter.netemAt):
-				i = int(k[len(TopoParameter.netemAt):])
-				val = self.paramDic[k]
-				if not isinstance(val, list):
-					tmp = val
-					val = []
-					val.append(tmp)
-				self.loadNetemAtList(i, val)
+    def loadNetemAt(self):
+        if not self.getParam(TopoParameter.changeNetem) == "yes":
+            return
+        for k in sorted(self.paramDic):
+            if k.startswith(TopoParameter.netemAt):
+                i = int(k[len(TopoParameter.netemAt):])
+                val = self.paramDic[k]
+                if not isinstance(val, list):
+                    tmp = val
+                    val = []
+                    val.append(tmp)
+                self.loadNetemAtList(i, val)
 
-	def loadNetemAtList(self, id, nlist):
-		for n in nlist:
-			tab = n.split(",")
-			if len(tab)==2:
-				o = NetemAt(float(tab[0]), tab[1])
-				if id < len(self.linkCharacteristics):
-					self.linkCharacteristics[id].addNetemAt(o)
-				else:
-					print("Error can't set netem for link " + str(id))
-			else:
-				print("Netem wrong line : " + n)
-		print(self.linkCharacteristics[id].netemAt)
+    def loadNetemAtList(self, id, nlist):
+        for n in nlist:
+            tab = n.split(",")
+            if len(tab)==2:
+                o = NetemAt(float(tab[0]), tab[1])
+                if id < len(self.linkCharacteristics):
+                    self.linkCharacteristics[id].addNetemAt(o)
+                else:
+                    print("Error can't set netem for link " + str(id))
+            else:
+                print("Netem wrong line : " + n)
+        print(self.linkCharacteristics[id].netemAt)
 
-	def loadLinkCharacteristics(self):
-		i = 0
-		for k in sorted(self.paramDic):
-			if k.startswith("path"):
-				tab = self.paramDic[k].split(",")
-				bup = False
-				loss = "0.0"
-				if len(tab) == 5:
-					loss = tab[3]
-					bup = tab[4] == 'True'
-				if len(tab) == 4:
-					try:
-						loss = float(tab[3])
-						loss = tab[3]
-					except ValueError:
-						bup = tab[3] == 'True'
-				if len(tab) == 3 or len(tab) == 4 or len(tab) == 5:
-					path = LinkCharacteristics(i,tab[0],
-							tab[1], tab[2], loss, bup)
-					self.linkCharacteristics.append(path)
-					i = i + 1
-				else:
-					print("Ignored path :")
-					print(self.paramDic[k])
+    def loadLinkCharacteristics(self):
+        i = 0
+        for k in sorted(self.paramDic):
+            if k.startswith("path"):
+                tab = self.paramDic[k].split(",")
+                bup = False
+                loss = "0.0"
+                if len(tab) == 5:
+                    loss = tab[3]
+                    bup = tab[4] == 'True'
+                if len(tab) == 4:
+                    try:
+                        loss = float(tab[3])
+                        loss = tab[3]
+                    except ValueError:
+                        bup = tab[3] == 'True'
+                if len(tab) == 3 or len(tab) == 4 or len(tab) == 5:
+                    path = LinkCharacteristics(i,tab[0],
+                            tab[1], tab[2], loss, bup)
+                    self.linkCharacteristics.append(path)
+                    i = i + 1
+                else:
+                    print("Ignored path :")
+                    print(self.paramDic[k])
 
-	def getParam(self, key):
-		val = Parameter.getParam(self, key)
-		if val is None:
-			if key in TopoParameter.defaultValue:
-				return TopoParameter.defaultValue[key]
-			else:
-				raise Exception("Param not found " + key)
-		else:
-			return val
+    def getParam(self, key):
+        val = Parameter.getParam(self, key)
+        if val is None:
+            if key in TopoParameter.defaultValue:
+                return TopoParameter.defaultValue[key]
+            else:
+                raise Exception("Param not found " + key)
+        else:
+            return val
 
-	def __str__(self):
-		s = Parameter.__str__(self)
-		s = s + "\n"
-		for p in self.linkCharacteristics[:-1]:
-			s = s + p.__str__() + "\n"
-		s = s + self.linkCharacteristics[-1].__str__()
-		return s
+    def __str__(self):
+        s = Parameter.__str__(self)
+        s = s + "\n"
+        for p in self.linkCharacteristics[:-1]:
+            s = s + p.__str__() + "\n"
+        s = s + self.linkCharacteristics[-1].__str__()
+        return s
 
 class Topo(object):
-	mininetBuilder = "mininet"
-	multiIfTopo = "MultiIf"
-	ECMPLikeTopo = "ECMPLike"
-	twoIfCongTopo = "twoIfCong"
-	multiIfCongTopo = "MultiIfCong"
-	topoAttr    = "topoType"
-	switchNamePrefix = "s"
-	routerNamePrefix = "r"
-	clientName = "Client"
-	serverName = "Server"
-	routerName = "Router"
-	cmdLog = "command.log"
+    mininetBuilder = "mininet"
+    multiIfTopo = "MultiIf"
+    ECMPLikeTopo = "ECMPLike"
+    twoIfCongTopo = "twoIfCong"
+    multiIfCongTopo = "MultiIfCong"
+    topoAttr    = "topoType"
+    switchNamePrefix = "s"
+    routerNamePrefix = "r"
+    clientName = "Client"
+    serverName = "Server"
+    routerName = "Router"
+    cmdLog = "command.log"
 
-	"""Simple MpTopo"""
-	def __init__(self, topoBuilder, topoParam):
-		self.topoBuilder = topoBuilder
-		self.topoParam = topoParam
-		self.changeNetem = topoParam.getParam(TopoParameter.changeNetem)
-		self.logFile = open(Topo.cmdLog, 'w')
+    """Simple MpTopo"""
+    def __init__(self, topoBuilder, topoParam):
+        self.topoBuilder = topoBuilder
+        self.topoParam = topoParam
+        self.changeNetem = topoParam.getParam(TopoParameter.changeNetem)
+        self.logFile = open(Topo.cmdLog, 'w')
 
-	def getLinkCharacteristics(self):
-		return self.topoParam.linkCharacteristics
+    def getLinkCharacteristics(self):
+        return self.topoParam.linkCharacteristics
 
-	def commandTo(self, who, cmd):
-		self.logFile.write(who.__str__() + " : " + cmd + "\n")
-		return self.topoBuilder.commandTo(who, cmd)
+    def commandTo(self, who, cmd):
+        self.logFile.write(who.__str__() + " : " + cmd + "\n")
+        return self.topoBuilder.commandTo(who, cmd)
 
-	def notNSCommand(self, cmd):
-		"""
-		mainly use for not namespace sysctl.
-		"""
-		self.logFile.write("Not_NS" + " : " + cmd + "\n")
-		return self.topoBuilder.notNSCommand(cmd)
+    def notNSCommand(self, cmd):
+        """
+        mainly use for not namespace sysctl.
+        """
+        self.logFile.write("Not_NS" + " : " + cmd + "\n")
+        return self.topoBuilder.notNSCommand(cmd)
 
-	def getHost(self, who):
-		return self.topoBuilder.getHost(who)
+    def getHost(self, who):
+        return self.topoBuilder.getHost(who)
 
-	def addHost(self, host):
-		return self.topoBuilder.addHost(host)
+    def addHost(self, host):
+        return self.topoBuilder.addHost(host)
 
-	def addSwitch(self, switch):
-		return self.topoBuilder.addSwitch(switch)
+    def addSwitch(self, switch):
+        return self.topoBuilder.addSwitch(switch)
 
-	def addLink(self, fromA, toB, **kwargs):
-		self.topoBuilder.addLink(fromA,toB,**kwargs)
+    def addLink(self, fromA, toB, **kwargs):
+        self.topoBuilder.addLink(fromA,toB,**kwargs)
 
-	def getCLI(self):
-		self.topoBuilder.getCLI()
+    def getCLI(self):
+        self.topoBuilder.getCLI()
 
-	def startNetwork(self):
-		self.topoBuilder.startNetwork()
+    def startNetwork(self):
+        self.topoBuilder.startNetwork()
 
-	def closeLogFile(self):
-		self.logFile.close()
+    def closeLogFile(self):
+        self.logFile.close()
 
-	def stopNetwork(self):
-		self.topoBuilder.stopNetwork()
+    def stopNetwork(self):
+        self.topoBuilder.stopNetwork()
 
 
 class TopoConfig(object):
