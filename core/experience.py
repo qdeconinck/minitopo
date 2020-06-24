@@ -9,24 +9,6 @@ class Experience(object):
 	`NAME` attribute.
 	"""
 
-    NCPV = "ncpv"
-    NC = "nc"
-
-    HTTPS = "https"
-    HTTP = "http"
-    EPLOAD = "epload"
-    NETPERF = "netperf"
-    
-    SIRI = "siri"
-    SENDFILE = "sendfile"
-    VLC = "vlc"
-    IPERF = "iperf"
-    MSG = "msg"
-    SIRIHTTP = "sirihttp"
-    SIRIMSG = "sirimsg"
-    QUIC = "quic"
-    QUICSIRI = "quicsiri"
-
     def __init__(self, xpParam, mpTopo, mpConfig):
         self.xpParam  = xpParam
         self.mpTopo   = mpTopo
