@@ -2,20 +2,25 @@ from .parameter import ExperienceParameter
 from topos.multi_interface import MultiInterfaceTopo
 
 class Experience(object):
-    PING = "ping"
+    """
+	Base class to instantiate an experience to perform.
+
+	This class is not instantiable as it. You must define a child class with the
+	`NAME` attribute.
+	"""
+
     NCPV = "ncpv"
     NC = "nc"
-    NONE = "none"
+
     HTTPS = "https"
     HTTP = "http"
     EPLOAD = "epload"
     NETPERF = "netperf"
-    AB = "ab"
+    
     SIRI = "siri"
     SENDFILE = "sendfile"
     VLC = "vlc"
     IPERF = "iperf"
-    DITG = "ditg"
     MSG = "msg"
     SIRIHTTP = "sirihttp"
     SIRIMSG = "sirimsg"

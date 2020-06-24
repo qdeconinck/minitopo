@@ -70,7 +70,7 @@ class ExperienceQUIC(Experience):
 
 	def getCongServerCmd(self, congID):
 		s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-				"/utils/https.py &> https_server" + str(congID) + ".log &"
+				"/utils/https_server.py &> https_server" + str(congID) + ".log &"
 		print(s)
 		return s
 
@@ -123,7 +123,7 @@ class ExperienceQUIC(Experience):
 		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + ExperienceQUIC.SERVER_GO_FILE)
 		if isinstance(self.mpConfig, MultiInterfaceCongConfig):
 			for cs in self.mpConfig.cong_servers:
-				self.mpTopo.commandTo(cs, "pkill -f https.py")
+				self.mpTopo.commandTo(cs, "pkill -f https_server.py")
 
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
 		# Need to delete the go-build directory in tmp; could lead to no more space left error

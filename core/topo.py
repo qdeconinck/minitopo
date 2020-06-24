@@ -202,11 +202,11 @@ class TopoParameter(Parameter):
 
 class Topo(object):
     """
-	Base class to instantiate a topology.
+    Base class to instantiate a topology.
 
-	This class is not instantiable as it. You must define a child class with the
-	`NAME` attribute.
-	"""
+    This class is not instantiable as it. You must define a child class with the
+    `NAME` attribute.
+    """
     mininetBuilder = "mininet"
     topoAttr    = "topoType"
     switchNamePrefix = "s"
@@ -264,11 +264,11 @@ class Topo(object):
 
 class TopoConfig(object):
     """
-	Base class to instantiate a topology.
+    Base class to instantiate a topology.
 
-	This class is not instantiable as it. You must define a child class with the
-	`NAME` attribute.
-	"""
+    This class is not instantiable as it. You must define a child class with the
+    `NAME` attribute.
+    """
 
     PING_OUTPUT = "ping.log"
 

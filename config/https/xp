@@ -1,0 +1,5 @@
+xpType:https
+clientPcap:yes
+kpms:fullmesh
+kpmc:fullmesh
+rmem:300000 300000 300000
