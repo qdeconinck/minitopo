@@ -1,6 +1,18 @@
 from core.experience import Experience, ExperienceParameter
 import os
 
+
+class VLCParameter(ExperienceParameter):
+    FILE = "vlcFile"
+    TIME = "vlcTime"
+
+    def __init__(self, experience_parameter_filename):
+        super(VLCParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            VLCParameter.FILE: "bunny_ibmff_360.mpd",
+            VLCParameter.TIME: "0",
+        })
+
 class VLC(Experience):
     NAME = "vlc"
 
@@ -30,8 +42,8 @@ class VLC(Experience):
         return s
 
     def load_parameters(self):
-        self.file = self.experience_parameter.get(ExperienceParameter.VLCFILE)
-        self.time = self.experience_parameter.get(ExperienceParameter.VLCTIME)
+        self.file = self.experience_parameter.get(VLCParameter.FILE)
+        self.time = self.experience_parameter.get(VLCParameter.TIME)
 
     def prepare(self):
         super(VLC, self).prepare()
@@ -40,39 +52,31 @@ class VLC(Experience):
         self.topo.command_to(self.topo_config.client, "Xvfb :66 &")
         self.topo.command_to(self.topo_config.server, "rm " + \
                 VLC.SERVER_LOG )
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client,
-                "dd if=/dev/urandom of=random bs=1K count=" + \
-                self.random_size)
 
-    def getVLCServerCmd(self):
-        s = "/etc/init.d/apache2 restart &>" + VLC.SERVER_LOG + " "
+    def get_vlc_server_cmd(self):
+        s = "/etc/init.d/apache2 restart &> {}".format(VLC.SERVER_LOG)
         print(s)
         return s
 
-    def getVLCClientCmd(self):
-        s = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mininet/usr/lib/ && sudo ldconfig && " \
-                + VLC.VLC_BIN + " -I dummy --x11-display :66" + \
-                " --adaptive-logic 3 --no-loop --play-and-exit " + \
-                " http://" + self.topo_config.getServerIP() + \
-                "/" + self.file + " 2>&1 | grep -E '(Neb|halp|bandwidth|late|Buffering|buffering)' > " + VLC.CLIENT_LOG
-        if self.time != "0" :
-            s = s + " &"
+    def get_vlc_client_cmd(self):
+        s = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mininet/usr/lib/ && sudo ldconfig && \
+            {} -I dummy --x11-display :66 --adaptive-logic 3 --no-loop --play-and-exit \
+                http://{}/{} 2>&1 | grep -E '(Neb|halp|bandwidth|late|Buffering|buffering)' > {} {}".format(
+                    VLC.VLC_BIN, self.topo_config.getServerIP(), self.file, VLC.CLIENT_LOG,
+                    "&" if self.time != "0" else "")
         print(s)
         return s
 
     def clean(self):
         super(VLC, self).clean(self)
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client, "rm random*")
         self.topo.command_to(self.topo_config.client, "pkill Xvfb")
 
     def run(self):
-        cmd = self.getVLCServerCmd()
+        cmd = self.get_vlc_server_cmd()
         self.topo.command_to(self.topo_config.server, cmd)
 
         self.topo.command_to(self.topo_config.client, "sleep 1")
-        cmd = self.getVLCClientCmd()
+        cmd = self.get_vlc_client_cmd()
         self.topo.command_to(self.topo_config.client, cmd)
 
         if self.time != "0" :

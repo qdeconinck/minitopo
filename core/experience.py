@@ -23,13 +23,6 @@ class ExperienceParameter(Parameter):
     SNAPLENPCAP = "snaplenPcap"
     XPTYPE     = "xpType"
     PINGCOUNT  = "pingCount"
-    NETPERFTESTLEN = "netperfTestlen"
-    NETPERFTESTNAME = "netperfTestname"
-    NETPERFREQRESSIZE = "netperfReqresSize"
-    VLCFILE = "vlcFile"
-    VLCTIME = "vlcTime"
-    QUICMULTIPATH = "quicMultipath"
-    QUICSIRIRUNTIME = "quicSiriRunTime"
     PRIOPATH0 = "prioPath0"
     PRIOPATH1 = "prioPath1"
     BACKUPPATH0 = "backupPath0"
@@ -83,12 +76,6 @@ class ExperienceParameter(Parameter):
         SNAPLENPCAP: "65535",  # Default snapping value of tcpdump
         XPTYPE: "none",
         PINGCOUNT: "5",
-        NETPERFTESTLEN: "10",
-        NETPERFTESTNAME: "TCP_RR",
-        NETPERFREQRESSIZE: "2K,256",
-        VLCFILE: "bunny_ibmff_360.mpd",
-        VLCTIME: "0",
-        QUICMULTIPATH: "0",
         PRIOPATH0: "0",
         PRIOPATH1: "0",
         BACKUPPATH0: "0",
@@ -431,6 +418,7 @@ class RandomFileParameter(ExperienceParameter):
             RandomFileParameter.FILE: "random",
             RandomFileParameter.RANDOM_SIZE: "1024",
         })
+
 
 class RandomFileExperience(Experience):
     """

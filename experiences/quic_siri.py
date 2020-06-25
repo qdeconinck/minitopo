@@ -2,8 +2,20 @@ from core.experience import Experience, ExperienceParameter
 import os
 
 
+class QUICSiriParameter(ExperienceParameter):
+    MULTIPATH = "quicMultipath"
+    RUN_TIME = "quicSiriRunTime"
+
+    def __init__(self, experience_parameter_filename):
+        super(QUICSiriParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            QUICSiriParameter.MULTIPATH: "0",
+        })
+
+
 class QUICSiri(Experience):
     NAME = "quicsiri"
+    PARAMETER_CLASS = QUICSiriParameter
 
     GO_BIN = "/usr/local/go/bin/go"
     SERVER_LOG = "quic_server.log"
@@ -33,8 +45,8 @@ class QUICSiri(Experience):
         return s
 
     def load_parameters(self):
-        self.run_time = self.experience_parameter.get(ExperienceParameter.QUICSIRIRUNTIME)
-        self.multipath = self.experience_parameter.get(ExperienceParameter.QUICMULTIPATH)
+        self.run_time = self.experience_parameter.get(QUICSiriParameter.RUN_TIME)
+        self.multipath = self.experience_parameter.get(QUICSiriParameter.MULTIPATH)
 
     def prepare(self):
         super(QUICSiri, self).prepare()
@@ -43,18 +55,16 @@ class QUICSiri(Experience):
         self.topo.command_to(self.topo_config.server, "rm " + \
                 QUICSiri.SERVER_LOG )
 
-    def getQUICSiriServerCmd(self):
-        s = QUICSiri.GO_BIN + " run " + QUICSiri.SERVER_GO_FILE
-        s += " -addr 0.0.0.0:8080 &>" + QUICSiri.SERVER_LOG + " &"
+    def get_quic_siri_server_cmd(self):
+        s = "{} run {} -addr 0.0.0.0:8080 &> {} &".format(QUICSiri.GO_BIN,
+            QUICSiri.SERVER_GO_FILE, QUICSiri.SERVER_LOG)
         print(s)
         return s
 
-    def getQUICSiriClientCmd(self):
-        s = QUICSiri.GO_BIN + " run " + QUICSiri.CLIENT_GO_FILE
-        s += " -addr " + self.topo_config.getServerIP() + ":8080 -runTime " + self.run_time + "s"
-        if int(self.multipath) > 0:
-            s += " -m"
-        s += " &>" + QUICSiri.CLIENT_LOG
+    def get_quic_siri_client_cmd(self):
+        s = "{} run {} -addr {}:8080 -runTime {}s {} &> {}".format(QUICSiri.GO_BIN,
+            QUICSiri.CLIENT_GO_FILE, self.topo_config.getServerIP(), self.run_time,
+            "-m" if int(self.multipath) > 0 else "", QUICSiri.CLIENT_LOG)
         print(s)
         return s
 
@@ -62,12 +72,12 @@ class QUICSiri(Experience):
         super(QUICSiri, self).clean()
 
     def run(self):
-        cmd = self.getQUICSiriServerCmd()
+        cmd = self.get_quic_siri_server_cmd()
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
         self.topo.command_to(self.topo_config.server, cmd)
 
         self.topo.command_to(self.topo_config.client, "sleep 2")
-        cmd = self.getQUICSiriClientCmd()
+        cmd = self.get_quic_siri_client_cmd()
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")

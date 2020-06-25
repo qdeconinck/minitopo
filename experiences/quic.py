@@ -3,8 +3,19 @@ from topos.multi_interface_cong import MultiInterfaceCongConfig
 import os
 
 
+class QUICParameter(RandomFileExperience):
+    MULTIPATH = "quicMultipath"
+
+    def __init__(self, experience_parameter_filename):
+        super(QUICParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            QUICParameter.MULTIPATH: "0",
+        })
+
+
 class QUIC(RandomFileExperience):
     NAME = "quic"
+    PARAMETER_CLASS = QUICParameter
 
     GO_BIN = "/usr/local/go/bin/go"
     WGET = "~/git/wget/src/wget"
@@ -36,7 +47,7 @@ class QUIC(RandomFileExperience):
 
     def load_parameters(self):
         super(QUIC, self).load_parameters()
-        self.multipath = self.experience_parameter.get(ExperienceParameter.QUICMULTIPATH)
+        self.multipath = self.experience_parameter.get(QUICParameter.MULTIPATH)
 
     def prepare(self):
         super(QUIC, self).prepare()

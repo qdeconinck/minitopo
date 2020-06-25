@@ -70,7 +70,6 @@ class Siri(Experience):
         self.buffer_size = self.experience_parameter.get(SiriParameter.BUFFER_SIZE)
         self.burst_size = self.experience_parameter.get(SiriParameter.BURST_SIZE)
         self.interval_burst_time_ms = self.experience_parameter.get(SiriParameter.INTERVAL_BURST_TIME_MS)
-        print("load parameter siri")
 
     def prepare(self):
         super(Siri, self).prepare()

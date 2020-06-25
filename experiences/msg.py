@@ -19,6 +19,7 @@ class MsgParameter(ExperienceParameter):
 
 class Msg(Experience):
     NAME = "msg"
+    PARAMETER_CLASS = MsgParameter
 
     SERVER_LOG = "msg_server.log"
     CLIENT_LOG = "msg_client.log"
@@ -50,7 +51,6 @@ class Msg(Experience):
         self.server_sleep = self.experience_parameter.get(MsgParameter.SERVER_SLEEP)
         self.nb_requests = self.experience_parameter.get(MsgParameter.NB_REQUESTS)
         self.bytes = self.experience_parameter.get(MsgParameter.BYTES)
-        print("load parameter msg")
 
     def prepare(self):
         super(Msg, self).prepare()
