@@ -3,8 +3,8 @@ from core.experience import Experience, ExperienceParameter
 class NoneExperience(Experience):
     NAME = "none"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(NoneExperience, self).__init__(experience_parameter, topo, topo_config)
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(NoneExperience, self).__init__(experience_parameter_filename, topo, topo_config)
         super(NoneExperience, self).classic_run()
 
     def prepare(self):

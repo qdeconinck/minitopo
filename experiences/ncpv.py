@@ -1,4 +1,21 @@
-from core.experience import Experience, ExperienceParameter
+from .nc import NC, NCParameter, ExperienceParameter
+
+
+class NCPVParameter(NCParameter):
+    RATE_LIMIT= "pvRateLimit"
+    G        = "pvG" #patched version of pv
+    Z        = "pvZ"
+    CHANGE_PV   = "changePv"
+    CHANGE_PV_AT = "changePvAt"
+
+    def __init__(self, experience_parameter_filename):
+        super(NCPVParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            NCPVParameter.RATE_LIMIT: "400k",
+            NCPVParameter.G: "10000",
+            NCPVParameter.Z: "10000",
+            NCPVParameter.CHANGE_PV: "no",
+        })
 
 
 class MpPvAt(object):
@@ -12,11 +29,12 @@ class MpPvAt(object):
                 ") will be " + self.cmd
 
 
-class NCPV(Experience):
+class NCPV(NC):
     """
     NC PV : NetCat and Pipe Viewer
     """
     NAME = "ncpv"
+    PARAMETER_CLASS = NCPVParameter
 
     SERVER_NC_LOG = "netcat_server"
     CLIENT_NC_LOG = "netcat_client"
@@ -24,9 +42,9 @@ class NCPV(Experience):
     PV_BIN = "/usr/local/bin/pv"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(NCPV, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(NCPV, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(NCPV, self).classic_run()
 
@@ -45,23 +63,11 @@ class NCPV(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
+        super(NCPV, self).load_parameters()
         self.pvg = self.experience_parameter.get(ExperienceParameter.PVG)
         self.pvz = self.experience_parameter.get(ExperienceParameter.PVZ)
         self.pvRateLimit = self.experience_parameter.get(ExperienceParameter.PVRATELIMIT)
-        self.ddibs = self.experience_parameter.get(ExperienceParameter.DDIBS)
-        self.ddobs = self.experience_parameter.get(ExperienceParameter.DDOBS)
-        self.ddcount = self.experience_parameter.get(ExperienceParameter.DDCOUNT)
-        self.ncServerPort = self.experience_parameter.get(ExperienceParameter.NCSERVERPORT)
-        self.pvRateLimit = self.experience_parameter.get(ExperienceParameter.PVRATELIMIT)
-        self.ncClientPort = []
-        for k in sorted(self.experience_parameter.paramDic):
-            if k.startswith(ExperienceParameter.NCCLIENTPORT):
-                port = self.experience_parameter.paramDic[k]
-                self.ncClientPort.append(port)
-        if len(self.ncClientPort) == 0:
-            d = self.experience_parameter.get(ExperienceParameter.NCCLIENTPORT)
-            self.ncClientPort.append(d)
         self.loadPvAt()
 
     def loadPvAt(self):
@@ -106,15 +112,11 @@ class NCPV(Experience):
 
     def prepare(self):
         super(NCPV, self).prepare()
-        self.topo.command_to(self.topo_config.client, "rm " + \
-                NCPV.CLIENT_NC_LOG )
-        self.topo.command_to(self.topo_config.server, "rm " + \
-                NCPV.SERVER_NC_LOG )
 
     def getNCServerCmd(self, id):
-        s = NCPV.NC_BIN + " -d  " + \
+        s = NC.NC_BIN + " -d  " + \
                 " -l " + self.ncServerPort  + \
-                " 1>/dev/null 2>" + NCPV.SERVER_NC_LOG + \
+                " 1>/dev/null 2>" + NC.SERVER_NC_LOG + \
                 "_" + str(id) + ".log &"
         print(s)
         return s
@@ -123,10 +125,10 @@ class NCPV(Experience):
         s = "dd if=/dev/urandom ibs=" + self.ddibs + \
                 " obs=" + self.ddobs + \
                 " count=" + self.ddcount + \
-                " | " + NCPV.PV_BIN + \
+                " | " + NC.PV_BIN + \
                 " -g " + self.pvg + " -z " + self.pvz + \
                 " -q --rate-limit " + self.pvRateLimit + \
-                " | " + NCPV.NC_BIN + " " + \
+                " | " + NC.NC_BIN + " " + \
                 "  -p " + self.ncClientPort[id] + " " + \
                 self.topo_config.getServerIP() + " " + \
                 self.ncServerPort + " " + \
@@ -134,13 +136,13 @@ class NCPV(Experience):
                 "_" + str(id) + ".log"
         print(s)
         return s
+
     def getPvPidCmd(self):
         s = "pgrep -n pv"
         return s
 
     def clean(self):
         super(NCPV, self).clean()
-        self.topo.command_to(self.topo_config.server, "killall netcat")
 
     def run(self):
         for i in range(0, len(self.ncClientPort)):

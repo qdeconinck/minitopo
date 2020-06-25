@@ -9,9 +9,9 @@ class VLC(Experience):
     VLC_BIN = "/home/mininet/vlc/vlc"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(VLC, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(VLC, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(VLC, self).classic_run()
 
@@ -30,7 +30,7 @@ class VLC(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
         self.file = self.experience_parameter.get(ExperienceParameter.VLCFILE)
         self.time = self.experience_parameter.get(ExperienceParameter.VLCTIME)
 

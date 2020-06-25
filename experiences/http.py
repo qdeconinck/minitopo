@@ -1,7 +1,7 @@
-from core.experience import Experience, ExperienceParameter
+from core.experience import ExperienceParameter, RandomFileExperience, RandomFileParameter
 import os
 
-class HTTP(Experience):
+class HTTP(RandomFileExperience):
     NAME = "http"
 
     SERVER_LOG = "http_server.log"
@@ -9,11 +9,9 @@ class HTTP(Experience):
     WGET_BIN = "wget"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(HTTP, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
-        self.ping()
-        super(HTTP, self).classic_run()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        # Just rely on RandomFileExperiment
+        super(HTTP, self).__init__(experience_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
@@ -30,9 +28,9 @@ class HTTP(Experience):
         print(s)
         return s
 
-    def loadParam(self):
-        self.file = self.experience_parameter.get(ExperienceParameter.HTTPFILE)
-        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPRANDOMSIZE)
+    def load_parameters(self):
+        # Just rely on RandomFileExperiment
+        super(HTTP, self).load_parameters()
 
     def prepare(self):
         super(HTTP, self).prepare()
@@ -40,26 +38,20 @@ class HTTP(Experience):
                 HTTP.CLIENT_LOG )
         self.topo.command_to(self.topo_config.server, "rm " + \
                 HTTP.SERVER_LOG )
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client,
-                "dd if=/dev/urandom of=random bs=1K count=" + \
-                self.random_size)
 
     def getHTTPServerCmd(self):
-        s = "/etc/init.d/apache2 restart &>" + HTTP.SERVER_LOG + "&"
+        s = "/etc/init.d/apache2 restart &> {}&".format(HTTP.SERVER_LOG)
         print(s)
         return s
 
     def getHTTPClientCmd(self):
-        s = "(time " + HTTP.WGET_BIN + " http://" + self.topo_config.getServerIP() + \
-                "/" + self.file + " --no-check-certificate) &>" + HTTP.CLIENT_LOG
+        s = "(time {} http://{}/{} --no-check-certificate) &> {}".format(HTTP.WGET_BIN,
+            self.topo_config.getServerIP(), self.file, HTTP.CLIENT_LOG)
         print(s)
         return s
 
     def clean(self):
         super(HTTP, self).clean()
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client, "rm random*")
 
     def run(self):
         cmd = self.getHTTPServerCmd()

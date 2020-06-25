@@ -1,7 +1,7 @@
-from core.experience import Experience, ExperienceParameter
+from core.experience import RandomFileExperience, RandomFileParameter, ExperienceParameter
 import os
 
-class SendFile(Experience):
+class SendFile(RandomFileExperience):
     NAME = "sendfile"
 
     SERVER_LOG = "sendfile_server.log"
@@ -9,11 +9,9 @@ class SendFile(Experience):
     WGET_BIN = "./client"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(SendFile, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
-        self.ping()
-        super(SendFile, self).classic_run()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        # Just rely on RandomFileExperience
+        super(SendFile, self).__init__(experience_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
@@ -30,9 +28,8 @@ class SendFile(Experience):
         print(s)
         return s
 
-    def loadParam(self):
-        self.file = self.experience_parameter.get(ExperienceParameter.HTTPSFILE)
-        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPSRANDOMSIZE)
+    def load_parameters(self):
+        super(SendFile, self).load_parameters()
 
     def prepare(self):
         super(SendFile, self).prepare()
@@ -40,10 +37,6 @@ class SendFile(Experience):
                 SendFile.CLIENT_LOG )
         self.topo.command_to(self.topo_config.server, "rm " + \
                 SendFile.SERVER_LOG )
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client,
-                "dd if=/dev/urandom of=random bs=1K count=" + \
-                self.random_size)
 
     def getSendFileServerCmd(self):
         s = "./server &>" + SendFile.SERVER_LOG + "&"
@@ -57,8 +50,6 @@ class SendFile(Experience):
 
     def clean(self):
         super(SendFile, self).clean()
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client, "rm random*")
 
     def run(self):
         cmd = self.getSendFileServerCmd()

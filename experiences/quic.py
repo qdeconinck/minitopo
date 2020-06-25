@@ -1,9 +1,9 @@
-from core.experience import Experience, ExperienceParameter
+from core.experience import RandomFileExperience, RandomFileParameter, ExperienceParameter
 from topos.multi_interface_cong import MultiInterfaceCongConfig
 import os
 
 
-class QUIC(Experience):
+class QUIC(RandomFileExperience):
     NAME = "quic"
 
     GO_BIN = "/usr/local/go/bin/go"
@@ -15,11 +15,9 @@ class QUIC(Experience):
     CERTPATH = "~/go/src/github.com/lucas-clemente/quic-go/example/"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(QUIC, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
-        self.ping()
-        super(QUIC, self).classic_run()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        # Just rely on RandomFileExperience
+        super(QUIC, self).__init__(experience_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
@@ -36,9 +34,8 @@ class QUIC(Experience):
         print(s)
         return s
 
-    def loadParam(self):
-        self.file = self.experience_parameter.get(ExperienceParameter.HTTPSFILE)
-        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPSRANDOMSIZE)
+    def load_parameters(self):
+        super(QUIC, self).load_parameters()
         self.multipath = self.experience_parameter.get(ExperienceParameter.QUICMULTIPATH)
 
     def prepare(self):
@@ -47,10 +44,6 @@ class QUIC(Experience):
                 QUIC.CLIENT_LOG )
         self.topo.command_to(self.topo_config.server, "rm " + \
                 QUIC.SERVER_LOG )
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client,
-                "dd if=/dev/urandom of=random bs=1K count=" + \
-                self.random_size)
 
     def getQUICServerCmd(self):
         s = QUIC.GO_BIN + " run " + QUIC.SERVER_GO_FILE
@@ -69,7 +62,7 @@ class QUIC(Experience):
 
     def getCongServerCmd(self, congID):
         s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-                "/utils/https_server.py &> https_server" + str(congID) + ".log &"
+                "/../utils/https_server.py &> https_server" + str(congID) + ".log &"
         print(s)
         return s
 
@@ -81,8 +74,6 @@ class QUIC(Experience):
 
     def clean(self):
         super(QUIC, self).clean()
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client, "rm random*")
 
     def run(self):
         cmd = self.getQUICServerCmd()

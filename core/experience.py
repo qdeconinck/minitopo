@@ -1,5 +1,154 @@
-from .parameter import ExperienceParameter
+from .parameter import Parameter
 from topos.multi_interface import MultiInterfaceTopo
+
+class ExperienceParameter(Parameter):
+    """
+    Handler for experience parameters stored in configuration files
+    """
+    RMEM       = "rmem"
+    WMEM       = "wmem"
+    SCHED      = "sched"
+    CC		   = "congctrl"
+    AUTOCORK   = "autocork"
+    EARLYRETRANS = "earlyRetrans"
+    KERNELPM   = "kpm"
+    KERNELPMC  = "kpmc" #kernel path manager client / server
+    KERNELPMS  = "kpms"
+    USERPMC	   = "upmc"
+    USERPMS	   = "upms" #userspace path manager client / server
+    USERPMCARGS   = "upmc_args"
+    USERPMSARGS   = "upms_args"
+    CLIENTPCAP = "clientPcap"
+    SERVERPCAP = "serverPcap"
+    SNAPLENPCAP = "snaplenPcap"
+    XPTYPE     = "xpType"
+    PINGCOUNT  = "pingCount"
+    NETPERFTESTLEN = "netperfTestlen"
+    NETPERFTESTNAME = "netperfTestname"
+    NETPERFREQRESSIZE = "netperfReqresSize"
+
+    SIRIRUNTIME = "siriRunTime"
+    SIRIQUERYSIZE = "siriQuerySize"
+    SIRIRESPONSESIZE = "siriResponseSize"
+    SIRIDELAYQUERYRESPONSE = "siriDelayQueryResponse"
+    SIRIMINPAYLOADSIZE = "siriMinPayloadSize"
+    SIRIMAXPAYLOADSIZE = "siriMaxPayloadSize"
+    SIRIINTERVALTIMEMS = "siriIntervalTimeMs"
+    SIRIBUFFERSIZE = "siriBufferSize"
+    SIRIBURSTSIZE = "siriBurstSize"
+    SIRIINTERVALBURSTTIMEMS = "siriIntervalBurstTimeMs"
+    VLCFILE = "vlcFile"
+    VLCTIME = "vlcTime"
+    DITGKBYTES = "ditgKBytes"
+    DITGCONSTANTPACKETSIZE = "ditgConstantPacketSize"
+    DITGMEANPOISSONPACKETSSEC = "ditgMeanPoissonPacketsSec"
+    DITGCONSTANTPACKETSSEC = "ditgConstantPacketsSec"
+    DITGBURSTSONPACKETSSEC = "ditgBurstsOnPacketsSec"
+    DITGBURSTSOFFPACKETSSEC = "ditgBurstsOffPacketsSec"
+    MSGCLIENTSLEEP = "msgClientSleep"
+    MSGSERVERSLEEP = "msgServerSleep"
+    MSGNBREQUESTS = "msgNbRequests"
+    MSGBYTES = "msgBytes"
+    QUICMULTIPATH = "quicMultipath"
+    QUICSIRIRUNTIME = "quicSiriRunTime"
+    PRIOPATH0 = "prioPath0"
+    PRIOPATH1 = "prioPath1"
+    BACKUPPATH0 = "backupPath0"
+    BACKUPPATH1 = "backupPath1"
+    EXPIRATION = "expiration"
+    BUFFERAUTOTUNING = "bufferAutotuning"
+    METRIC = "metric"
+
+
+    # Global sysctl keys
+    SYSCTL_KEY = {
+        RMEM: "net.ipv4.tcp_rmem",
+        WMEM: "net.ipv4.tcp_wmem",
+        KERNELPM: "net.mptcp.mptcp_path_manager",
+        SCHED: "net.mptcp.mptcp_scheduler",
+        CC: "net.ipv4.tcp_congestion_control",
+        AUTOCORK: "net.ipv4.tcp_autocorking",
+        EARLYRETRANS: "net.ipv4.tcp_early_retrans",
+        EXPIRATION: "net.mptcp.mptcp_sched_expiration",
+        BUFFERAUTOTUNING: "net.ipv4.tcp_moderate_rcvbuf",
+    }
+
+    # sysctl keys specific to client and server, independently
+    SYSCTL_KEY_CLIENT = {
+        KERNELPMC: "net.mptcp.mptcp_path_manager",
+    }
+    SYSCTL_KEY_SERVER = {
+        KERNELPMS: "net.mptcp.mptcp_path_manager",
+    }
+
+    # Default values for unspecified experience parameters
+    DEFAULT_PARAMETERS = {
+        RMEM: "10240 87380 16777216",
+        WMEM: "4096 16384 4194304",
+        KERNELPM: "fullmesh",
+        KERNELPMC: "fullmesh",
+        KERNELPMS: "fullmesh",
+        USERPMC: "fullmesh",
+        USERPMS: "fullmesh",
+        USERPMCARGS: "",
+        USERPMSARGS: "",
+        CC: "olia",
+        SCHED: "default",
+        AUTOCORK: "1",
+        EARLYRETRANS: "3",
+        EXPIRATION: "300",
+        BUFFERAUTOTUNING: "1",
+        METRIC: "-1",
+        CLIENTPCAP: "no",
+        SERVERPCAP: "no",
+        SNAPLENPCAP: "65535",  # Default snapping value of tcpdump
+        XPTYPE: "none",
+        PINGCOUNT: "5",
+        NETPERFTESTLEN: "10",
+        NETPERFTESTNAME: "TCP_RR",
+        NETPERFREQRESSIZE: "2K,256",
+        SIRIQUERYSIZE: "2500",
+        SIRIRESPONSESIZE: "750",
+        SIRIDELAYQUERYRESPONSE: "0",
+        SIRIMINPAYLOADSIZE: "85",
+        SIRIMAXPAYLOADSIZE: "500",
+        SIRIINTERVALTIMEMS: "333",
+        SIRIBUFFERSIZE: "9",
+        SIRIBURSTSIZE: "0",
+        SIRIINTERVALBURSTTIMEMS: "0",
+        VLCFILE: "bunny_ibmff_360.mpd",
+        VLCTIME: "0",
+        DITGKBYTES: "10000",
+        DITGCONSTANTPACKETSIZE: "1428",
+        DITGMEANPOISSONPACKETSSEC: "0",
+        DITGCONSTANTPACKETSSEC: "0",
+        DITGBURSTSONPACKETSSEC: "0",
+        DITGBURSTSOFFPACKETSSEC: "0",
+        MSGCLIENTSLEEP: "5.0",
+        MSGSERVERSLEEP: "5.0",
+        MSGNBREQUESTS: "5",
+        MSGBYTES: "1200",
+        QUICMULTIPATH: "0",
+        PRIOPATH0: "0",
+        PRIOPATH1: "0",
+        BACKUPPATH0: "0",
+        BACKUPPATH1: "0",
+    }
+
+    def __init__(self, parameter_filename):
+        super(ExperienceParameter, self).__init__(parameter_filename)
+        self.default_parameters = ExperienceParameter.DEFAULT_PARAMETERS
+
+    def get(self, key):
+        val = super(ExperienceParameter, self).get(key)
+        if val is None:
+            if key in self.default_parameters:
+                return self.default_parameters[key]
+            else:
+                raise Exception("Parameter not found " + key)
+        else:
+            return val
+
 
 class Experience(object):
     """
@@ -8,16 +157,33 @@ class Experience(object):
 	This class is not instantiable as it. You must define a child class with the
 	`NAME` attribute.
 
+    By default, an Experience relies on an instance of ExperienceParameter to
+    collect the parameters from the experience configuration file. However, an
+    experience may introduce specific parameters in the configuration file. In
+    such case, the inherinting class must override the `PARAMETER_CLASS` class
+    variable to point to another class inheriting from ExperienceParameter.
+
     Attributes:
         experience_parameter    Instance of ExperienceParameter
         topo                    Instance of Topo
         topo_config             Instance of TopoConfig
 	"""
+    PARAMETER_CLASS = ExperienceParameter
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        self.experience_parameter = experience_parameter
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        """
+        Instantiation of this base class only load the experience parameter
+        """
+        self.experience_parameter = self.__class__.PARAMETER_CLASS(experience_parameter_filename)
         self.topo = topo
         self.topo_config = topo_config
+
+    def load_parameters(self):
+        """
+        Load the parameter of interest from self.experience_parameter
+        """
+        # Nothing to do in the base class
+        pass
 
     def classic_run(self):
         """
@@ -203,24 +369,24 @@ class Experience(object):
 
     def save_sysctl(self):
         self.sysctlBUP = {}
-        self._save_sysctl(ExperienceParameter.sysctlKey, self.sysctlBUP)
+        self._save_sysctl(ExperienceParameter.SYSCTL_KEY, self.sysctlBUP)
         self.sysctlBUPC = {}
-        self._save_sysctl(ExperienceParameter.sysctlKeyClient, self.sysctlBUPC,
+        self._save_sysctl(ExperienceParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
                 ns = True, who = self.topo_config.client)
         self.sysctlBUPS = {}
-        self._save_sysctl(ExperienceParameter.sysctlKeyServer, self.sysctlBUPS,
+        self._save_sysctl(ExperienceParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
                 ns = True, who = self.topo_config.server)
 
     def _save_sysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
         for k in sysctlDic:
-            sysctlKey = sysctlDic[k]
-            cmd = self.cmdReadSysctl(sysctlKey)
+            SYSCTL_KEY = sysctlDic[k]
+            cmd = self.cmdReadSysctl(SYSCTL_KEY)
             if not ns:
                 val = self.topo.command_global(cmd)
             else:
                 val = self.topo.command_to(who, cmd)
             if val == "Error":
-                print("oooops can't get sysctl " + sysctlKey)
+                print("oooops can't get sysctl " + SYSCTL_KEY)
             else:
                 # For Python3 compatibility
                 if type(val) is bytes:
@@ -238,45 +404,45 @@ class Experience(object):
         return s
 
     def write_sysctl(self):
-        self._write_sysctl(ExperienceParameter.sysctlKey, self.sysctlBUP)
-        self._write_sysctl(ExperienceParameter.sysctlKeyClient, self.sysctlBUPC,
+        self._write_sysctl(ExperienceParameter.SYSCTL_KEY, self.sysctlBUP)
+        self._write_sysctl(ExperienceParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
                 ns = True, who = self.topo_config.client)
-        self._write_sysctl(ExperienceParameter.sysctlKeyServer, self.sysctlBUPS,
+        self._write_sysctl(ExperienceParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
                 ns = True, who = self.topo_config.server)
 
     def _write_sysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
         for k in sysctlBUP:
-            sysctlKey = sysctlDic[k]
+            SYSCTL_KEY = sysctlDic[k]
             sysctlValue = self.experience_parameter.get(k)
-            cmd = self.cmd_write_sysctl(sysctlKey,sysctlValue)
+            cmd = self.cmd_write_sysctl(SYSCTL_KEY,sysctlValue)
             if not ns:
                 val = self.topo.command_global(cmd)
             else:
                 val = self.topo.command_to(who, cmd)
             if val == "Error":
-                print("oooops can't set sysctl " + sysctlKey)
+                print("oooops can't set sysctl " + SYSCTL_KEY)
 
 
     def backUpSysctl(self):
-        self._backUpSysctl(ExperienceParameter.sysctlKey, self.sysctlBUP)
-        self._backUpSysctl(ExperienceParameter.sysctlKeyClient, self.sysctlBUPC,
+        self._backUpSysctl(ExperienceParameter.SYSCTL_KEY, self.sysctlBUP)
+        self._backUpSysctl(ExperienceParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
                 ns = True, who = self.topo_config.client)
-        self._backUpSysctl(ExperienceParameter.sysctlKeyServer, self.sysctlBUPS,
+        self._backUpSysctl(ExperienceParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
                 ns = True, who = self.topo_config.server)
 
 
     def _backUpSysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
         for k in sysctlBUP:
-            sysctlKey = sysctlDic[k]
+            SYSCTL_KEY = sysctlDic[k]
             sysctlValue = sysctlBUP[k]
-            cmd = self.cmd_write_sysctl(sysctlKey,sysctlValue)
+            cmd = self.cmd_write_sysctl(SYSCTL_KEY,sysctlValue)
             if not ns:
                 val = self.topo.command_global(cmd)
             else:
                 val = self.topo.command_to(who, cmd)
 
             if val == "Error":
-                print("oooops can't set sysctl " + sysctlKey)
+                print("oooops can't set sysctl " + SYSCTL_KEY)
 
 
     def runTcpDump(self):
@@ -292,3 +458,48 @@ class Experience(object):
                     "tcpdump -i any -s " + snaplenpcap + " -w server.pcap &")
         if spcap == "yes" or cpcap == "yes":
             self.topo.command_to(self.topo_config.client,"sleep 5")
+
+
+class RandomFileParameter(ExperienceParameter):
+    """
+    Parameters for the RandomFileExperience
+    """
+    FILE = "file"  # file to fetch; if random, we create a file with random data called random.
+    RANDOM_SIZE = "file_size"  # in KB
+
+    def __init__(self, experience_parameter_filename):
+        super(RandomFileParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            RandomFileParameter.FILE: "random",
+            RandomFileParameter.RANDOM_SIZE: "1024",
+        })
+
+class RandomFileExperience(Experience):
+    """
+    Enable a experience to use random files
+
+    This class is not directly instantiable
+    """
+    PARAMETER_CLASS = RandomFileParameter
+
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(RandomFileExperience, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
+        self.ping()
+        super(RandomFileExperience, self).classic_run()
+
+    def load_parameters(self):
+        super(RandomFileExperience, self).load_parameters()
+        self.file = self.experience_parameter.get(RandomFileParameter.FILE)
+        self.random_size = self.experience_parameter.get(RandomFileParameter.RANDOM_SIZE)
+
+    def prepare(self):
+        super(RandomFileExperience, self).prepare()
+        if self.file  == "random":
+            self.topo.command_to(self.topo_config.client,
+                "dd if=/dev/urandom of=random bs=1K count={}".format(self.random_size))
+
+    def clean(self):
+        super(RandomFileExperience, self).clean()
+        if self.file  == "random":
+            self.topo.command_to(self.topo_config.client, "rm random*")

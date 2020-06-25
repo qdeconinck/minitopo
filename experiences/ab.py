@@ -1,19 +1,30 @@
-from core.experience import Experience, ExperienceParameter
+from core.experience import RandomFileExperience, RandomFileParameter, ExperienceParameter
 import os
 
-class AB(Experience):
+
+class ABParameter(RandomFileParameter):
+    CONCURRENT_REQUESTS = "abConccurentRequests"
+    TIME_LIMIT = "abTimelimit"
+
+    def __init__(self, experience_parameter_filename):
+        super(ABParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            ABParameter.CONCURRENT_REQUESTS: "50",
+            ABParameter.TIME_LIMIT: "20",
+        })
+
+
+class AB(RandomFileExperience):
     NAME = "ab"
+    PARAMETER_CLASS = ABParameter
 
     SERVER_LOG = "ab_server.log"
     CLIENT_LOG = "ab_client.log"
     AB_BIN = "ab"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(AB, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
-        self.ping()
-        super(AB, self).classic_run()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(AB, self).__init__(experience_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client,
@@ -30,49 +41,39 @@ class AB(Experience):
         print(s)
         return s
 
-    def loadParam(self):
-        self.file = self.experience_parameter.get(ExperienceParameter.HTTPFILE)
-        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPRANDOMSIZE)
-        self.concurrent_requests = self.experience_parameter.get(ExperienceParameter.ABCONCURRENTREQUESTS)
-        self.timelimit = self.experience_parameter.get(ExperienceParameter.ABTIMELIMIT)
+    def load_parameters(self):
+        super(AB, self).load_parameters()
+        self.concurrent_requests = self.experience_parameter.get(ABParameter.CONCURRENT_REQUESTS)
+        self.time_limit = self.experience_parameter.get(ABParameter.TIME_LIMIT)
 
     def prepare(self):
-        Experience.prepare(self)
+        super(AB, self).prepare()
         self.topo.command_to(self.topo_config.client, "rm " + \
                 AB.CLIENT_LOG )
         self.topo.command_to(self.topo_config.server, "rm " + \
                 AB.SERVER_LOG )
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client,
-                "dd if=/dev/urandom of=random bs=1K count=" + \
-                self.random_size)
 
-    def getAbServerCmd(self):
-        s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-                "/utils/http_server.py &>" + AB.SERVER_LOG + "&"
+    def get_ab_server_cmd(self):
+        s = "python {}/../utils/http_server.py &> {} 2>&1 &".format(
+            os.path.dirname(os.path.abspath(__file__)), AB.SERVER_LOG)
         print(s)
         return s
 
-    def getAbClientCmd(self):
-        s = AB.AB_BIN + " -c " + self.concurrent_requests + " -t " + \
-             self.timelimit + " http://" + self.topo_config.getServerIP() + "/" + self.file + \
-            " &>" + AB.CLIENT_LOG
+    def get_ab_client_cmd(self):
+        s = "{} -c {} -t {} http://{}/{} &> {}".format(AB.AB_BIN, self.concurrent_requests,
+            self.time_limit, self.topo_config.getServerIP(), self.file, AB.CLIENT_LOG)
         print(s)
         return s
 
     def clean(self):
-        Experience.clean(self)
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client, "rm random*")
-        #todo use cst
-        #self.topo.command_to(self.topo_config.server, "killall netcat")
-
+        super(AB, self).clean()
 
     def run(self):
-        cmd = self.getAbServerCmd()
+        cmd = self.get_ab_server_cmd()
         self.topo.command_to(self.topo_config.server, cmd)
-
-        self.topo.command_to(self.topo_config.client, "sleep 2")
-        cmd = self.getAbClientCmd()
+        print("Wait for the HTTP server to be up, this can take quite a while...")
+        self.topo.command_to(self.topo_config.client, "sleep 15")
+        cmd = self.get_ab_client_cmd()
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.client, "sleep 2")
+        self.topo.get_cli()

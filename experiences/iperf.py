@@ -1,17 +1,29 @@
 from core.experience import Experience, ExperienceParameter
 import os
 
+class IPerfParameter(ExperienceParameter):
+    TIME = "iperfTime"
+    PARALLEL = "iperfParallel"
+
+    def __init__(self, experience_parameter_filename):
+        super(IPerfParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            IPerfParameter.TIME: "10",
+            IPerfParameter.PARALLEL: "1",
+        })
+
 class IPerf(Experience):
     NAME = "iperf"
+    PARAMETER_CLASS = IPerfParameter
 
     IPERF_LOG = "iperf.log"
     SERVER_LOG = "server.log"
     IPERF_BIN = "iperf3"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(IPerf, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(IPerf, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(IPerf, self).classic_run()
 
@@ -30,9 +42,9 @@ class IPerf(Experience):
         print(s)
         return s
 
-    def loadParam(self):
-        self.time = self.experience_parameter.get(ExperienceParameter.IPERFTIME)
-        self.parallel = self.experience_parameter.get(ExperienceParameter.IPERFPARALLEL)
+    def load_parameters(self):
+        self.time = self.experience_parameter.get(IPerfParameter.TIME)
+        self.parallel = self.experience_parameter.get(IPerfParameter.PARALLEL)
 
     def prepare(self):
         super(IPerf, self).prepare()

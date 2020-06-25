@@ -1,7 +1,7 @@
-from core.experience import Experience, ExperienceParameter
+from core.experience import ExperienceParameter, RandomFileExperience, RandomFileParameter
 import os
 
-class HTTPS(Experience):
+class HTTPS(RandomFileExperience):
     NAME = "https"
 
     SERVER_LOG = "https_server.log"
@@ -9,11 +9,9 @@ class HTTPS(Experience):
     WGET_BIN = "wget"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(HTTPS, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
-        self.ping()
-        super(HTTPS, self).classic_run()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        # Just rely on RandomFileExperiment
+        super(HTTPS, self).__init__(experience_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
@@ -30,9 +28,9 @@ class HTTPS(Experience):
         print(s)
         return s
 
-    def loadParam(self):
-        self.file = self.experience_parameter.get(ExperienceParameter.HTTPSFILE)
-        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPSRANDOMSIZE)
+    def load_parameters(self):
+        # Just rely on RandomFileExperiment
+        super(HTTPS, self).load_parameters()
 
     def prepare(self):
         super(HTTPS, self).prepare()
@@ -40,10 +38,6 @@ class HTTPS(Experience):
                 HTTPS.CLIENT_LOG )
         self.topo.command_to(self.topo_config.server, "rm " + \
                 HTTPS.SERVER_LOG )
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client,
-                "dd if=/dev/urandom of=random bs=1K count=" + \
-                self.random_size)
 
     def getHTTPSServerCmd(self):
         s = "python {}/../utils/https_server.py {}/../utils/server.pem &> {}&".format(os.path.dirname(os.path.abspath(__file__)),
@@ -59,8 +53,6 @@ class HTTPS(Experience):
 
     def clean(self):
         super(HTTPS, self).clean()
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client, "rm random*")
 
     def run(self):
         cmd = self.getHTTPSServerCmd()
@@ -68,7 +60,7 @@ class HTTPS(Experience):
         self.topo.command_to(self.topo_config.server, cmd)
 
         print("Waiting for the server to run")
-        self.topo.command_to(self.topo_config.client, "sleep 15")
+        self.topo.command_to(self.topo_config.client, "sleep 2")
         cmd = self.getHTTPSClientCmd()
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         self.topo.command_to(self.topo_config.client, cmd)

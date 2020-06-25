@@ -5,8 +5,8 @@ class Ping(Experience):
 
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(Ping, self).__init__(experience_parameter, topo, topo_config)
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(Ping, self).__init__(experience_parameter_filename, topo, topo_config)
         super(Ping, self).classic_run()
 
     def prepare(self):

@@ -14,9 +14,9 @@ class DITG(Experience):
     PING_OUTPUT = "ping.log"
 
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(DITG, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(DITG, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(DITG, self).classic_run()
 
@@ -35,7 +35,7 @@ class DITG(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
         self.kbytes = self.experience_parameter.get(ExperienceParameter.DITGKBYTES)
         self.constant_packet_size = self.experience_parameter.get(ExperienceParameter.DITGCONSTANTPACKETSIZE)
         self.mean_poisson_packets_sec = self.experience_parameter.get(ExperienceParameter.DITGMEANPOISSONPACKETSSEC)

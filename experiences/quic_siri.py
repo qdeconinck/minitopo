@@ -12,9 +12,9 @@ class QUICSiri(Experience):
     SERVER_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/siri/siri.go"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(QUICSiri, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(QUICSiri, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(QUICSiri, self).classic_run()
 
@@ -33,7 +33,7 @@ class QUICSiri(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
         self.run_time = self.experience_parameter.get(ExperienceParameter.QUICSIRIRUNTIME)
         self.multipath = self.experience_parameter.get(ExperienceParameter.QUICMULTIPATH)
 

@@ -1,7 +1,7 @@
-from core.experience import Experience, ExperienceParameter
+from core.experience import ExperienceParameter, RandomFileExperience, RandomFileParameter
 import os
 
-class SiriHTTP(Experience):
+class SiriHTTP(RandomFileExperience):
     NAME = "sirihttp"
 
     HTTP_SERVER_LOG = "http_server.log"
@@ -13,11 +13,9 @@ class SiriHTTP(Experience):
     JAVA_BIN = "java"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(SiriHTTP, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
-        self.ping()
-        super(SiriHTTP, self).classic_run()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        # Just rely on RandomFileExperiment
+        super(SiriHTTP, self).__init__(experience_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
@@ -34,7 +32,9 @@ class SiriHTTP(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
+        # Start collecting parameters of RandomFileExperiment
+        super(SiriHTTP, self).load_parameters()
         self.run_time = self.experience_parameter.get(ExperienceParameter.SIRIRUNTIME)
         self.query_size = self.experience_parameter.get(ExperienceParameter.SIRIQUERYSIZE)
         self.response_size = self.experience_parameter.get(ExperienceParameter.SIRIRESPONSESIZE)
@@ -45,8 +45,6 @@ class SiriHTTP(Experience):
         self.buffer_size = self.experience_parameter.get(ExperienceParameter.SIRIBUFFERSIZE)
         self.burst_size = self.experience_parameter.get(ExperienceParameter.SIRIBURSTSIZE)
         self.interval_burst_time_ms = self.experience_parameter.get(ExperienceParameter.SIRIINTERVALBURSTTIMEMS)
-        self.file = self.experience_parameter.get(ExperienceParameter.HTTPFILE)
-        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPRANDOMSIZE)
 
     def prepare(self):
         super(SiriHTTP, self).prepare()

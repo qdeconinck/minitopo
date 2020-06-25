@@ -9,27 +9,19 @@ SimpleHTTPServer.py - simple HTTP server supporting SSL.
 usage: python SimpleHTTPServer.py
 '''
 
-import socket, os
-try:
-    # Python 2
-    from SocketServer import BaseServer
-    from BaseHTTPServer import HTTPServer
-    from SimpleHTTPServer import SimpleHTTPRequestHandler
-except ImportError:
+import sys
+if sys.version_info[0] == 3:
     # Python 3
-    from socketserver import BaseServer
-    from http.server import HTTPServer, SimpleHTTPRequestHandler
-
-from OpenSSL import SSL
-
-def test(HandlerClass=SimpleHTTPRequestHandler,
-         ServerClass=HTTPServer):
-    server_address = ('', 80)  # (address, port)
-    httpd = ServerClass(server_address, HandlerClass)
-    sa = httpd.socket.getsockname()
-    print("Serving HTTP on", sa[0], "port", sa[1], "...")
+    import http.server
+    server_address = ('', 80)
+    httpd = http.server.HTTPServer(server_address, http.server.SimpleHTTPRequestHandler)
+    print("Serving HTTP on 0.0.0.0 port 80...")
     httpd.serve_forever()
+else:
+    # Python2
+    import BaseHTTPServer, SimpleHTTPServer
+    import os
 
-
-if __name__ == '__main__':
-    test()
+    httpd = BaseHTTPServer.HTTPServer(('', 443), SimpleHTTPServer.SimpleHTTPRequestHandler)
+    print("Serving HTTP on 0.0.0.0 port 80...")
+    httpd.serve_forever()

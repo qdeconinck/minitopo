@@ -1,8 +1,19 @@
 from core.experience import Experience, ExperienceParameter
 import os
 
+class EploadParameter(ExperienceParameter):
+    TEST_DIR = "test_dir"
+
+    def __init__(self, experience_parameter_filename):
+        super(EploadParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            TEST_DIR: "/bla/bla/bla",
+        })
+
+
 class Epload(Experience):
     NAME = "epload"
+    PARAMETER_CLASS = EploadParameter
 
     SERVER_LOG = "http_server.log"
     EPLOAD_LOG = "epload.log"
@@ -10,9 +21,9 @@ class Epload(Experience):
     EPLOAD_EMULATOR="/home/mininet/epload/epload/emulator/run.js"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(Epload, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(Epload, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(Epload, self).classic_run()
 
@@ -31,8 +42,8 @@ class Epload(Experience):
         print(s)
         return s
 
-    def loadParam(self):
-        self.epload_test_dir = self.experience_parameter.get(ExperienceParameter.EPLOADTESTDIR)
+    def load_parameters(self):
+        self.test_dir = self.experience_parameter.get(EploadParameter.TEST_DIR)
 
     def prepare(self):
         super(Epload, self).prepare()
@@ -54,19 +65,19 @@ class Epload(Experience):
     def getEploadClientCmd(self):
         s = Epload.NODE_BIN + " " + Epload.EPLOAD_EMULATOR + \
                 " http " + \
-                self.epload_test_dir + " &>" + Epload.EPLOAD_LOG
+                self.test_dir + " &>" + Epload.EPLOAD_LOG
         print(s)
         return s
 
     def getSubHostCmd(self):
-        s = "for f in `ls " + self.epload_test_dir + "/*`; do " + \
+        s = "for f in `ls " + self.test_dir + "/*`; do " + \
             " sed -i 's/@host@/" + self.topo_config.getServerIP() + "/' " + \
             "$f; done"
         print(s)
         return s
 
     def getSubBackHostCmd(self):
-        s = "for f in `ls " + self.epload_test_dir + "/*`; do " + \
+        s = "for f in `ls " + self.test_dir + "/*`; do " + \
             " sed -i 's/" + self.topo_config.getServerIP() + "/@host@/' " + \
             "$f; done"
         print(s)

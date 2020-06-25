@@ -9,9 +9,9 @@ class Msg(Experience):
     CLIENT_ERR = "msg_client.err"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(Msg, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(Msg, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(Msg, self).classic_run()
 
@@ -30,7 +30,7 @@ class Msg(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
         self.client_sleep = self.experience_parameter.get(ExperienceParameter.MSGCLIENTSLEEP)
         self.server_sleep = self.experience_parameter.get(ExperienceParameter.MSGSERVERSLEEP)
         self.nb_requests = self.experience_parameter.get(ExperienceParameter.MSGNBREQUESTS)

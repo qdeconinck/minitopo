@@ -119,13 +119,13 @@ class TopoParameter(Parameter):
     RSUBNET = "rightSubnet"
     netemAt = "netemAt_"
     changeNetem = "changeNetem"
-    defaultValue = {}
-    defaultValue[LSUBNET] = "10.1."
-    defaultValue[RSUBNET] = "10.2."
-    defaultValue[changeNetem] = "false"
+    DEFAULT_PARAMETERS = {}
+    DEFAULT_PARAMETERS[LSUBNET] = "10.1."
+    DEFAULT_PARAMETERS[RSUBNET] = "10.2."
+    DEFAULT_PARAMETERS[changeNetem] = "false"
 
-    def __init__(self, paramFile):
-        Parameter.__init__(self, paramFile)
+    def __init__(self, parameter_filename):
+        Parameter.__init__(self, parameter_filename)
         self.linkCharacteristics = []
         self.loadLinkCharacteristics()
         self.loadNetemAt()
@@ -134,10 +134,10 @@ class TopoParameter(Parameter):
     def loadNetemAt(self):
         if not self.get(TopoParameter.changeNetem) == "yes":
             return
-        for k in sorted(self.paramDic):
+        for k in sorted(self.parameters):
             if k.startswith(TopoParameter.netemAt):
                 i = int(k[len(TopoParameter.netemAt):])
-                val = self.paramDic[k]
+                val = self.parameters[k]
                 if not isinstance(val, list):
                     tmp = val
                     val = []
@@ -159,9 +159,9 @@ class TopoParameter(Parameter):
 
     def loadLinkCharacteristics(self):
         i = 0
-        for k in sorted(self.paramDic):
+        for k in sorted(self.parameters):
             if k.startswith("path"):
-                tab = self.paramDic[k].split(",")
+                tab = self.parameters[k].split(",")
                 bup = False
                 loss = "0.0"
                 if len(tab) == 5:
@@ -180,13 +180,13 @@ class TopoParameter(Parameter):
                     i = i + 1
                 else:
                     print("Ignored path :")
-                    print(self.paramDic[k])
+                    print(self.parameters[k])
 
     def get(self, key):
         val = Parameter.get(self, key)
         if val is None:
-            if key in TopoParameter.defaultValue:
-                return TopoParameter.defaultValue[key]
+            if key in TopoParameter.DEFAULT_PARAMETERS:
+                return TopoParameter.DEFAULT_PARAMETERS[key]
             else:
                 raise Exception("Param not found " + key)
         else:

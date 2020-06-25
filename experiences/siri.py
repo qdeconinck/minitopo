@@ -10,9 +10,9 @@ class Siri(Experience):
     JAVA_BIN = "java"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(Siri, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(Siri, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(Siri, self).classic_run()
 
@@ -31,7 +31,7 @@ class Siri(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
         self.run_time = self.experience_parameter.get(ExperienceParameter.SIRIRUNTIME)
         self.query_size = self.experience_parameter.get(ExperienceParameter.SIRIQUERYSIZE)
         self.response_size = self.experience_parameter.get(ExperienceParameter.SIRIRESPONSESIZE)

@@ -10,9 +10,9 @@ class Netperf(Experience):
     NETSERVER_BIN = "netserver"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter, topo, topo_config):
-        super(Netperf, self).__init__(experience_parameter, topo, topo_config)
-        self.loadParam()
+    def __init__(self, experience_parameter_filename, topo, topo_config):
+        super(Netperf, self).__init__(experience_parameter_filename, topo, topo_config)
+        self.load_parameters()
         self.ping()
         super(Netperf, self).classic_run()
 
@@ -31,7 +31,7 @@ class Netperf(Experience):
         print(s)
         return s
 
-    def loadParam(self):
+    def load_parameters(self):
         self.testlen = self.experience_parameter.get(ExperienceParameter.NETPERFTESTLEN)
         self.testname = self.experience_parameter.get(ExperienceParameter.NETPERFTESTNAME)
         self.reqres_size = self.experience_parameter.get(ExperienceParameter.NETPERFREQRESSIZE)
