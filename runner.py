@@ -74,9 +74,9 @@ class Runner(object):
         """
         # Well, we need to load twice the experience parameters, is it really annoying?
         xp = ExperienceParameter(experience_parameter_file).get(ExperienceParameter.XPTYPE)
-        print(EXPERIENCES)
         if xp in EXPERIENCES:
-            EXPERIENCES[xp](experience_parameter_file, self.topo, self.topo_config)
+            exp = EXPERIENCES[xp](experience_parameter_file, self.topo, self.topo_config)
+            exp.classic_run()
         else:
             raise Exception("Unknown experience {}".format(xp))
 

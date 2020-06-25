@@ -1,8 +1,37 @@
 from core.experience import Experience, ExperienceParameter
 import os
 
+
+class SiriParameter(ExperienceParameter):
+    RUN_TIME = "siriRunTime"
+    QUERY_SIZE = "siriQuerySize"
+    RESPONSE_SIZE = "siriResponseSize"
+    DELAY_QUERY_RESPONSE = "siriDelayQueryResponse"
+    MIN_PAYLOAD_SIZE = "siriMinPayloadSize"
+    MAX_PAYLOAD_SIZE = "siriMaxPayloadSize"
+    INTERVAL_TIME_MS = "siriIntervalTimeMs"
+    BUFFER_SIZE = "siriBufferSize"
+    BURST_SIZE = "siriBurstSize"
+    INTERVAL_BURST_TIME_MS = "siriIntervalBurstTimeMs"
+
+    def __init__(self, experience_parameter_filename):
+        super(SiriParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            SiriParameter.QUERY_SIZE: "2500",
+            SiriParameter.RESPONSE_SIZE: "750",
+            SiriParameter.DELAY_QUERY_RESPONSE: "0",
+            SiriParameter.MIN_PAYLOAD_SIZE: "85",
+            SiriParameter.MAX_PAYLOAD_SIZE: "500",
+            SiriParameter.INTERVAL_TIME_MS: "333",
+            SiriParameter.BUFFER_SIZE: "9",
+            SiriParameter.BURST_SIZE: "0",
+            SiriParameter.INTERVAL_BURST_TIME_MS: "0",
+        })
+
+
 class Siri(Experience):
     NAME = "siri"
+    PARAMETER_CLASS = SiriParameter
 
     SERVER_LOG = "siri_server.log"
     CLIENT_LOG = "siri_client.log"
@@ -14,7 +43,6 @@ class Siri(Experience):
         super(Siri, self).__init__(experience_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
-        super(Siri, self).classic_run()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
@@ -32,16 +60,17 @@ class Siri(Experience):
         return s
 
     def load_parameters(self):
-        self.run_time = self.experience_parameter.get(ExperienceParameter.SIRIRUNTIME)
-        self.query_size = self.experience_parameter.get(ExperienceParameter.SIRIQUERYSIZE)
-        self.response_size = self.experience_parameter.get(ExperienceParameter.SIRIRESPONSESIZE)
-        self.delay_query_response = self.experience_parameter.get(ExperienceParameter.SIRIDELAYQUERYRESPONSE)
-        self.min_payload_size = self.experience_parameter.get(ExperienceParameter.SIRIMINPAYLOADSIZE)
-        self.max_payload_size = self.experience_parameter.get(ExperienceParameter.SIRIMAXPAYLOADSIZE)
-        self.interval_time_ms = self.experience_parameter.get(ExperienceParameter.SIRIINTERVALTIMEMS)
-        self.buffer_size = self.experience_parameter.get(ExperienceParameter.SIRIBUFFERSIZE)
-        self.burst_size = self.experience_parameter.get(ExperienceParameter.SIRIBURSTSIZE)
-        self.interval_burst_time_ms = self.experience_parameter.get(ExperienceParameter.SIRIINTERVALBURSTTIMEMS)
+        self.run_time = self.experience_parameter.get(SiriParameter.RUN_TIME)
+        self.query_size = self.experience_parameter.get(SiriParameter.QUERY_SIZE)
+        self.response_size = self.experience_parameter.get(SiriParameter.RESPONSE_SIZE)
+        self.delay_query_response = self.experience_parameter.get(SiriParameter.DELAY_QUERY_RESPONSE)
+        self.min_payload_size = self.experience_parameter.get(SiriParameter.MIN_PAYLOAD_SIZE)
+        self.max_payload_size = self.experience_parameter.get(SiriParameter.MAX_PAYLOAD_SIZE)
+        self.interval_time_ms = self.experience_parameter.get(SiriParameter.INTERVAL_TIME_MS)
+        self.buffer_size = self.experience_parameter.get(SiriParameter.BUFFER_SIZE)
+        self.burst_size = self.experience_parameter.get(SiriParameter.BURST_SIZE)
+        self.interval_burst_time_ms = self.experience_parameter.get(SiriParameter.INTERVAL_BURST_TIME_MS)
+        print("load parameter siri")
 
     def prepare(self):
         super(Siri, self).prepare()
@@ -50,18 +79,18 @@ class Siri(Experience):
         self.topo.command_to(self.topo_config.server, "rm " + \
                 Siri.SERVER_LOG)
 
-    def getSiriServerCmd(self):
-        s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-                "/utils/siri_server.py &>" + Siri.SERVER_LOG + "&"
+    def get_siri_server_cmd(self):
+        s = "python3 {}/../utils/siri_server.py &> {}&".format(
+            os.path.dirname(os.path.abspath(__file__)), Siri.SERVER_LOG)
         print(s)
         return s
 
-    def getSiriClientCmd(self):
-        s = Siri.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/utils/siriClient.jar " + \
-                self.topo_config.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
-                " " + self.delay_query_response + " " + self.min_payload_size + " " + \
-                self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \
-                " >" + Siri.CLIENT_LOG + " 2>" + Siri.CLIENT_ERR
+    def get_siri_client_cmd(self):
+        s = "{} -jar {}/../utils/siriClient.jar {} 8080 {} {} {} {} {} {} {} {} {} {} > {} 2> {}".format(
+            Siri.JAVA_BIN, os.path.dirname(os.path.abspath(__file__)), self.topo_config.getServerIP(),
+            self.run_time, self.query_size, self.response_size, self.delay_query_response,
+            self.min_payload_size, self.max_payload_size, self.interval_time_ms, self.buffer_size,
+            self.burst_size, self.interval_burst_time_ms, Siri.CLIENT_LOG, Siri.CLIENT_ERR)
         print(s)
         return s
 
@@ -69,12 +98,12 @@ class Siri(Experience):
         super(Siri, self).clean()
 
     def run(self):
-        cmd = self.getSiriServerCmd()
+        cmd = self.get_siri_server_cmd()
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
         self.topo.command_to(self.topo_config.server, cmd)
 
         self.topo.command_to(self.topo_config.client, "sleep 2")
-        cmd = self.getSiriClientCmd()
+        cmd = self.get_siri_client_cmd()
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")

@@ -34,7 +34,6 @@ class NC(Experience):
     def __init__(self, experience_parameter_filename, topo, topo_config):
         super(NC, self).__init__(experience_parameter_filename, topo, topo_config)
         self.load_parameters()
-        super(NC, self).classic_run()
     
     def load_parameters(self):
         self.ddibs = self.experience_parameter.get(NCParameter.DD_IBS)

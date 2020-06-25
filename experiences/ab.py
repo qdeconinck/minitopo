@@ -76,4 +76,3 @@ class AB(RandomFileExperience):
         cmd = self.get_ab_client_cmd()
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.client, "sleep 2")
-        self.topo.get_cli()

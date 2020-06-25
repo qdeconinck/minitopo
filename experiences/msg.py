@@ -1,6 +1,22 @@
 from core.experience import Experience, ExperienceParameter
 import os
 
+
+class MsgParameter(ExperienceParameter):
+    CLIENT_SLEEP = "msgClientSleep"
+    SERVER_SLEEP = "msgServerSleep"
+    NB_REQUESTS = "msgNbRequests"
+    BYTES = "msgBytes"
+
+    def __init__(self, experience_parameter_filename):
+        super(MsgParameter, self).__init__(experience_parameter_filename)
+        self.default_parameters.update({
+            MsgParameter.CLIENT_SLEEP: "5.0",
+            MsgParameter.SERVER_SLEEP: "5.0",
+            MsgParameter.NB_REQUESTS: "5",
+            MsgParameter.BYTES: "1200",
+        })
+
 class Msg(Experience):
     NAME = "msg"
 
@@ -13,7 +29,6 @@ class Msg(Experience):
         super(Msg, self).__init__(experience_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
-        super(Msg, self).classic_run()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
@@ -31,10 +46,11 @@ class Msg(Experience):
         return s
 
     def load_parameters(self):
-        self.client_sleep = self.experience_parameter.get(ExperienceParameter.MSGCLIENTSLEEP)
-        self.server_sleep = self.experience_parameter.get(ExperienceParameter.MSGSERVERSLEEP)
-        self.nb_requests = self.experience_parameter.get(ExperienceParameter.MSGNBREQUESTS)
-        self.bytes = self.experience_parameter.get(ExperienceParameter.MSGBYTES)
+        self.client_sleep = self.experience_parameter.get(MsgParameter.CLIENT_SLEEP)
+        self.server_sleep = self.experience_parameter.get(MsgParameter.SERVER_SLEEP)
+        self.nb_requests = self.experience_parameter.get(MsgParameter.NB_REQUESTS)
+        self.bytes = self.experience_parameter.get(MsgParameter.BYTES)
+        print("load parameter msg")
 
     def prepare(self):
         super(Msg, self).prepare()
@@ -43,16 +59,17 @@ class Msg(Experience):
         self.topo.command_to(self.topo_config.server, "rm " + \
                 Msg.SERVER_LOG)
 
-    def getMsgServerCmd(self):
-        s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-                "/utils/msg_server.py --sleep " + self.server_sleep + " --bytes " + self.bytes + " &>" + Msg.SERVER_LOG + "&"
+    def get_msg_server_cmd(self):
+        s = "python {}/../utils/msg_server.py --sleep {} --bytes {} &> {}&".format(
+           os.path.dirname(os.path.abspath(__file__)), self.server_sleep, self.bytes,
+           Msg.SERVER_LOG)
         print(s)
         return s
 
-    def getMsgClientCmd(self):
-        s = "python " + os.path.dirname(os.path.abspath(__file__))  + \
-                "/utils/msg_client.py --sleep " + self.client_sleep + " --nb " + self.nb_requests + \
-                " --bytes " + self.bytes + " >" + Msg.CLIENT_LOG + " 2>" + Msg.CLIENT_ERR
+    def get_msg_client_cmd(self, daemon=False):
+        s = "python {}/../utils/msg_client.py --sleep {} --nb {} --bytes {} > {} 2> {} {}".format(
+           os.path.dirname(os.path.abspath(__file__)), self.client_sleep, self.nb_requests,
+           self.bytes, Msg.CLIENT_LOG, Msg.CLIENT_ERR, "&" if daemon else "")
         print(s)
         return s
 
@@ -60,12 +77,12 @@ class Msg(Experience):
         super(Msg, self).clean()
 
     def run(self):
-        cmd = self.getMsgServerCmd()
+        cmd = self.get_msg_server_cmd()
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
         self.topo.command_to(self.topo_config.server, cmd)
 
         self.topo.command_to(self.topo_config.client, "sleep 2")
-        cmd = self.getMsgClientCmd()
+        cmd = self.get_msg_client_cmd()
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")

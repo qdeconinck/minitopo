@@ -26,29 +26,8 @@ class ExperienceParameter(Parameter):
     NETPERFTESTLEN = "netperfTestlen"
     NETPERFTESTNAME = "netperfTestname"
     NETPERFREQRESSIZE = "netperfReqresSize"
-
-    SIRIRUNTIME = "siriRunTime"
-    SIRIQUERYSIZE = "siriQuerySize"
-    SIRIRESPONSESIZE = "siriResponseSize"
-    SIRIDELAYQUERYRESPONSE = "siriDelayQueryResponse"
-    SIRIMINPAYLOADSIZE = "siriMinPayloadSize"
-    SIRIMAXPAYLOADSIZE = "siriMaxPayloadSize"
-    SIRIINTERVALTIMEMS = "siriIntervalTimeMs"
-    SIRIBUFFERSIZE = "siriBufferSize"
-    SIRIBURSTSIZE = "siriBurstSize"
-    SIRIINTERVALBURSTTIMEMS = "siriIntervalBurstTimeMs"
     VLCFILE = "vlcFile"
     VLCTIME = "vlcTime"
-    DITGKBYTES = "ditgKBytes"
-    DITGCONSTANTPACKETSIZE = "ditgConstantPacketSize"
-    DITGMEANPOISSONPACKETSSEC = "ditgMeanPoissonPacketsSec"
-    DITGCONSTANTPACKETSSEC = "ditgConstantPacketsSec"
-    DITGBURSTSONPACKETSSEC = "ditgBurstsOnPacketsSec"
-    DITGBURSTSOFFPACKETSSEC = "ditgBurstsOffPacketsSec"
-    MSGCLIENTSLEEP = "msgClientSleep"
-    MSGSERVERSLEEP = "msgServerSleep"
-    MSGNBREQUESTS = "msgNbRequests"
-    MSGBYTES = "msgBytes"
     QUICMULTIPATH = "quicMultipath"
     QUICSIRIRUNTIME = "quicSiriRunTime"
     PRIOPATH0 = "prioPath0"
@@ -107,27 +86,8 @@ class ExperienceParameter(Parameter):
         NETPERFTESTLEN: "10",
         NETPERFTESTNAME: "TCP_RR",
         NETPERFREQRESSIZE: "2K,256",
-        SIRIQUERYSIZE: "2500",
-        SIRIRESPONSESIZE: "750",
-        SIRIDELAYQUERYRESPONSE: "0",
-        SIRIMINPAYLOADSIZE: "85",
-        SIRIMAXPAYLOADSIZE: "500",
-        SIRIINTERVALTIMEMS: "333",
-        SIRIBUFFERSIZE: "9",
-        SIRIBURSTSIZE: "0",
-        SIRIINTERVALBURSTTIMEMS: "0",
         VLCFILE: "bunny_ibmff_360.mpd",
         VLCTIME: "0",
-        DITGKBYTES: "10000",
-        DITGCONSTANTPACKETSIZE: "1428",
-        DITGMEANPOISSONPACKETSSEC: "0",
-        DITGCONSTANTPACKETSSEC: "0",
-        DITGBURSTSONPACKETSSEC: "0",
-        DITGBURSTSOFFPACKETSSEC: "0",
-        MSGCLIENTSLEEP: "5.0",
-        MSGSERVERSLEEP: "5.0",
-        MSGNBREQUESTS: "5",
-        MSGBYTES: "1200",
         QUICMULTIPATH: "0",
         PRIOPATH0: "0",
         PRIOPATH1: "0",
@@ -191,8 +151,6 @@ class Experience(object):
         - A preparation phase through `prepare()` (generating experiment files,...)
         - A running phase through `run()` (where the actual experience takes place)
         - A cleaning phase through `clean()` (stopping traffic, removing generated files,...)
-
-        Typically, this function is called in the constructor of child classes.
         """
         self.prepare()
         self.run()
@@ -486,7 +444,6 @@ class RandomFileExperience(Experience):
         super(RandomFileExperience, self).__init__(experience_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
-        super(RandomFileExperience, self).classic_run()
 
     def load_parameters(self):
         super(RandomFileExperience, self).load_parameters()

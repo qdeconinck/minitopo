@@ -5,7 +5,6 @@ class NoneExperience(Experience):
 
     def __init__(self, experience_parameter_filename, topo, topo_config):
         super(NoneExperience, self).__init__(experience_parameter_filename, topo, topo_config)
-        super(NoneExperience, self).classic_run()
 
     def prepare(self):
         Experience.prepare(self)

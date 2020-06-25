@@ -16,7 +16,6 @@ class QUICSiri(Experience):
         super(QUICSiri, self).__init__(experience_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
-        super(QUICSiri, self).classic_run()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \

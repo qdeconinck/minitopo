@@ -1,7 +1,8 @@
 from core.experience import ExperienceParameter, RandomFileExperience, RandomFileParameter
+from .siri import Siri
 import os
 
-class SiriHTTP(RandomFileExperience):
+class SiriHTTP(Siri, RandomFileExperience):
     NAME = "sirihttp"
 
     HTTP_SERVER_LOG = "http_server.log"
@@ -33,18 +34,8 @@ class SiriHTTP(RandomFileExperience):
         return s
 
     def load_parameters(self):
-        # Start collecting parameters of RandomFileExperiment
+        # Start collecting parameters of RandomFileExperiment and Siri
         super(SiriHTTP, self).load_parameters()
-        self.run_time = self.experience_parameter.get(ExperienceParameter.SIRIRUNTIME)
-        self.query_size = self.experience_parameter.get(ExperienceParameter.SIRIQUERYSIZE)
-        self.response_size = self.experience_parameter.get(ExperienceParameter.SIRIRESPONSESIZE)
-        self.delay_query_response = self.experience_parameter.get(ExperienceParameter.SIRIDELAYQUERYRESPONSE)
-        self.min_payload_size = self.experience_parameter.get(ExperienceParameter.SIRIMINPAYLOADSIZE)
-        self.max_payload_size = self.experience_parameter.get(ExperienceParameter.SIRIMAXPAYLOADSIZE)
-        self.interval_time_ms = self.experience_parameter.get(ExperienceParameter.SIRIINTERVALTIMEMS)
-        self.buffer_size = self.experience_parameter.get(ExperienceParameter.SIRIBUFFERSIZE)
-        self.burst_size = self.experience_parameter.get(ExperienceParameter.SIRIBURSTSIZE)
-        self.interval_burst_time_ms = self.experience_parameter.get(ExperienceParameter.SIRIINTERVALBURSTTIMEMS)
 
     def prepare(self):
         super(SiriHTTP, self).prepare()
@@ -56,26 +47,6 @@ class SiriHTTP(RandomFileExperience):
                 SiriHTTP.HTTP_CLIENT_LOG)
         self.topo.command_to(self.topo_config.server, "rm " + \
                 SiriHTTP.HTTP_SERVER_LOG)
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client,
-                "dd if=/dev/urandom of=random bs=1K count=" + \
-                self.random_size)
-
-
-    def getSiriServerCmd(self):
-        s = "python3 " + os.path.dirname(os.path.abspath(__file__))  + \
-                "/utils/siri_server.py &>" + SiriHTTP.SERVER_LOG + "&"
-        print(s)
-        return s
-
-    def getSiriClientCmd(self):
-        s = SiriHTTP.JAVA_BIN + " -jar " + os.path.dirname(os.path.abspath(__file__))  + "/utils/siriClient.jar " + \
-                self.topo_config.getServerIP() + " 8080 " + self.run_time + " " + self.query_size + " " + self.response_size + \
-                " " + self.delay_query_response + " " + self.min_payload_size + " " + \
-                self.max_payload_size  + " " + self.interval_time_ms + " " + self.buffer_size + " " + self.burst_size + " " + self.interval_burst_time_ms + \
-                " >" + SiriHTTP.CLIENT_LOG + " 2>" + SiriHTTP.CLIENT_ERR
-        print(s)
-        return s
 
     def getHTTPServerCmd(self):
         s = "/etc/init.d/apache2 restart &>" + SiriHTTP.SERVER_LOG + "&"
@@ -90,11 +61,9 @@ class SiriHTTP(RandomFileExperience):
 
     def clean(self):
         super(SiriHTTP, self).clean()
-        if self.file  == "random":
-            self.topo.command_to(self.topo_config.client, "rm random*")
 
     def run(self):
-        cmd = self.getSiriServerCmd()
+        cmd = self.get_siri_server_cmd()
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
         self.topo.command_to(self.topo_config.server, cmd)
         cmd = self.getHTTPServerCmd()
@@ -104,7 +73,7 @@ class SiriHTTP(RandomFileExperience):
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         cmd = self.getHTTPClientCmd()
         self.topo.command_to(self.topo_config.client, "for i in {1..200}; do " + cmd + "; done &")
-        cmd = self.getSiriClientCmd()
+        cmd = self.get_siri_client_cmd()
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_after")
