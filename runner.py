@@ -73,7 +73,7 @@ class Runner(object):
         Match the name of the experiement and launch it
         """
         # Well, we need to load twice the experience parameters, is it really annoying?
-        xp = ExperienceParameter(experience_parameter_file).get(ExperienceParameter.XPTYPE)
+        xp = ExperienceParameter(experience_parameter_file).get(ExperienceParameter.XP_TYPE)
         if xp in EXPERIENCES:
             exp = EXPERIENCES[xp](experience_parameter_file, self.topo, self.topo_config)
             exp.classic_run()

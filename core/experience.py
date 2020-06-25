@@ -10,25 +10,25 @@ class ExperienceParameter(Parameter):
     SCHED      = "sched"
     CC		   = "congctrl"
     AUTOCORK   = "autocork"
-    EARLYRETRANS = "earlyRetrans"
+    EARLY_RETRANS = "earlyRetrans"
     KERNELPM   = "kpm"
     KERNELPMC  = "kpmc" #kernel path manager client / server
     KERNELPMS  = "kpms"
     USERPMC	   = "upmc"
     USERPMS	   = "upms" #userspace path manager client / server
-    USERPMCARGS   = "upmc_args"
-    USERPMSARGS   = "upms_args"
-    CLIENTPCAP = "clientPcap"
-    SERVERPCAP = "serverPcap"
-    SNAPLENPCAP = "snaplenPcap"
-    XPTYPE     = "xpType"
-    PINGCOUNT  = "pingCount"
-    PRIOPATH0 = "prioPath0"
-    PRIOPATH1 = "prioPath1"
-    BACKUPPATH0 = "backupPath0"
-    BACKUPPATH1 = "backupPath1"
+    USERPMC_ARGS   = "upmc_args"
+    USERPMS_ARGS   = "upms_args"
+    CLIENT_PCAP = "clientPcap"
+    SERVER_PCAP = "serverPcap"
+    SNAPLEN_PCAP = "snaplenPcap"
+    XP_TYPE     = "xpType"
+    PING_COUNT  = "pingCount"
+    PRIO_PATH0 = "prioPath0"
+    PRIO_PATH1 = "prioPath1"
+    BACKUP_PATH0 = "backupPath0"
+    BACKUP_PATH1 = "backupPath1"
     EXPIRATION = "expiration"
-    BUFFERAUTOTUNING = "bufferAutotuning"
+    BUFFER_AUTOTUNING = "bufferAutotuning"
     METRIC = "metric"
 
 
@@ -40,9 +40,9 @@ class ExperienceParameter(Parameter):
         SCHED: "net.mptcp.mptcp_scheduler",
         CC: "net.ipv4.tcp_congestion_control",
         AUTOCORK: "net.ipv4.tcp_autocorking",
-        EARLYRETRANS: "net.ipv4.tcp_early_retrans",
+        EARLY_RETRANS: "net.ipv4.tcp_early_retrans",
         EXPIRATION: "net.mptcp.mptcp_sched_expiration",
-        BUFFERAUTOTUNING: "net.ipv4.tcp_moderate_rcvbuf",
+        BUFFER_AUTOTUNING: "net.ipv4.tcp_moderate_rcvbuf",
     }
 
     # sysctl keys specific to client and server, independently
@@ -62,24 +62,24 @@ class ExperienceParameter(Parameter):
         KERNELPMS: "fullmesh",
         USERPMC: "fullmesh",
         USERPMS: "fullmesh",
-        USERPMCARGS: "",
-        USERPMSARGS: "",
+        USERPMC_ARGS: "",
+        USERPMS_ARGS: "",
         CC: "olia",
         SCHED: "default",
         AUTOCORK: "1",
-        EARLYRETRANS: "3",
+        EARLY_RETRANS: "3",
         EXPIRATION: "300",
-        BUFFERAUTOTUNING: "1",
+        BUFFER_AUTOTUNING: "1",
         METRIC: "-1",
-        CLIENTPCAP: "no",
-        SERVERPCAP: "no",
-        SNAPLENPCAP: "65535",  # Default snapping value of tcpdump
-        XPTYPE: "none",
-        PINGCOUNT: "5",
-        PRIOPATH0: "0",
-        PRIOPATH1: "0",
-        BACKUPPATH0: "0",
-        BACKUPPATH1: "0",
+        CLIENT_PCAP: "no",
+        SERVER_PCAP: "no",
+        SNAPLEN_PCAP: "65535",  # Default snapping value of tcpdump
+        XP_TYPE: "none",
+        PING_COUNT: "5",
+        PRIO_PATH0: "0",
+        PRIO_PATH1: "0",
+        BACKUP_PATH0: "0",
+        BACKUP_PATH1: "0",
     }
 
     def __init__(self, parameter_filename):
@@ -175,8 +175,8 @@ class Experience(object):
         """
         # Only meaningful if mpTopo is instance of MultiInterfaceTopo
         if isinstance(self.topo, MultiInterfaceTopo):
-            prioPath0 = self.experience_parameter.get(ExperienceParameter.PRIOPATH0)
-            prioPath1 = self.experience_parameter.get(ExperienceParameter.PRIOPATH1)
+            prioPath0 = self.experience_parameter.get(ExperienceParameter.PRIO_PATH0)
+            prioPath1 = self.experience_parameter.get(ExperienceParameter.PRIO_PATH1)
             if not prioPath0 == prioPath1:
                 self.topo.command_to(self.topo_config.client, "/home/mininet/iproute/ip/ip link set dev " +
                                         self.topo_config.getClientInterface(0) + " priority " + str(prioPath0))
@@ -189,11 +189,11 @@ class Experience(object):
                                       self.topo_config.getRouterInterfaceSwitch(1) + " priority " +
                                       str(prioPath1))
 
-            backupPath0 = self.experience_parameter.get(ExperienceParameter.BACKUPPATH0)
+            backupPath0 = self.experience_parameter.get(ExperienceParameter.BACKUP_PATH0)
             if int(backupPath0) > 0:
                 self.topo.command_to(self.topo_config.client, self.topo_config.interfaceBUPCommand(self.topo_config.getClientInterface(0)))
                 self.topo.command_to(self.topo_config.router, self.topo_config.interfaceBUPCommand(self.topo_config.getRouterInterfaceSwitch(0)))
-            backupPath1 = self.experience_parameter.get(ExperienceParameter.BACKUPPATH1)
+            backupPath1 = self.experience_parameter.get(ExperienceParameter.BACKUP_PATH1)
             if int(backupPath1) > 0:
                 self.topo.command_to(self.topo_config.client, self.topo_config.interfaceBUPCommand(self.topo_config.getClientInterface(1)))
                 self.topo.command_to(self.topo_config.router, self.topo_config.interfaceBUPCommand(self.topo_config.getRouterInterfaceSwitch(1)))
@@ -233,14 +233,14 @@ class Experience(object):
             print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
             upmc = self.experience_parameter.get(ExperienceParameter.USERPMC)
-            upmca = self.experience_parameter.get(ExperienceParameter.USERPMCARGS)
+            upmca = self.experience_parameter.get(ExperienceParameter.USERPMC_ARGS)
             self.topo.command_to(self.topo_config.client, upmc + \
                     " " + upmca + " &>upmc.log &")
         if self.experience_parameter.get(ExperienceParameter.KERNELPMS) != "netlink":
             print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
             upms = self.experience_parameter.get(ExperienceParameter.USERPMS)
-            upmsa = self.experience_parameter.get(ExperienceParameter.USERPMSARGS)
+            upmsa = self.experience_parameter.get(ExperienceParameter.USERPMS_ARGS)
             self.topo.command_to(self.topo_config.server, upms + \
                     " " + upmsa + " &>upms.log &")
 
@@ -392,9 +392,9 @@ class Experience(object):
 
     def runTcpDump(self):
         #todo : replace filename by cst
-        cpcap = self.experience_parameter.get(ExperienceParameter.CLIENTPCAP)
-        spcap = self.experience_parameter.get(ExperienceParameter.SERVERPCAP)
-        snaplenpcap = self.experience_parameter.get(ExperienceParameter.SNAPLENPCAP)
+        cpcap = self.experience_parameter.get(ExperienceParameter.CLIENT_PCAP)
+        spcap = self.experience_parameter.get(ExperienceParameter.SERVER_PCAP)
+        snaplenpcap = self.experience_parameter.get(ExperienceParameter.SNAPLEN_PCAP)
         if cpcap == "yes" :
             self.topo.command_to(self.topo_config.client,
                     "tcpdump -i any -s " + snaplenpcap + " -w client.pcap &")

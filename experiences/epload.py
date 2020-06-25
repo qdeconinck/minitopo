@@ -29,7 +29,7 @@ class Epload(Experience):
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 Epload.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
