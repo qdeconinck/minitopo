@@ -9,20 +9,20 @@ class VLC(Experience):
     VLC_BIN = "/home/mininet/vlc/vlc"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(VLC, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(VLC, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(VLC, self).classicRun()
+        super(VLC, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 VLC.PING_OUTPUT )
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -31,18 +31,18 @@ class VLC(Experience):
         return s
 
     def loadParam(self):
-        self.file = self.xpParam.getParam(ExperienceParameter.VLCFILE)
-        self.time = self.xpParam.getParam(ExperienceParameter.VLCTIME)
+        self.file = self.experience_parameter.get(ExperienceParameter.VLCFILE)
+        self.time = self.experience_parameter.get(ExperienceParameter.VLCTIME)
 
     def prepare(self):
         super(VLC, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 VLC.CLIENT_LOG )
-        self.mpTopo.commandTo(self.mpConfig.client, "Xvfb :66 &")
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+        self.topo.command_to(self.topo_config.client, "Xvfb :66 &")
+        self.topo.command_to(self.topo_config.server, "rm " + \
                 VLC.SERVER_LOG )
         if self.file  == "random":
-            self.mpTopo.commandTo(self.mpConfig.client,
+            self.topo.command_to(self.topo_config.client,
                 "dd if=/dev/urandom of=random bs=1K count=" + \
                 self.random_size)
 
@@ -55,7 +55,7 @@ class VLC(Experience):
         s = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mininet/usr/lib/ && sudo ldconfig && " \
                 + VLC.VLC_BIN + " -I dummy --x11-display :66" + \
                 " --adaptive-logic 3 --no-loop --play-and-exit " + \
-                " http://" + self.mpConfig.getServerIP() + \
+                " http://" + self.topo_config.getServerIP() + \
                 "/" + self.file + " 2>&1 | grep -E '(Neb|halp|bandwidth|late|Buffering|buffering)' > " + VLC.CLIENT_LOG
         if self.time != "0" :
             s = s + " &"
@@ -65,19 +65,19 @@ class VLC(Experience):
     def clean(self):
         super(VLC, self).clean(self)
         if self.file  == "random":
-            self.mpTopo.commandTo(self.mpConfig.client, "rm random*")
-        self.mpTopo.commandTo(self.mpConfig.client, "pkill Xvfb")
+            self.topo.command_to(self.topo_config.client, "rm random*")
+        self.topo.command_to(self.topo_config.client, "pkill Xvfb")
 
     def run(self):
         cmd = self.getVLCServerCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
+        self.topo.command_to(self.topo_config.server, cmd)
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 1")
+        self.topo.command_to(self.topo_config.client, "sleep 1")
         cmd = self.getVLCClientCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        self.topo.command_to(self.topo_config.client, cmd)
 
         if self.time != "0" :
-            self.mpTopo.commandTo(self.mpConfig.client, "sleep " + self.time)
-            self.mpTopo.commandTo(self.mpConfig.client, "pkill -9 -f vlc")
+            self.topo.command_to(self.topo_config.client, "sleep " + self.time)
+            self.topo.command_to(self.topo_config.client, "pkill -9 -f vlc")
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "sleep 2")

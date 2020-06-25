@@ -132,7 +132,7 @@ class TopoParameter(Parameter):
         print(self.__str__())
 
     def loadNetemAt(self):
-        if not self.getParam(TopoParameter.changeNetem) == "yes":
+        if not self.get(TopoParameter.changeNetem) == "yes":
             return
         for k in sorted(self.paramDic):
             if k.startswith(TopoParameter.netemAt):
@@ -182,8 +182,8 @@ class TopoParameter(Parameter):
                     print("Ignored path :")
                     print(self.paramDic[k])
 
-    def getParam(self, key):
-        val = Parameter.getParam(self, key)
+    def get(self, key):
+        val = Parameter.get(self, key)
         if val is None:
             if key in TopoParameter.defaultValue:
                 return TopoParameter.defaultValue[key]
@@ -207,8 +207,8 @@ class Topo(object):
     This class is not instantiable as it. You must define a child class with the
     `NAME` attribute.
     """
-    mininetBuilder = "mininet"
-    topoAttr    = "topoType"
+    MININET_BUILDER = "mininet"
+    TOPO_ATTR = "topoType"
     switchNamePrefix = "s"
     routerNamePrefix = "r"
     clientName = "Client"
@@ -220,25 +220,25 @@ class Topo(object):
     def __init__(self, topoBuilder, topoParam):
         self.topoBuilder = topoBuilder
         self.topoParam = topoParam
-        self.changeNetem = topoParam.getParam(TopoParameter.changeNetem)
+        self.changeNetem = topoParam.get(TopoParameter.changeNetem)
         self.logFile = open(Topo.cmdLog, 'w')
 
     def getLinkCharacteristics(self):
         return self.topoParam.linkCharacteristics
 
-    def commandTo(self, who, cmd):
+    def command_to(self, who, cmd):
         self.logFile.write(who.__str__() + " : " + cmd + "\n")
-        return self.topoBuilder.commandTo(who, cmd)
+        return self.topoBuilder.command_to(who, cmd)
 
-    def notNSCommand(self, cmd):
+    def command_global(self, cmd):
         """
         mainly use for not namespace sysctl.
         """
         self.logFile.write("Not_NS" + " : " + cmd + "\n")
-        return self.topoBuilder.notNSCommand(cmd)
+        return self.topoBuilder.command_global(cmd)
 
-    def getHost(self, who):
-        return self.topoBuilder.getHost(who)
+    def get_host(self, who):
+        return self.topoBuilder.get_host(who)
 
     def addHost(self, host):
         return self.topoBuilder.addHost(host)
@@ -249,17 +249,17 @@ class Topo(object):
     def addLink(self, fromA, toB, **kwargs):
         self.topoBuilder.addLink(fromA,toB,**kwargs)
 
-    def getCLI(self):
-        self.topoBuilder.getCLI()
+    def get_cli(self):
+        self.topoBuilder.get_cli()
 
-    def startNetwork(self):
-        self.topoBuilder.startNetwork()
+    def start_network(self):
+        self.topoBuilder.start_network()
 
     def closeLogFile(self):
         self.logFile.close()
 
-    def stopNetwork(self):
-        self.topoBuilder.stopNetwork()
+    def stop_network(self):
+        self.topoBuilder.stop_network()
 
 
 class TopoConfig(object):
@@ -276,7 +276,7 @@ class TopoConfig(object):
         self.topo = topo
         self.param = param
 
-    def configureNetwork(self):
+    def configure_network(self):
         print("Configure interfaces....Generic call ?")
         self.configureInterfaces()
         self.configureRoute()

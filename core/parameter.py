@@ -32,7 +32,7 @@ class Parameter(object):
                 print("In file " + paramFile)
         f.close()
 
-    def getParam(self, key):
+    def get(self, key):
         if key in self.paramDic:
             return self.paramDic[key]
         return None
@@ -210,8 +210,8 @@ class ExperienceParameter(Parameter):
     def __init__(self, paramFile):
         super(ExperienceParameter, self).__init__(paramFile)
 
-    def getParam(self, key):
-        val = super(ExperienceParameter, self).getParam(key)
+    def get(self, key):
+        val = super(ExperienceParameter, self).get(key)
         if val is None:
             if key in ExperienceParameter.defaultValue:
                 return ExperienceParameter.defaultValue[key]

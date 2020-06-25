@@ -12,30 +12,30 @@ class NC(Experience):
     CLIENT_NC_LOG = "netcat_client"
     NC_BIN = "netcat"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(NC, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(NC, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
-        super(NC, self).classicRun()
+        super(NC, self).classic_run()
     
     def loadParam(self):
-        self.ddibs = self.xpParam.getParam(ExperienceParameter.DDIBS)
-        self.ddobs = self.xpParam.getParam(ExperienceParameter.DDOBS)
-        self.ddcount = self.xpParam.getParam(ExperienceParameter.DDCOUNT)
-        self.ncServerPort = self.xpParam.getParam(ExperienceParameter.NCSERVERPORT)
+        self.ddibs = self.experience_parameter.get(ExperienceParameter.DDIBS)
+        self.ddobs = self.experience_parameter.get(ExperienceParameter.DDOBS)
+        self.ddcount = self.experience_parameter.get(ExperienceParameter.DDCOUNT)
+        self.ncServerPort = self.experience_parameter.get(ExperienceParameter.NCSERVERPORT)
         self.ncClientPort = []
-        for k in sorted(self.xpParam.paramDic):
+        for k in sorted(self.experience_parameter.paramDic):
             if k.startswith(ExperienceParameter.NCCLIENTPORT):
-                port = self.xpParam.paramDic[k]
+                port = self.experience_parameter.paramDic[k]
                 self.ncClientPort.append(port)
         if len(self.ncClientPort) == 0:
-            d = self.xpParam.getParam(ExperienceParameter.NCCLIENTPORT)
+            d = self.experience_parameter.get(ExperienceParameter.NCCLIENTPORT)
             self.ncClientPort.append(d)
 
     def prepare(self):
         super(NC, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 NC.CLIENT_NC_LOG )
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+        self.topo.command_to(self.topo_config.server, "rm " + \
                 NC.SERVER_NC_LOG )
 
     def getNCServerCmd(self, id):
@@ -53,7 +53,7 @@ class NC(Experience):
     def getNCClientCmd(self, id):
         s = NC.NC_BIN + " " + \
                 " -p " + self.ncClientPort[id] + " " + \
-                self.mpConfig.getServerIP() + " " + \
+                self.topo_config.getServerIP() + " " + \
                 self.ncServerPort + " " + \
                 "&>" + NC.CLIENT_NC_LOG + \
                 "_" + str(id) + ".log"
@@ -62,17 +62,17 @@ class NC(Experience):
 
     def clean(self):
         super(NC, self).clean()
-        self.mpTopo.commandTo(self.mpConfig.server, "killall netcat")
+        self.topo.command_to(self.topo_config.server, "killall netcat")
 
     def run(self):
         for i in range(0, len(self.ncClientPort)):
             cmd = self.getNCServerCmd(i)
-            self.mpConfig.server.sendCmd(cmd)
+            self.topo_config.server.sendCmd(cmd)
             
             cmd = self.getNCClientCmd(i)
-            self.mpTopo.commandTo(self.mpConfig.client, cmd)
+            self.topo.command_to(self.topo_config.client, cmd)
 
-            self.mpConfig.server.waitOutput()
+            self.topo_config.server.waitOutput()
             
-            self.mpTopo.commandTo(self.mpConfig.client, "sleep 1")
+            self.topo.command_to(self.topo_config.client, "sleep 1")
 

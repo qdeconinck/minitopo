@@ -12,20 +12,20 @@ class QUICSiri(Experience):
     SERVER_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/siri/siri.go"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(QUICSiri, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(QUICSiri, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(QUICSiri, self).classicRun()
+        super(QUICSiri, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 QUICSiri.PING_OUTPUT )
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -34,14 +34,14 @@ class QUICSiri(Experience):
         return s
 
     def loadParam(self):
-        self.run_time = self.xpParam.getParam(ExperienceParameter.QUICSIRIRUNTIME)
-        self.multipath = self.xpParam.getParam(ExperienceParameter.QUICMULTIPATH)
+        self.run_time = self.experience_parameter.get(ExperienceParameter.QUICSIRIRUNTIME)
+        self.multipath = self.experience_parameter.get(ExperienceParameter.QUICMULTIPATH)
 
     def prepare(self):
         super(QUICSiri, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 QUICSiri.CLIENT_LOG )
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+        self.topo.command_to(self.topo_config.server, "rm " + \
                 QUICSiri.SERVER_LOG )
 
     def getQUICSiriServerCmd(self):
@@ -52,7 +52,7 @@ class QUICSiri(Experience):
 
     def getQUICSiriClientCmd(self):
         s = QUICSiri.GO_BIN + " run " + QUICSiri.CLIENT_GO_FILE
-        s += " -addr " + self.mpConfig.getServerIP() + ":8080 -runTime " + self.run_time + "s"
+        s += " -addr " + self.topo_config.getServerIP() + ":8080 -runTime " + self.run_time + "s"
         if int(self.multipath) > 0:
             s += " -m"
         s += " &>" + QUICSiri.CLIENT_LOG
@@ -64,16 +64,16 @@ class QUICSiri(Experience):
 
     def run(self):
         cmd = self.getQUICSiriServerCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_before")
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
+        self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
+        self.topo.command_to(self.topo_config.server, cmd)
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "sleep 2")
         cmd = self.getQUICSiriClientCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_before")
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
-        self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
-        self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
-        self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + QUICSiri.SERVER_GO_FILE)
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
+        self.topo.command_to(self.topo_config.client, cmd)
+        self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")
+        self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_after")
+        self.topo.command_to(self.topo_config.server, "pkill -f " + QUICSiri.SERVER_GO_FILE)
+        self.topo.command_to(self.topo_config.client, "sleep 2")
         # Need to delete the go-build directory in tmp; could lead to no more space left error
-        self.mpTopo.commandTo(self.mpConfig.client, "rm -r /tmp/go-build*")
+        self.topo.command_to(self.topo_config.client, "rm -r /tmp/go-build*")

@@ -24,20 +24,20 @@ class NCPV(Experience):
     PV_BIN = "/usr/local/bin/pv"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(NCPV, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(NCPV, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(NCPV, self).classicRun()
+        super(NCPV, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 NCPV.PING_OUTPUT )
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -46,31 +46,31 @@ class NCPV(Experience):
         return s
 
     def loadParam(self):
-        self.pvg = self.xpParam.getParam(ExperienceParameter.PVG)
-        self.pvz = self.xpParam.getParam(ExperienceParameter.PVZ)
-        self.pvRateLimit = self.xpParam.getParam(ExperienceParameter.PVRATELIMIT)
-        self.ddibs = self.xpParam.getParam(ExperienceParameter.DDIBS)
-        self.ddobs = self.xpParam.getParam(ExperienceParameter.DDOBS)
-        self.ddcount = self.xpParam.getParam(ExperienceParameter.DDCOUNT)
-        self.ncServerPort = self.xpParam.getParam(ExperienceParameter.NCSERVERPORT)
-        self.pvRateLimit = self.xpParam.getParam(ExperienceParameter.PVRATELIMIT)
+        self.pvg = self.experience_parameter.get(ExperienceParameter.PVG)
+        self.pvz = self.experience_parameter.get(ExperienceParameter.PVZ)
+        self.pvRateLimit = self.experience_parameter.get(ExperienceParameter.PVRATELIMIT)
+        self.ddibs = self.experience_parameter.get(ExperienceParameter.DDIBS)
+        self.ddobs = self.experience_parameter.get(ExperienceParameter.DDOBS)
+        self.ddcount = self.experience_parameter.get(ExperienceParameter.DDCOUNT)
+        self.ncServerPort = self.experience_parameter.get(ExperienceParameter.NCSERVERPORT)
+        self.pvRateLimit = self.experience_parameter.get(ExperienceParameter.PVRATELIMIT)
         self.ncClientPort = []
-        for k in sorted(self.xpParam.paramDic):
+        for k in sorted(self.experience_parameter.paramDic):
             if k.startswith(ExperienceParameter.NCCLIENTPORT):
-                port = self.xpParam.paramDic[k]
+                port = self.experience_parameter.paramDic[k]
                 self.ncClientPort.append(port)
         if len(self.ncClientPort) == 0:
-            d = self.xpParam.getParam(ExperienceParameter.NCCLIENTPORT)
+            d = self.experience_parameter.get(ExperienceParameter.NCCLIENTPORT)
             self.ncClientPort.append(d)
         self.loadPvAt()
 
     def loadPvAt(self):
         self.changePvAt = []
-        self.changePv = self.xpParam.getParam(ExperienceParameter.CHANGEPV)
+        self.changePv = self.experience_parameter.get(ExperienceParameter.CHANGEPV)
         if self.changePv != "yes":
             print("Don't change pv rate...")
             return
-        changePvAt = self.xpParam.getParam(ExperienceParameter.CHANGEPVAT)
+        changePvAt = self.experience_parameter.get(ExperienceParameter.CHANGEPVAT)
         if not isinstance(changePvAt, list):
             changePvAt = [changePvAt]
         for p in changePvAt:
@@ -106,9 +106,9 @@ class NCPV(Experience):
 
     def prepare(self):
         super(NCPV, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 NCPV.CLIENT_NC_LOG )
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+        self.topo.command_to(self.topo_config.server, "rm " + \
                 NCPV.SERVER_NC_LOG )
 
     def getNCServerCmd(self, id):
@@ -128,7 +128,7 @@ class NCPV(Experience):
                 " -q --rate-limit " + self.pvRateLimit + \
                 " | " + NCPV.NC_BIN + " " + \
                 "  -p " + self.ncClientPort[id] + " " + \
-                self.mpConfig.getServerIP() + " " + \
+                self.topo_config.getServerIP() + " " + \
                 self.ncServerPort + " " + \
                 "&>" + NCPV.CLIENT_NC_LOG + \
                 "_" + str(id) + ".log"
@@ -140,28 +140,28 @@ class NCPV(Experience):
 
     def clean(self):
         super(NCPV, self).clean()
-        self.mpTopo.commandTo(self.mpConfig.server, "killall netcat")
+        self.topo.command_to(self.topo_config.server, "killall netcat")
 
     def run(self):
         for i in range(0, len(self.ncClientPort)):
             cmd = self.getNCServerCmd(i)
-            self.mpTopo.commandTo(self.mpConfig.server, cmd)
+            self.topo.command_to(self.topo_config.server, cmd)
 
             cmd = self.getNCClientCmd(i)
-            self.mpConfig.client.sendCmd(cmd)
+            self.topo_config.client.sendCmd(cmd)
 
             cmd = self.getPvPidCmd()
             self.pvPid = None
             while self.pvPid == None or self.pvPid == "": 
-                self.pvPid = self.mpTopo.commandTo(self.mpConfig.server, cmd)[:-1]
+                self.pvPid = self.topo.command_to(self.topo_config.server, cmd)[:-1]
                 print("guessing pv pid ... :" + str(self.pvPid))
 
             cmd = self.getPvChangeCmd()
             print(cmd)
-            self.mpTopo.commandTo(self.mpConfig.server, cmd)
+            self.topo.command_to(self.topo_config.server, cmd)
 
 
-            self.mpConfig.client.waitOutput()
+            self.topo_config.client.waitOutput()
 
-            self.mpTopo.commandTo(self.mpConfig.client, "sleep 1")
+            self.topo.command_to(self.topo_config.client, "sleep 1")
 

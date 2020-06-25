@@ -15,20 +15,20 @@ class QUIC(Experience):
     CERTPATH = "~/go/src/github.com/lucas-clemente/quic-go/example/"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(QUIC, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(QUIC, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(QUIC, self).classicRun()
+        super(QUIC, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 QUIC.PING_OUTPUT )
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -37,18 +37,18 @@ class QUIC(Experience):
         return s
 
     def loadParam(self):
-        self.file = self.xpParam.getParam(ExperienceParameter.HTTPSFILE)
-        self.random_size = self.xpParam.getParam(ExperienceParameter.HTTPSRANDOMSIZE)
-        self.multipath = self.xpParam.getParam(ExperienceParameter.QUICMULTIPATH)
+        self.file = self.experience_parameter.get(ExperienceParameter.HTTPSFILE)
+        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPSRANDOMSIZE)
+        self.multipath = self.experience_parameter.get(ExperienceParameter.QUICMULTIPATH)
 
     def prepare(self):
         super(QUIC, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 QUIC.CLIENT_LOG )
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+        self.topo.command_to(self.topo_config.server, "rm " + \
                 QUIC.SERVER_LOG )
         if self.file  == "random":
-            self.mpTopo.commandTo(self.mpConfig.client,
+            self.topo.command_to(self.topo_config.client,
                 "dd if=/dev/urandom of=random bs=1K count=" + \
                 self.random_size)
 
@@ -63,7 +63,7 @@ class QUIC(Experience):
         s = QUIC.GO_BIN + " run " + QUIC.CLIENT_GO_FILE
         if int(self.multipath) > 0:
             s += " -m"
-        s += " https://" + self.mpConfig.getServerIP() + ":6121/random &>" + QUIC.CLIENT_LOG
+        s += " https://" + self.topo_config.getServerIP() + ":6121/random &>" + QUIC.CLIENT_LOG
         print(s)
         return s
 
@@ -74,7 +74,7 @@ class QUIC(Experience):
         return s
 
     def getCongClientCmd(self, congID):
-        s = "(time " + QUIC.WGET + " https://" + self.mpConfig.getCongServerIP(congID) +\
+        s = "(time " + QUIC.WGET + " https://" + self.topo_config.getCongServerIP(congID) +\
                  "/" + self.file + " --no-check-certificate --disable-mptcp) &> https_client" + str(congID) + ".log &"
         print(s)
         return s
@@ -82,47 +82,47 @@ class QUIC(Experience):
     def clean(self):
         super(QUIC, self).clean()
         if self.file  == "random":
-            self.mpTopo.commandTo(self.mpConfig.client, "rm random*")
+            self.topo.command_to(self.topo_config.client, "rm random*")
 
     def run(self):
         cmd = self.getQUICServerCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_before")
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
+        self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
+        self.topo.command_to(self.topo_config.server, cmd)
 
-        if isinstance(self.mpConfig, MultiInterfaceCongConfig):
+        if isinstance(self.topo_config, MultiInterfaceCongConfig):
             i = 0
-            for cs in self.mpConfig.cong_servers:
+            for cs in self.topo_config.cong_servers:
                 cmd = self.getCongServerCmd(i)
-                self.mpTopo.commandTo(cs, cmd)
+                self.topo.command_to(cs, cmd)
                 i = i + 1
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "sleep 2")
 
-        self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_before")
+        self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         # First run congestion clients, then the main one
-        if isinstance(self.mpConfig, MultiInterfaceCongConfig):
+        if isinstance(self.topo_config, MultiInterfaceCongConfig):
             i = 0
-            for cc in self.mpConfig.cong_clients:
+            for cc in self.topo_config.cong_clients:
                 cmd = self.getCongClientCmd(i)
-                self.mpTopo.commandTo(cc, cmd)
+                self.topo.command_to(cc, cmd)
                 i = i + 1
 
         cmd = self.getQUICClientCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
-        self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
-        self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
+        self.topo.command_to(self.topo_config.client, cmd)
+        self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")
+        self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_after")
         # Wait for congestion traffic to end
-        if isinstance(self.mpConfig, MultiInterfaceCongConfig):
-            for cc in self.mpConfig.cong_clients:
-                self.mpTopo.commandTo(cc, "while pkill -f wget -0; do sleep 0.5; done")
+        if isinstance(self.topo_config, MultiInterfaceCongConfig):
+            for cc in self.topo_config.cong_clients:
+                self.topo.command_to(cc, "while pkill -f wget -0; do sleep 0.5; done")
 
-        self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + QUIC.SERVER_GO_FILE)
-        if isinstance(self.mpConfig, MultiInterfaceCongConfig):
-            for cs in self.mpConfig.cong_servers:
-                self.mpTopo.commandTo(cs, "pkill -f https_server.py")
+        self.topo.command_to(self.topo_config.server, "pkill -f " + QUIC.SERVER_GO_FILE)
+        if isinstance(self.topo_config, MultiInterfaceCongConfig):
+            for cs in self.topo_config.cong_servers:
+                self.topo.command_to(cs, "pkill -f https_server.py")
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "sleep 2")
         # Need to delete the go-build directory in tmp; could lead to no more space left error
-        self.mpTopo.commandTo(self.mpConfig.client, "rm -r /tmp/go-build*")
+        self.topo.command_to(self.topo_config.client, "rm -r /tmp/go-build*")
         # Remove cache data
-        self.mpTopo.commandTo(self.mpConfig.client, "rm cache_*")
+        self.topo.command_to(self.topo_config.client, "rm cache_*")

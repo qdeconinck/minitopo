@@ -9,20 +9,20 @@ class IPerf(Experience):
     IPERF_BIN = "iperf3"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(IPerf, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(IPerf, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(IPerf, self).classicRun()
+        super(IPerf, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 IPerf.PING_OUTPUT)
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -31,18 +31,18 @@ class IPerf(Experience):
         return s
 
     def loadParam(self):
-        self.time = self.xpParam.getParam(ExperienceParameter.IPERFTIME)
-        self.parallel = self.xpParam.getParam(ExperienceParameter.IPERFPARALLEL)
+        self.time = self.experience_parameter.get(ExperienceParameter.IPERFTIME)
+        self.parallel = self.experience_parameter.get(ExperienceParameter.IPERFPARALLEL)
 
     def prepare(self):
         super(IPerf, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " +
+        self.topo.command_to(self.topo_config.client, "rm " +
                 IPerf.IPERF_LOG)
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " +
+        self.topo.command_to(self.topo_config.server, "rm " +
                 IPerf.SERVER_LOG)
 
     def getClientCmd(self):
-        s = IPerf.IPERF_BIN + " -c " + self.mpConfig.getServerIP() + \
+        s = IPerf.IPERF_BIN + " -c " + self.topo_config.getServerIP() + \
             " -t " + self.time + " -P " + self.parallel + " &>" + IPerf.IPERF_LOG
         print(s)
         return s
@@ -58,9 +58,9 @@ class IPerf(Experience):
 
     def run(self):
         cmd = self.getServerCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
+        self.topo.command_to(self.topo_config.server, cmd)
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "sleep 2")
         cmd = self.getClientCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, cmd)
+        self.topo.command_to(self.topo_config.client, "sleep 2")

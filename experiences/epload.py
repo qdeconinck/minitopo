@@ -10,20 +10,20 @@ class Epload(Experience):
     EPLOAD_EMULATOR="/home/mininet/epload/epload/emulator/run.js"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(Epload, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(Epload, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(Epload, self).classicRun()
+        super(Epload, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 Epload.PING_OUTPUT )
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -32,13 +32,13 @@ class Epload(Experience):
         return s
 
     def loadParam(self):
-        self.epload_test_dir = self.xpParam.getParam(ExperienceParameter.EPLOADTESTDIR)
+        self.epload_test_dir = self.experience_parameter.get(ExperienceParameter.EPLOADTESTDIR)
 
     def prepare(self):
         super(Epload, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 Epload.EPLOAD_LOG )
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+        self.topo.command_to(self.topo_config.server, "rm " + \
                 Epload.SERVER_LOG )
 
     def getHTTPServerCmd(self):
@@ -60,14 +60,14 @@ class Epload(Experience):
 
     def getSubHostCmd(self):
         s = "for f in `ls " + self.epload_test_dir + "/*`; do " + \
-            " sed -i 's/@host@/" + self.mpConfig.getServerIP() + "/' " + \
+            " sed -i 's/@host@/" + self.topo_config.getServerIP() + "/' " + \
             "$f; done"
         print(s)
         return s
 
     def getSubBackHostCmd(self):
         s = "for f in `ls " + self.epload_test_dir + "/*`; do " + \
-            " sed -i 's/" + self.mpConfig.getServerIP() + "/@host@/' " + \
+            " sed -i 's/" + self.topo_config.getServerIP() + "/@host@/' " + \
             "$f; done"
         print(s)
         return s
@@ -77,16 +77,16 @@ class Epload(Experience):
 
     def run(self):
         cmd = self.getHTTPServerCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.server, cmd)
+        self.topo.command_to(self.topo_config.client, "sleep 2")
 
         cmd = self.getSubHostCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        self.topo.command_to(self.topo_config.client, cmd)
         cmd = self.getEploadClientCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        self.topo.command_to(self.topo_config.client, cmd)
         cmd = self.getSubBackHostCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        self.topo.command_to(self.topo_config.client, cmd)
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "sleep 2")
         cmd = self.getKillHTTPCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
+        self.topo.command_to(self.topo_config.server, cmd)

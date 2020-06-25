@@ -9,20 +9,20 @@ class HTTPS(Experience):
     WGET_BIN = "wget"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(HTTPS, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(HTTPS, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(HTTPS, self).classicRun()
+        super(HTTPS, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 HTTPS.PING_OUTPUT )
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -31,17 +31,17 @@ class HTTPS(Experience):
         return s
 
     def loadParam(self):
-        self.file = self.xpParam.getParam(ExperienceParameter.HTTPSFILE)
-        self.random_size = self.xpParam.getParam(ExperienceParameter.HTTPSRANDOMSIZE)
+        self.file = self.experience_parameter.get(ExperienceParameter.HTTPSFILE)
+        self.random_size = self.experience_parameter.get(ExperienceParameter.HTTPSRANDOMSIZE)
 
     def prepare(self):
         super(HTTPS, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 HTTPS.CLIENT_LOG )
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + \
+        self.topo.command_to(self.topo_config.server, "rm " + \
                 HTTPS.SERVER_LOG )
         if self.file  == "random":
-            self.mpTopo.commandTo(self.mpConfig.client,
+            self.topo.command_to(self.topo_config.client,
                 "dd if=/dev/urandom of=random bs=1K count=" + \
                 self.random_size)
 
@@ -52,7 +52,7 @@ class HTTPS(Experience):
         return s
 
     def getHTTPSClientCmd(self):
-        s = "(time " + HTTPS.WGET_BIN + " https://" + self.mpConfig.getServerIP() + \
+        s = "(time " + HTTPS.WGET_BIN + " https://" + self.topo_config.getServerIP() + \
                 "/" + self.file + " --no-check-certificate) &>" + HTTPS.CLIENT_LOG
         print(s)
         return s
@@ -60,19 +60,19 @@ class HTTPS(Experience):
     def clean(self):
         super(HTTPS, self).clean()
         if self.file  == "random":
-            self.mpTopo.commandTo(self.mpConfig.client, "rm random*")
+            self.topo.command_to(self.topo_config.client, "rm random*")
 
     def run(self):
         cmd = self.getHTTPSServerCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_before")
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
+        self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
+        self.topo.command_to(self.topo_config.server, cmd)
 
         print("Waiting for the server to run")
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 15")
+        self.topo.command_to(self.topo_config.client, "sleep 15")
         cmd = self.getHTTPSClientCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_before")
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
-        self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
-        self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
-        self.mpTopo.commandTo(self.mpConfig.server, "pkill -f https_server.py")
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
+        self.topo.command_to(self.topo_config.client, cmd)
+        self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")
+        self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_after")
+        self.topo.command_to(self.topo_config.server, "pkill -f https_server.py")
+        self.topo.command_to(self.topo_config.client, "sleep 2")

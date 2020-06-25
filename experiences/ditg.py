@@ -14,20 +14,20 @@ class DITG(Experience):
     PING_OUTPUT = "ping.log"
 
 
-    def __init__(self, xpParamFile, mpTopo, mpConfig):
-        super(DITG, self).__init__(xpParamFile, mpTopo, mpConfig)
+    def __init__(self, experience_parameter, topo, topo_config):
+        super(DITG, self).__init__(experience_parameter, topo, topo_config)
         self.loadParam()
         self.ping()
-        super(DITG, self).classicRun()
+        super(DITG, self).classic_run()
 
     def ping(self):
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + \
+        self.topo.command_to(self.topo_config.client, "rm " + \
                 Experience.PING_OUTPUT)
-        count = self.xpParam.getParam(ExperienceParameter.PINGCOUNT)
-        for i in range(0, self.mpConfig.getClientInterfaceCount()):
-             cmd = self.pingCommand(self.mpConfig.getClientIP(i),
-                 self.mpConfig.getServerIP(), n = count)
-             self.mpTopo.commandTo(self.mpConfig.client, cmd)
+        count = self.experience_parameter.get(ExperienceParameter.PINGCOUNT)
+        for i in range(0, self.topo_config.getClientInterfaceCount()):
+             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
@@ -36,21 +36,21 @@ class DITG(Experience):
         return s
 
     def loadParam(self):
-        self.kbytes = self.xpParam.getParam(ExperienceParameter.DITGKBYTES)
-        self.constant_packet_size = self.xpParam.getParam(ExperienceParameter.DITGCONSTANTPACKETSIZE)
-        self.mean_poisson_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGMEANPOISSONPACKETSSEC)
-        self.constant_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGCONSTANTPACKETSSEC)
-        self.bursts_on_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGBURSTSONPACKETSSEC)
-        self.bursts_off_packets_sec = self.xpParam.getParam(ExperienceParameter.DITGBURSTSOFFPACKETSSEC)
+        self.kbytes = self.experience_parameter.get(ExperienceParameter.DITGKBYTES)
+        self.constant_packet_size = self.experience_parameter.get(ExperienceParameter.DITGCONSTANTPACKETSIZE)
+        self.mean_poisson_packets_sec = self.experience_parameter.get(ExperienceParameter.DITGMEANPOISSONPACKETSSEC)
+        self.constant_packets_sec = self.experience_parameter.get(ExperienceParameter.DITGCONSTANTPACKETSSEC)
+        self.bursts_on_packets_sec = self.experience_parameter.get(ExperienceParameter.DITGBURSTSONPACKETSSEC)
+        self.bursts_off_packets_sec = self.experience_parameter.get(ExperienceParameter.DITGBURSTSOFFPACKETSSEC)
 
     def prepare(self):
         super(DITG, self).prepare()
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + DITG.DITG_LOG)
-        self.mpTopo.commandTo(self.mpConfig.server, "rm " + DITG.DITG_SERVER_LOG)
-        self.mpTopo.commandTo(self.mpConfig.client, "rm " + DITG.DITG_TEMP_LOG)
+        self.topo.command_to(self.topo_config.client, "rm " + DITG.DITG_LOG)
+        self.topo.command_to(self.topo_config.server, "rm " + DITG.DITG_SERVER_LOG)
+        self.topo.command_to(self.topo_config.client, "rm " + DITG.DITG_TEMP_LOG)
 
     def getClientCmd(self):
-        s = DITG.ITGSEND_BIN + " -a " + self.mpConfig.getServerIP() + \
+        s = DITG.ITGSEND_BIN + " -a " + self.topo_config.getServerIP() + \
             " -T TCP -k " + self.kbytes + " -l " + DITG.DITG_TEMP_LOG
 
         if self.constant_packet_size != "0":
@@ -76,11 +76,11 @@ class DITG(Experience):
 
     def run(self):
         cmd = self.getServerCmd()
-        self.mpTopo.commandTo(self.mpConfig.server, cmd)
+        self.topo.command_to(self.topo_config.server, cmd)
 
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, "sleep 2")
         cmd = self.getClientCmd()
-        self.mpTopo.commandTo(self.mpConfig.client, cmd)
-        self.mpTopo.commandTo(self.mpConfig.server, "pkill -9 -f ITGRecv")
-        self.mpTopo.commandTo(self.mpConfig.server, DITG.ITGDEC_BIN + " " + DITG.DITG_SERVER_TEMP_LOG + " &> " + DITG.DITG_SERVER_LOG)
-        self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
+        self.topo.command_to(self.topo_config.client, cmd)
+        self.topo.command_to(self.topo_config.server, "pkill -9 -f ITGRecv")
+        self.topo.command_to(self.topo_config.server, DITG.ITGDEC_BIN + " " + DITG.DITG_SERVER_TEMP_LOG + " &> " + DITG.DITG_SERVER_LOG)
+        self.topo.command_to(self.topo_config.client, "sleep 2")
