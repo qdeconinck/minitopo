@@ -1,8 +1,8 @@
-from core.experience import ExperienceParameter, RandomFileExperience, RandomFileParameter
+from core.experiment import ExperimentParameter, RandomFileExperiment, RandomFileParameter
 from .siri import Siri
 import os
 
-class SiriHTTP(Siri, RandomFileExperience):
+class SiriHTTP(Siri, RandomFileExperiment):
     NAME = "sirihttp"
 
     HTTP_SERVER_LOG = "http_server.log"
@@ -14,14 +14,14 @@ class SiriHTTP(Siri, RandomFileExperience):
     JAVA_BIN = "java"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
         # Just rely on RandomFileExperiment
-        super(SiriHTTP, self).__init__(experience_parameter_filename, topo, topo_config)
+        super(SiriHTTP, self).__init__(experiment_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 SiriHTTP.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)

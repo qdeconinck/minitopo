@@ -1,7 +1,7 @@
-from core.experience import RandomFileExperience, RandomFileParameter, ExperienceParameter
+from core.experiment import RandomFileExperiment, RandomFileParameter, ExperimentParameter
 import os
 
-class SendFile(RandomFileExperience):
+class SendFile(RandomFileExperiment):
     NAME = "sendfile"
 
     SERVER_LOG = "sendfile_server.log"
@@ -9,14 +9,14 @@ class SendFile(RandomFileExperience):
     WGET_BIN = "./client"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        # Just rely on RandomFileExperience
-        super(SendFile, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        # Just rely on RandomFileExperiment
+        super(SendFile, self).__init__(experiment_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 SendFile.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)

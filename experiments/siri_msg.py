@@ -1,4 +1,4 @@
-from core.experience import ExperienceParameter
+from core.experiment import ExperimentParameter
 from .siri import Siri, SiriParameter
 from .msg import Msg, MsgParameter
 import os
@@ -25,8 +25,8 @@ class SiriMsg(Siri, Msg):
     JAVA_BIN = "java"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(SiriMsg, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(SiriMsg, self).__init__(experiment_parameter_filename, topo, topo_config)
 
     def load_parameters(self):
         # Fetch both Msg and Siri parameters

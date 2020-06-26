@@ -1,9 +1,9 @@
 from .parameter import Parameter
 from topos.multi_interface import MultiInterfaceTopo
 
-class ExperienceParameter(Parameter):
+class ExperimentParameter(Parameter):
     """
-    Handler for experience parameters stored in configuration files
+    Handler for experiment parameters stored in configuration files
     """
     RMEM       = "rmem"
     WMEM       = "wmem"
@@ -53,7 +53,7 @@ class ExperienceParameter(Parameter):
         KERNELPMS: "net.mptcp.mptcp_path_manager",
     }
 
-    # Default values for unspecified experience parameters
+    # Default values for unspecified experiment parameters
     DEFAULT_PARAMETERS = {
         RMEM: "10240 87380 16777216",
         WMEM: "4096 16384 4194304",
@@ -83,11 +83,11 @@ class ExperienceParameter(Parameter):
     }
 
     def __init__(self, parameter_filename):
-        super(ExperienceParameter, self).__init__(parameter_filename)
-        self.default_parameters = ExperienceParameter.DEFAULT_PARAMETERS
+        super(ExperimentParameter, self).__init__(parameter_filename)
+        self.default_parameters = ExperimentParameter.DEFAULT_PARAMETERS
 
     def get(self, key):
-        val = super(ExperienceParameter, self).get(key)
+        val = super(ExperimentParameter, self).get(key)
         if val is None:
             if key in self.default_parameters:
                 return self.default_parameters[key]
@@ -97,37 +97,37 @@ class ExperienceParameter(Parameter):
             return val
 
 
-class Experience(object):
+class Experiment(object):
     """
-	Base class to instantiate an experience to perform.
+	Base class to instantiate an experiment to perform.
 
 	This class is not instantiable as it. You must define a child class with the
 	`NAME` attribute.
 
-    By default, an Experience relies on an instance of ExperienceParameter to
-    collect the parameters from the experience configuration file. However, an
-    experience may introduce specific parameters in the configuration file. In
+    By default, an Experiment relies on an instance of ExperimentParameter to
+    collect the parameters from the experiment configuration file. However, an
+    experiment may introduce specific parameters in the configuration file. In
     such case, the inherinting class must override the `PARAMETER_CLASS` class
-    variable to point to another class inheriting from ExperienceParameter.
+    variable to point to another class inheriting from ExperimentParameter.
 
     Attributes:
-        experience_parameter    Instance of ExperienceParameter
+        experiment_parameter    Instance of ExperimentParameter
         topo                    Instance of Topo
         topo_config             Instance of TopoConfig
 	"""
-    PARAMETER_CLASS = ExperienceParameter
+    PARAMETER_CLASS = ExperimentParameter
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
         """
-        Instantiation of this base class only load the experience parameter
+        Instantiation of this base class only load the experiment parameter
         """
-        self.experience_parameter = self.__class__.PARAMETER_CLASS(experience_parameter_filename)
+        self.experiment_parameter = self.__class__.PARAMETER_CLASS(experiment_parameter_filename)
         self.topo = topo
         self.topo_config = topo_config
 
     def load_parameters(self):
         """
-        Load the parameter of interest from self.experience_parameter
+        Load the parameter of interest from self.experiment_parameter
         """
         # Nothing to do in the base class
         pass
@@ -136,7 +136,7 @@ class Experience(object):
         """
         Default function to perform the experiment. It consists into three phases:
         - A preparation phase through `prepare()` (generating experiment files,...)
-        - A running phase through `run()` (where the actual experience takes place)
+        - A running phase through `run()` (where the actual experiment takes place)
         - A cleaning phase through `clean()` (stopping traffic, removing generated files,...)
         """
         self.prepare()
@@ -145,11 +145,11 @@ class Experience(object):
 
     def prepare(self):
         """
-        Prepare the environment to run the experience.
+        Prepare the environment to run the experiment.
         Typically, when you inherit from this class, you want to extend this
         method, while still calling this parent function.
 
-        TODO: split experience traffic and protocol configuration
+        TODO: split experiment traffic and protocol configuration
         """
         self.setup_sysctl()
         self.run_userspace_path_manager()  # TODO to move elsewhere
@@ -164,7 +164,7 @@ class Experience(object):
         """
         Function only meaningful for MPTCP and its specific scheduler
         """
-        metric = self.experience_parameter.get(ExperienceParameter.METRIC)
+        metric = self.experiment_parameter.get(ExperimentParameter.METRIC)
         if int(metric) >= 0:
             self.topo.command_global(
                 "echo {} > /sys/module/mptcp_sched_metric/parameters/metric".format(metric))
@@ -175,8 +175,8 @@ class Experience(object):
         """
         # Only meaningful if mpTopo is instance of MultiInterfaceTopo
         if isinstance(self.topo, MultiInterfaceTopo):
-            prioPath0 = self.experience_parameter.get(ExperienceParameter.PRIO_PATH0)
-            prioPath1 = self.experience_parameter.get(ExperienceParameter.PRIO_PATH1)
+            prioPath0 = self.experiment_parameter.get(ExperimentParameter.PRIO_PATH0)
+            prioPath1 = self.experiment_parameter.get(ExperimentParameter.PRIO_PATH1)
             if not prioPath0 == prioPath1:
                 self.topo.command_to(self.topo_config.client, "/home/mininet/iproute/ip/ip link set dev " +
                                         self.topo_config.getClientInterface(0) + " priority " + str(prioPath0))
@@ -189,11 +189,11 @@ class Experience(object):
                                       self.topo_config.getRouterInterfaceSwitch(1) + " priority " +
                                       str(prioPath1))
 
-            backupPath0 = self.experience_parameter.get(ExperienceParameter.BACKUP_PATH0)
+            backupPath0 = self.experiment_parameter.get(ExperimentParameter.BACKUP_PATH0)
             if int(backupPath0) > 0:
                 self.topo.command_to(self.topo_config.client, self.topo_config.interfaceBUPCommand(self.topo_config.getClientInterface(0)))
                 self.topo.command_to(self.topo_config.router, self.topo_config.interfaceBUPCommand(self.topo_config.getRouterInterfaceSwitch(0)))
-            backupPath1 = self.experience_parameter.get(ExperienceParameter.BACKUP_PATH1)
+            backupPath1 = self.experiment_parameter.get(ExperimentParameter.BACKUP_PATH1)
             if int(backupPath1) > 0:
                 self.topo.command_to(self.topo_config.client, self.topo_config.interfaceBUPCommand(self.topo_config.getClientInterface(1)))
                 self.topo.command_to(self.topo_config.router, self.topo_config.interfaceBUPCommand(self.topo_config.getRouterInterfaceSwitch(1)))
@@ -229,31 +229,31 @@ class Experience(object):
         self.topo.command_to(self.topo_config.router, cmd)
 
     def run_userspace_path_manager(self):
-        if self.experience_parameter.get(ExperienceParameter.KERNELPMC) != "netlink":
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMC) != "netlink":
             print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upmc = self.experience_parameter.get(ExperienceParameter.USERPMC)
-            upmca = self.experience_parameter.get(ExperienceParameter.USERPMC_ARGS)
+            upmc = self.experiment_parameter.get(ExperimentParameter.USERPMC)
+            upmca = self.experiment_parameter.get(ExperimentParameter.USERPMC_ARGS)
             self.topo.command_to(self.topo_config.client, upmc + \
                     " " + upmca + " &>upmc.log &")
-        if self.experience_parameter.get(ExperienceParameter.KERNELPMS) != "netlink":
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMS) != "netlink":
             print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upms = self.experience_parameter.get(ExperienceParameter.USERPMS)
-            upmsa = self.experience_parameter.get(ExperienceParameter.USERPMS_ARGS)
+            upms = self.experiment_parameter.get(ExperimentParameter.USERPMS)
+            upmsa = self.experiment_parameter.get(ExperimentParameter.USERPMS_ARGS)
             self.topo.command_to(self.topo_config.server, upms + \
                     " " + upmsa + " &>upms.log &")
 
     def cleanUserspacePM(self):
-        if self.experience_parameter.get(ExperienceParameter.KERNELPMC) != "netlink":
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMC) != "netlink":
             print("Client : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upmc = self.experience_parameter.get(ExperienceParameter.USERPMC)
+            upmc = self.experiment_parameter.get(ExperimentParameter.USERPMC)
             self.topo.command_to(self.topo_config.client, "killall " + upmc)
-        if self.experience_parameter.get(ExperienceParameter.KERNELPMS) != "netlink":
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMS) != "netlink":
             print("Server : Error, I can't change the userspace pm if the kernel pm is not netlink !")
         else:
-            upms = self.experience_parameter.get(ExperienceParameter.USERPMS)
+            upms = self.experiment_parameter.get(ExperimentParameter.USERPMS)
             self.topo.command_to(self.topo_config.server, "killall " + upms)
 
     def runNetemAt(self):
@@ -314,12 +314,12 @@ class Experience(object):
 
     def save_sysctl(self):
         self.sysctlBUP = {}
-        self._save_sysctl(ExperienceParameter.SYSCTL_KEY, self.sysctlBUP)
+        self._save_sysctl(ExperimentParameter.SYSCTL_KEY, self.sysctlBUP)
         self.sysctlBUPC = {}
-        self._save_sysctl(ExperienceParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
+        self._save_sysctl(ExperimentParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
                 ns = True, who = self.topo_config.client)
         self.sysctlBUPS = {}
-        self._save_sysctl(ExperienceParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
+        self._save_sysctl(ExperimentParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
                 ns = True, who = self.topo_config.server)
 
     def _save_sysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
@@ -349,16 +349,16 @@ class Experience(object):
         return s
 
     def write_sysctl(self):
-        self._write_sysctl(ExperienceParameter.SYSCTL_KEY, self.sysctlBUP)
-        self._write_sysctl(ExperienceParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
+        self._write_sysctl(ExperimentParameter.SYSCTL_KEY, self.sysctlBUP)
+        self._write_sysctl(ExperimentParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
                 ns = True, who = self.topo_config.client)
-        self._write_sysctl(ExperienceParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
+        self._write_sysctl(ExperimentParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
                 ns = True, who = self.topo_config.server)
 
     def _write_sysctl(self, sysctlDic, sysctlBUP, ns = False, who = None):
         for k in sysctlBUP:
             SYSCTL_KEY = sysctlDic[k]
-            sysctlValue = self.experience_parameter.get(k)
+            sysctlValue = self.experiment_parameter.get(k)
             cmd = self.cmd_write_sysctl(SYSCTL_KEY,sysctlValue)
             if not ns:
                 val = self.topo.command_global(cmd)
@@ -369,10 +369,10 @@ class Experience(object):
 
 
     def backUpSysctl(self):
-        self._backUpSysctl(ExperienceParameter.SYSCTL_KEY, self.sysctlBUP)
-        self._backUpSysctl(ExperienceParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
+        self._backUpSysctl(ExperimentParameter.SYSCTL_KEY, self.sysctlBUP)
+        self._backUpSysctl(ExperimentParameter.SYSCTL_KEY_CLIENT, self.sysctlBUPC,
                 ns = True, who = self.topo_config.client)
-        self._backUpSysctl(ExperienceParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
+        self._backUpSysctl(ExperimentParameter.SYSCTL_KEY_SERVER, self.sysctlBUPS,
                 ns = True, who = self.topo_config.server)
 
 
@@ -392,9 +392,9 @@ class Experience(object):
 
     def runTcpDump(self):
         #todo : replace filename by cst
-        cpcap = self.experience_parameter.get(ExperienceParameter.CLIENT_PCAP)
-        spcap = self.experience_parameter.get(ExperienceParameter.SERVER_PCAP)
-        snaplenpcap = self.experience_parameter.get(ExperienceParameter.SNAPLEN_PCAP)
+        cpcap = self.experiment_parameter.get(ExperimentParameter.CLIENT_PCAP)
+        spcap = self.experiment_parameter.get(ExperimentParameter.SERVER_PCAP)
+        snaplenpcap = self.experiment_parameter.get(ExperimentParameter.SNAPLEN_PCAP)
         if cpcap == "yes" :
             self.topo.command_to(self.topo_config.client,
                     "tcpdump -i any -s " + snaplenpcap + " -w client.pcap &")
@@ -405,46 +405,46 @@ class Experience(object):
             self.topo.command_to(self.topo_config.client,"sleep 5")
 
 
-class RandomFileParameter(ExperienceParameter):
+class RandomFileParameter(ExperimentParameter):
     """
-    Parameters for the RandomFileExperience
+    Parameters for the RandomFileExperiment
     """
     FILE = "file"  # file to fetch; if random, we create a file with random data called random.
     RANDOM_SIZE = "file_size"  # in KB
 
-    def __init__(self, experience_parameter_filename):
-        super(RandomFileParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(RandomFileParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             RandomFileParameter.FILE: "random",
             RandomFileParameter.RANDOM_SIZE: "1024",
         })
 
 
-class RandomFileExperience(Experience):
+class RandomFileExperiment(Experiment):
     """
-    Enable a experience to use random files
+    Enable a experiment to use random files
 
     This class is not directly instantiable
     """
     PARAMETER_CLASS = RandomFileParameter
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(RandomFileExperience, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(RandomFileExperiment, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
 
     def load_parameters(self):
-        super(RandomFileExperience, self).load_parameters()
-        self.file = self.experience_parameter.get(RandomFileParameter.FILE)
-        self.random_size = self.experience_parameter.get(RandomFileParameter.RANDOM_SIZE)
+        super(RandomFileExperiment, self).load_parameters()
+        self.file = self.experiment_parameter.get(RandomFileParameter.FILE)
+        self.random_size = self.experiment_parameter.get(RandomFileParameter.RANDOM_SIZE)
 
     def prepare(self):
-        super(RandomFileExperience, self).prepare()
+        super(RandomFileExperiment, self).prepare()
         if self.file  == "random":
             self.topo.command_to(self.topo_config.client,
                 "dd if=/dev/urandom of=random bs=1K count={}".format(self.random_size))
 
     def clean(self):
-        super(RandomFileExperience, self).clean()
+        super(RandomFileExperiment, self).clean()
         if self.file  == "random":
             self.topo.command_to(self.topo_config.client, "rm random*")

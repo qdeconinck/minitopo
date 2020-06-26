@@ -1,18 +1,18 @@
-from core.experience import Experience, ExperienceParameter
+from core.experiment import Experiment, ExperimentParameter
 import os
 
-class IPerfParameter(ExperienceParameter):
+class IPerfParameter(ExperimentParameter):
     TIME = "iperfTime"
     PARALLEL = "iperfParallel"
 
-    def __init__(self, experience_parameter_filename):
-        super(IPerfParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(IPerfParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             IPerfParameter.TIME: "10",
             IPerfParameter.PARALLEL: "1",
         })
 
-class IPerf(Experience):
+class IPerf(Experiment):
     NAME = "iperf"
     PARAMETER_CLASS = IPerfParameter
 
@@ -21,15 +21,15 @@ class IPerf(Experience):
     IPERF_BIN = "iperf3"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(IPerf, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(IPerf, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 IPerf.PING_OUTPUT)
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -42,8 +42,8 @@ class IPerf(Experience):
         return s
 
     def load_parameters(self):
-        self.time = self.experience_parameter.get(IPerfParameter.TIME)
-        self.parallel = self.experience_parameter.get(IPerfParameter.PARALLEL)
+        self.time = self.experiment_parameter.get(IPerfParameter.TIME)
+        self.parallel = self.experiment_parameter.get(IPerfParameter.PARALLEL)
 
     def prepare(self):
         super(IPerf, self).prepare()

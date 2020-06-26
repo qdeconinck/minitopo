@@ -1,19 +1,19 @@
-from core.experience import Experience, ExperienceParameter
+from core.experiment import Experiment, ExperimentParameter
 
 """
-Should be the mother of ExperienceNCPV, shame on me, should rewrite
-ExperienceNCPV as daughter class of this one.
+Should be the mother of ExperimentNCPV, shame on me, should rewrite
+ExperimentNCPV as daughter class of this one.
 """
 
-class NCParameter(ExperienceParameter):
+class NCParameter(ExperimentParameter):
     DD_IBS      = "ddIBS"
     DD_OBS      = "ddIBS"
     DD_COUNT    = "ddCount"
     SERVER_PORT = "ncServerPort"
     CLIENT_PORT = "ncClientPort"
 
-    def __init__(self, experience_parameter_filename):
-        super(NCParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(NCParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             NCParameter.DD_IBS: "1k",
             NCParameter.DD_OBS: "1k",
@@ -23,7 +23,7 @@ class NCParameter(ExperienceParameter):
         })
     
 
-class NC(Experience):
+class NC(Experiment):
     NAME = "nc"
     PARAMETER_CLASS = NCParameter
 
@@ -31,22 +31,22 @@ class NC(Experience):
     CLIENT_NC_LOG = "netcat_client"
     NC_BIN = "netcat"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(NC, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(NC, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
     
     def load_parameters(self):
-        self.ddibs = self.experience_parameter.get(NCParameter.DD_IBS)
-        self.ddobs = self.experience_parameter.get(NCParameter.DD_OBS)
-        self.ddcount = self.experience_parameter.get(NCParameter.DD_COUNT)
-        self.ncServerPort = self.experience_parameter.get(NCParameter.SERVER_PORT)
+        self.ddibs = self.experiment_parameter.get(NCParameter.DD_IBS)
+        self.ddobs = self.experiment_parameter.get(NCParameter.DD_OBS)
+        self.ddcount = self.experiment_parameter.get(NCParameter.DD_COUNT)
+        self.ncServerPort = self.experiment_parameter.get(NCParameter.SERVER_PORT)
         self.ncClientPort = []
-        for k in sorted(self.experience_parameter.paramDic):
+        for k in sorted(self.experiment_parameter.paramDic):
             if k.startswith(NCParameter.CLIENT_PORT):
-                port = self.experience_parameter.paramDic[k]
+                port = self.experiment_parameter.paramDic[k]
                 self.ncClientPort.append(port)
         if len(self.ncClientPort) == 0:
-            d = self.experience_parameter.get(NCParameter.CLIENT_PORT)
+            d = self.experiment_parameter.get(NCParameter.CLIENT_PORT)
             self.ncClientPort.append(d)
 
     def prepare(self):

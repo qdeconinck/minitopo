@@ -1,15 +1,15 @@
-from core.experience import Experience, ExperienceParameter
+from core.experiment import Experiment, ExperimentParameter
 import os
 
 
-class MsgParameter(ExperienceParameter):
+class MsgParameter(ExperimentParameter):
     CLIENT_SLEEP = "msgClientSleep"
     SERVER_SLEEP = "msgServerSleep"
     NB_REQUESTS = "msgNbRequests"
     BYTES = "msgBytes"
 
-    def __init__(self, experience_parameter_filename):
-        super(MsgParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(MsgParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             MsgParameter.CLIENT_SLEEP: "5.0",
             MsgParameter.SERVER_SLEEP: "5.0",
@@ -17,7 +17,7 @@ class MsgParameter(ExperienceParameter):
             MsgParameter.BYTES: "1200",
         })
 
-class Msg(Experience):
+class Msg(Experiment):
     NAME = "msg"
     PARAMETER_CLASS = MsgParameter
 
@@ -26,15 +26,15 @@ class Msg(Experience):
     CLIENT_ERR = "msg_client.err"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(Msg, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(Msg, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 Msg.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -47,10 +47,10 @@ class Msg(Experience):
         return s
 
     def load_parameters(self):
-        self.client_sleep = self.experience_parameter.get(MsgParameter.CLIENT_SLEEP)
-        self.server_sleep = self.experience_parameter.get(MsgParameter.SERVER_SLEEP)
-        self.nb_requests = self.experience_parameter.get(MsgParameter.NB_REQUESTS)
-        self.bytes = self.experience_parameter.get(MsgParameter.BYTES)
+        self.client_sleep = self.experiment_parameter.get(MsgParameter.CLIENT_SLEEP)
+        self.server_sleep = self.experiment_parameter.get(MsgParameter.SERVER_SLEEP)
+        self.nb_requests = self.experiment_parameter.get(MsgParameter.NB_REQUESTS)
+        self.bytes = self.experiment_parameter.get(MsgParameter.BYTES)
 
     def prepare(self):
         super(Msg, self).prepare()

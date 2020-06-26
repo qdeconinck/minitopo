@@ -1,4 +1,4 @@
-from .nc import NC, NCParameter, ExperienceParameter
+from .nc import NC, NCParameter, ExperimentParameter
 
 
 class NCPVParameter(NCParameter):
@@ -8,8 +8,8 @@ class NCPVParameter(NCParameter):
     CHANGE_PV   = "changePv"
     CHANGE_PV_AT = "changePvAt"
 
-    def __init__(self, experience_parameter_filename):
-        super(NCPVParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(NCPVParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             NCPVParameter.RATE_LIMIT: "400k",
             NCPVParameter.G: "10000",
@@ -42,15 +42,15 @@ class NCPV(NC):
     PV_BIN = "/usr/local/bin/pv"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(NCPV, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(NCPV, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 NCPV.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -64,18 +64,18 @@ class NCPV(NC):
 
     def load_parameters(self):
         super(NCPV, self).load_parameters()
-        self.pvg = self.experience_parameter.get(ExperienceParameter.PVG)
-        self.pvz = self.experience_parameter.get(ExperienceParameter.PVZ)
-        self.pvRateLimit = self.experience_parameter.get(ExperienceParameter.PVRATELIMIT)
+        self.pvg = self.experiment_parameter.get(ExperimentParameter.PVG)
+        self.pvz = self.experiment_parameter.get(ExperimentParameter.PVZ)
+        self.pvRateLimit = self.experiment_parameter.get(ExperimentParameter.PVRATELIMIT)
         self.loadPvAt()
 
     def loadPvAt(self):
         self.changePvAt = []
-        self.changePv = self.experience_parameter.get(ExperienceParameter.CHANGEPV)
+        self.changePv = self.experiment_parameter.get(ExperimentParameter.CHANGEPV)
         if self.changePv != "yes":
             print("Don't change pv rate...")
             return
-        changePvAt = self.experience_parameter.get(ExperienceParameter.CHANGEPVAT)
+        changePvAt = self.experiment_parameter.get(ExperimentParameter.CHANGEPVAT)
         if not isinstance(changePvAt, list):
             changePvAt = [changePvAt]
         for p in changePvAt:

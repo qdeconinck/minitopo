@@ -1,17 +1,17 @@
-from core.experience import Experience, ExperienceParameter
+from core.experiment import Experiment, ExperimentParameter
 import os
 
-class EploadParameter(ExperienceParameter):
+class EploadParameter(ExperimentParameter):
     TEST_DIR = "test_dir"
 
-    def __init__(self, experience_parameter_filename):
-        super(EploadParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(EploadParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             TEST_DIR: "/bla/bla/bla",
         })
 
 
-class Epload(Experience):
+class Epload(Experiment):
     NAME = "epload"
     PARAMETER_CLASS = EploadParameter
 
@@ -21,15 +21,15 @@ class Epload(Experience):
     EPLOAD_EMULATOR="/home/mininet/epload/epload/emulator/run.js"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(Epload, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(Epload, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 Epload.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -42,7 +42,7 @@ class Epload(Experience):
         return s
 
     def load_parameters(self):
-        self.test_dir = self.experience_parameter.get(EploadParameter.TEST_DIR)
+        self.test_dir = self.experiment_parameter.get(EploadParameter.TEST_DIR)
 
     def prepare(self):
         super(Epload, self).prepare()

@@ -1,8 +1,8 @@
-from core.experience import Experience, ExperienceParameter
+from core.experiment import Experiment, ExperimentParameter
 import os
 
 
-class DITGParameter(ExperienceParameter):
+class DITGParameter(ExperimentParameter):
     KBYTES = "ditgKBytes"
     CONSTANT_PACKET_SIZE = "ditgConstantPacketSize"
     MEAN_POISSON_PACKETS_SEC = "ditgMeanPoissonPacketsSec"
@@ -10,8 +10,8 @@ class DITGParameter(ExperienceParameter):
     BURSTS_ON_PACKETS_SEC = "ditgBurstsOnPacketsSec"
     BURSTS_OFF_PACKETS_SEC = "ditgBurstsOffPacketsSec"
 
-    def __init__(self, experience_parameter_filename):
-        super(DITGParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(DITGParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             DITGParameter.KBYTES: "10000",
             DITGParameter.CONSTANT_PACKET_SIZE: "1428",
@@ -22,7 +22,7 @@ class DITGParameter(ExperienceParameter):
         })
 
 
-class DITG(Experience):
+class DITG(Experiment):
     NAME = "ditg"
     PARAMETER_CLASS = DITGParameter
 
@@ -36,15 +36,15 @@ class DITG(Experience):
     PING_OUTPUT = "ping.log"
 
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(DITG, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(DITG, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
-                Experience.PING_OUTPUT)
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+                Experiment.PING_OUTPUT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -57,12 +57,12 @@ class DITG(Experience):
         return s
 
     def load_parameters(self):
-        self.kbytes = self.experience_parameter.get(DITGParameter.KBYTES)
-        self.constant_packet_size = self.experience_parameter.get(DITGParameter.CONSTANT_PACKET_SIZE)
-        self.mean_poisson_packets_sec = self.experience_parameter.get(DITGParameter.MEAN_POISSON_PACKETS_SEC)
-        self.constant_packets_sec = self.experience_parameter.get(DITGParameter.CONSTANT_PACKETS_SEC)
-        self.bursts_on_packets_sec = self.experience_parameter.get(DITGParameter.BURSTS_ON_PACKETS_SEC)
-        self.bursts_off_packets_sec = self.experience_parameter.get(DITGParameter.BURSTS_OFF_PACKETS_SEC)
+        self.kbytes = self.experiment_parameter.get(DITGParameter.KBYTES)
+        self.constant_packet_size = self.experiment_parameter.get(DITGParameter.CONSTANT_PACKET_SIZE)
+        self.mean_poisson_packets_sec = self.experiment_parameter.get(DITGParameter.MEAN_POISSON_PACKETS_SEC)
+        self.constant_packets_sec = self.experiment_parameter.get(DITGParameter.CONSTANT_PACKETS_SEC)
+        self.bursts_on_packets_sec = self.experiment_parameter.get(DITGParameter.BURSTS_ON_PACKETS_SEC)
+        self.bursts_off_packets_sec = self.experiment_parameter.get(DITGParameter.BURSTS_OFF_PACKETS_SEC)
 
     def prepare(self):
         super(DITG, self).prepare()

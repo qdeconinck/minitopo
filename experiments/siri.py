@@ -1,8 +1,8 @@
-from core.experience import Experience, ExperienceParameter
+from core.experiment import Experiment, ExperimentParameter
 import os
 
 
-class SiriParameter(ExperienceParameter):
+class SiriParameter(ExperimentParameter):
     RUN_TIME = "siriRunTime"
     QUERY_SIZE = "siriQuerySize"
     RESPONSE_SIZE = "siriResponseSize"
@@ -14,8 +14,8 @@ class SiriParameter(ExperienceParameter):
     BURST_SIZE = "siriBurstSize"
     INTERVAL_BURST_TIME_MS = "siriIntervalBurstTimeMs"
 
-    def __init__(self, experience_parameter_filename):
-        super(SiriParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(SiriParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             SiriParameter.QUERY_SIZE: "2500",
             SiriParameter.RESPONSE_SIZE: "750",
@@ -29,7 +29,7 @@ class SiriParameter(ExperienceParameter):
         })
 
 
-class Siri(Experience):
+class Siri(Experiment):
     NAME = "siri"
     PARAMETER_CLASS = SiriParameter
 
@@ -39,15 +39,15 @@ class Siri(Experience):
     JAVA_BIN = "java"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(Siri, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(Siri, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 Siri.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -60,16 +60,16 @@ class Siri(Experience):
         return s
 
     def load_parameters(self):
-        self.run_time = self.experience_parameter.get(SiriParameter.RUN_TIME)
-        self.query_size = self.experience_parameter.get(SiriParameter.QUERY_SIZE)
-        self.response_size = self.experience_parameter.get(SiriParameter.RESPONSE_SIZE)
-        self.delay_query_response = self.experience_parameter.get(SiriParameter.DELAY_QUERY_RESPONSE)
-        self.min_payload_size = self.experience_parameter.get(SiriParameter.MIN_PAYLOAD_SIZE)
-        self.max_payload_size = self.experience_parameter.get(SiriParameter.MAX_PAYLOAD_SIZE)
-        self.interval_time_ms = self.experience_parameter.get(SiriParameter.INTERVAL_TIME_MS)
-        self.buffer_size = self.experience_parameter.get(SiriParameter.BUFFER_SIZE)
-        self.burst_size = self.experience_parameter.get(SiriParameter.BURST_SIZE)
-        self.interval_burst_time_ms = self.experience_parameter.get(SiriParameter.INTERVAL_BURST_TIME_MS)
+        self.run_time = self.experiment_parameter.get(SiriParameter.RUN_TIME)
+        self.query_size = self.experiment_parameter.get(SiriParameter.QUERY_SIZE)
+        self.response_size = self.experiment_parameter.get(SiriParameter.RESPONSE_SIZE)
+        self.delay_query_response = self.experiment_parameter.get(SiriParameter.DELAY_QUERY_RESPONSE)
+        self.min_payload_size = self.experiment_parameter.get(SiriParameter.MIN_PAYLOAD_SIZE)
+        self.max_payload_size = self.experiment_parameter.get(SiriParameter.MAX_PAYLOAD_SIZE)
+        self.interval_time_ms = self.experiment_parameter.get(SiriParameter.INTERVAL_TIME_MS)
+        self.buffer_size = self.experiment_parameter.get(SiriParameter.BUFFER_SIZE)
+        self.burst_size = self.experiment_parameter.get(SiriParameter.BURST_SIZE)
+        self.interval_burst_time_ms = self.experiment_parameter.get(SiriParameter.INTERVAL_BURST_TIME_MS)
 
     def prepare(self):
         super(Siri, self).prepare()

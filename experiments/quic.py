@@ -1,19 +1,19 @@
-from core.experience import RandomFileExperience, RandomFileParameter, ExperienceParameter
+from core.experiment import RandomFileExperiment, RandomFileParameter, ExperimentParameter
 from topos.multi_interface_cong import MultiInterfaceCongConfig
 import os
 
 
-class QUICParameter(RandomFileExperience):
+class QUICParameter(RandomFileExperiment):
     MULTIPATH = "quicMultipath"
 
-    def __init__(self, experience_parameter_filename):
-        super(QUICParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(QUICParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             QUICParameter.MULTIPATH: "0",
         })
 
 
-class QUIC(RandomFileExperience):
+class QUIC(RandomFileExperiment):
     NAME = "quic"
     PARAMETER_CLASS = QUICParameter
 
@@ -26,14 +26,14 @@ class QUIC(RandomFileExperience):
     CERTPATH = "~/go/src/github.com/lucas-clemente/quic-go/example/"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        # Just rely on RandomFileExperience
-        super(QUIC, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        # Just rely on RandomFileExperiment
+        super(QUIC, self).__init__(experiment_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 QUIC.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -47,7 +47,7 @@ class QUIC(RandomFileExperience):
 
     def load_parameters(self):
         super(QUIC, self).load_parameters()
-        self.multipath = self.experience_parameter.get(QUICParameter.MULTIPATH)
+        self.multipath = self.experiment_parameter.get(QUICParameter.MULTIPATH)
 
     def prepare(self):
         super(QUIC, self).prepare()

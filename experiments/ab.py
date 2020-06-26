@@ -1,4 +1,4 @@
-from core.experience import RandomFileExperience, RandomFileParameter, ExperienceParameter
+from core.experiment import RandomFileExperiment, RandomFileParameter, ExperimentParameter
 import os
 
 
@@ -6,15 +6,15 @@ class ABParameter(RandomFileParameter):
     CONCURRENT_REQUESTS = "abConccurentRequests"
     TIME_LIMIT = "abTimelimit"
 
-    def __init__(self, experience_parameter_filename):
-        super(ABParameter, self).__init__(experience_parameter_filename)
+    def __init__(self, experiment_parameter_filename):
+        super(ABParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             ABParameter.CONCURRENT_REQUESTS: "50",
             ABParameter.TIME_LIMIT: "20",
         })
 
 
-class AB(RandomFileExperience):
+class AB(RandomFileExperiment):
     NAME = "ab"
     PARAMETER_CLASS = ABParameter
 
@@ -23,13 +23,13 @@ class AB(RandomFileExperience):
     AB_BIN = "ab"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
-        super(AB, self).__init__(experience_parameter_filename, topo, topo_config)
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
+        super(AB, self).__init__(experiment_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client,
                         "rm " + AB.PING_OUTPUT)
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -43,8 +43,8 @@ class AB(RandomFileExperience):
 
     def load_parameters(self):
         super(AB, self).load_parameters()
-        self.concurrent_requests = self.experience_parameter.get(ABParameter.CONCURRENT_REQUESTS)
-        self.time_limit = self.experience_parameter.get(ABParameter.TIME_LIMIT)
+        self.concurrent_requests = self.experiment_parameter.get(ABParameter.CONCURRENT_REQUESTS)
+        self.time_limit = self.experiment_parameter.get(ABParameter.TIME_LIMIT)
 
     def prepare(self):
         super(AB, self).prepare()

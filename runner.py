@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-from core.experience import Experience, ExperienceParameter, ExperienceParameter
+from core.experiment import Experiment, ExperimentParameter, ExperimentParameter
 from core.topo import Topo, TopoParameter
 
 from mininet_builder import MininetBuilder
 
-from experiences import EXPERIENCES
+from experiments import EXPERIMENTS
 from topos import TOPO_CONFIGS, TOPOS
 
 import logging
@@ -13,19 +13,19 @@ import logging
 
 class Runner(object):
     """
-    Run an experiment described by `experience_parameter_file` in the topology
+    Run an experiment described by `experiment_parameter_file` in the topology
     described by `topo_parameter_file` in the network environment built by
     `builder_type`.
 
     All the operations are done when calling the constructor.
     """
-    def __init__(self, builder_type, topo_parameter_file, experience_parameter_file):
+    def __init__(self, builder_type, topo_parameter_file, experiment_parameter_file):
         self.topo_parameter = TopoParameter(topo_parameter_file)
         self.set_builder(builder_type)
         self.set_topo()
         self.set_topo_config()
         self.start_topo()
-        self.run_experience(experience_parameter_file)
+        self.run_experiment(experiment_parameter_file)
         self.stop_topo()
 
     def set_builder(self, builder_type):
@@ -68,17 +68,17 @@ class Runner(object):
         self.topo.start_network()
         self.topo_config.configure_network()
 
-    def run_experience(self, experience_parameter_file):
+    def run_experiment(self, experiment_parameter_file):
         """
         Match the name of the experiement and launch it
         """
-        # Well, we need to load twice the experience parameters, is it really annoying?
-        xp = ExperienceParameter(experience_parameter_file).get(ExperienceParameter.XP_TYPE)
-        if xp in EXPERIENCES:
-            exp = EXPERIENCES[xp](experience_parameter_file, self.topo, self.topo_config)
+        # Well, we need to load twice the experiment parameters, is it really annoying?
+        xp = ExperimentParameter(experiment_parameter_file).get(ExperimentParameter.XP_TYPE)
+        if xp in EXPERIMENTS:
+            exp = EXPERIMENTS[xp](experiment_parameter_file, self.topo, self.topo_config)
             exp.classic_run()
         else:
-            raise Exception("Unknown experience {}".format(xp))
+            raise Exception("Unknown experiment {}".format(xp))
 
     def stop_topo(self):
         """
@@ -95,12 +95,12 @@ if __name__ == '__main__':
 
     parser.add_argument("--topo_param_file", "-t", required=True,
         help="path to the topo parameter file")
-    parser.add_argument("--experience_param_file", "-x",
-        help="path to the experience parameter file")
+    parser.add_argument("--experiment_param_file", "-x",
+        help="path to the experiment parameter file")
 
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
 
     # XXX Currently, there is no alternate topo builder...
-    Runner(Topo.MININET_BUILDER, args.topo_param_file, args.experience_param_file)
+    Runner(Topo.MININET_BUILDER, args.topo_param_file, args.experiment_param_file)

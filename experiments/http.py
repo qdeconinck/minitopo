@@ -1,22 +1,22 @@
-from core.experience import ExperienceParameter, RandomFileExperience, RandomFileParameter
+from core.experiment import ExperimentParameter, RandomFileExperiment, RandomFileParameter
 import os
 
-class HTTPS(RandomFileExperience):
-    NAME = "https"
+class HTTP(RandomFileExperiment):
+    NAME = "http"
 
-    SERVER_LOG = "https_server.log"
-    CLIENT_LOG = "https_client.log"
+    SERVER_LOG = "http_server.log"
+    CLIENT_LOG = "http_client.log"
     WGET_BIN = "wget"
     PING_OUTPUT = "ping.log"
 
-    def __init__(self, experience_parameter_filename, topo, topo_config):
+    def __init__(self, experiment_parameter_filename, topo, topo_config):
         # Just rely on RandomFileExperiment
-        super(HTTPS, self).__init__(experience_parameter_filename, topo, topo_config)
+        super(HTTP, self).__init__(experiment_parameter_filename, topo, topo_config)
 
     def ping(self):
         self.topo.command_to(self.topo_config.client, "rm " + \
-                HTTPS.PING_OUTPUT )
-        count = self.experience_parameter.get(ExperienceParameter.PING_COUNT)
+                HTTP.PING_OUTPUT )
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.getClientInterfaceCount()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
@@ -24,47 +24,44 @@ class HTTPS(RandomFileExperience):
 
     def pingCommand(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-                  " >> " + HTTPS.PING_OUTPUT
+                  " >> " + HTTP.PING_OUTPUT
         print(s)
         return s
 
     def load_parameters(self):
         # Just rely on RandomFileExperiment
-        super(HTTPS, self).load_parameters()
+        super(HTTP, self).load_parameters()
 
     def prepare(self):
-        super(HTTPS, self).prepare()
+        super(HTTP, self).prepare()
         self.topo.command_to(self.topo_config.client, "rm " + \
-                HTTPS.CLIENT_LOG )
+                HTTP.CLIENT_LOG )
         self.topo.command_to(self.topo_config.server, "rm " + \
-                HTTPS.SERVER_LOG )
+                HTTP.SERVER_LOG )
 
-    def getHTTPSServerCmd(self):
-        s = "python {}/../utils/https_server.py {}/../utils/server.pem &> {}&".format(os.path.dirname(os.path.abspath(__file__)),
-            os.path.dirname(os.path.abspath(__file__)), HTTPS.SERVER_LOG)
+    def getHTTPServerCmd(self):
+        s = "/etc/init.d/apache2 restart &> {}&".format(HTTP.SERVER_LOG)
         print(s)
         return s
 
-    def getHTTPSClientCmd(self):
-        s = "(time " + HTTPS.WGET_BIN + " https://" + self.topo_config.getServerIP() + \
-                "/" + self.file + " --no-check-certificate) &>" + HTTPS.CLIENT_LOG
+    def getHTTPClientCmd(self):
+        s = "(time {} http://{}/{} --no-check-certificate) &> {}".format(HTTP.WGET_BIN,
+            self.topo_config.getServerIP(), self.file, HTTP.CLIENT_LOG)
         print(s)
         return s
 
     def clean(self):
-        super(HTTPS, self).clean()
+        super(HTTP, self).clean()
 
     def run(self):
-        cmd = self.getHTTPSServerCmd()
+        cmd = self.getHTTPServerCmd()
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
         self.topo.command_to(self.topo_config.server, cmd)
 
-        print("Waiting for the server to run")
         self.topo.command_to(self.topo_config.client, "sleep 2")
-        cmd = self.getHTTPSClientCmd()
+        cmd = self.getHTTPClientCmd()
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_after")
-        self.topo.command_to(self.topo_config.server, "pkill -f https_server.py")
         self.topo.command_to(self.topo_config.client, "sleep 2")
