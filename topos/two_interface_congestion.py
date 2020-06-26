@@ -151,7 +151,7 @@ class TwoInterfaceCongestionConfig(TopoConfig):
         self.configureInterface(self.client, self.router, Topo.clientName + "-eth0", "10.0.0.1", netmask)
 
         if(links[0].back_up):
-            cmd = self.interfaceBUPCommand(Topo.clientName + "-eth0")
+            cmd = self.interface_backup_command(Topo.clientName + "-eth0")
             self.topo.command_to(self.client, cmd)
 
         self.configureInterface(self.router, self.client, Topo.routerName + "-eth0", "10.0.0.2", netmask)
@@ -161,7 +161,7 @@ class TwoInterfaceCongestionConfig(TopoConfig):
         self.configureInterface(self.client, self.routerCong, Topo.clientName + "-eth1", "10.0.1.1", netmask)
 
         if(links[1].back_up):
-            cmd = self.interfaceBUPCommand(Topo.clientName + "-eth1")
+            cmd = self.interface_backup_command(Topo.clientName + "-eth1")
             self.topo.command_to(self.client, cmd)
 
         self.configureInterface(self.routerCong, self.client, Topo.routerName + "Cong-eth0", "10.0.1.2", netmask)
@@ -219,16 +219,16 @@ class TwoInterfaceCongestionConfig(TopoConfig):
         serverIP = rSubnet + "0.1"
         return serverIP
 
-    def getClientInterfaceCount(self):
+    def client_interface_count(self):
         return len(self.topo.switch)
 
     def getRouterInterfaceServer(self):
-        return self.getRouterInterfaceSwitch(len(self.topo.switch))
+        return self.get_router_interface_to_switch(len(self.topo.switch))
 
-    def getClientInterface(self, interfaceID):
+    def get_client_interface(self, interfaceID):
         return Topo.clientName + "-eth" + str(interfaceID)
 
-    def getRouterInterfaceSwitch(self, interfaceID):
+    def get_router_interface_to_switch(self, interfaceID):
         return Topo.routerName + "-eth" + str(interfaceID)
 
     def getServerInterface(self):

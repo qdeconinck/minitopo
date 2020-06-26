@@ -17,7 +17,7 @@ class HTTP(RandomFileExperiment):
         self.topo.command_to(self.topo_config.client, "rm " + \
                 HTTP.PING_OUTPUT )
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
-        for i in range(0, self.topo_config.getClientInterfaceCount()):
+        for i in range(0, self.topo_config.client_interface_count()):
              cmd = self.pingCommand(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)

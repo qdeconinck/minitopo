@@ -1,5 +1,6 @@
 from .parameter import Parameter
 
+import logging
 import math
 
 
@@ -281,6 +282,79 @@ class TopoConfig(object):
         self.configureInterfaces()
         self.configureRoute()
 
+    def disable_tso(self):
+        """
+        Disable TSO on all interfaces
+        """
+        links = self.topo.getLinkCharacteristics()
+        for i, l in enumerate(links):
+            lname = self.getMidLeftName(i)
+            rname = self.getMidRightName(i)
+            lbox = self.topo.get_host(lname)
+            lif = self.getMidL2RInterface(i)
+            rif = self.getMidR2LInterface(i)
+            rbox = self.topo.get_host(rname)
+            print(str(lname) + " " + str(lif))
+            print(str(rname) + " " + str(rif))
+            print("boxes " + str(lbox) + " " + str(rbox))
+            cmd = "ethtool -K " + lif + " tso off"
+            print(cmd)
+            self.topo.command_to(lbox, cmd)
+            cmd = "ethtool -K " + rif + " tso off"
+            print(cmd)
+            self.topo.command_to(rbox, cmd)
+
+        # And for the server
+        cmd = "ethtool -K " + self.getServerInterface() + " tso off"
+        print(cmd)
+        self.topo.command_to(self.server, cmd)
+
+        cmd = "ethtool -K " + self.get_router_interface_to_switch(self.client_interface_count()) + " tso off"
+        print(cmd)
+        self.topo.command_to(self.router, cmd)
+
+    def run_netem_at(self):
+        """
+        Prepare netem commands to be run after some delay
+        """
+        if not self.topo.changeNetem == "yes":
+            # Just rely on defaults of TCLink
+            logging.debug("No need to change netem")
+            return
+
+        logging.info("Will change netem config on the fly")
+        links = self.topo.getLinkCharacteristics()
+        for i, l in enumerate(links):
+            lname = self.getMidLeftName(i)
+            rname = self.getMidRightName(i)
+            lbox = self.topo.get_host(lname)
+            lif = self.getMidL2RInterface(i)
+            rif = self.getMidR2LInterface(i)
+            rbox = self.topo.get_host(rname)
+            print(str(lname) + " " + str(lif))
+            print(str(rname) + " " + str(rif))
+            print("boxes " + str(lbox) + " " + str(rbox))
+            cmd = l.buildBwCmd(lif)
+            print(cmd)
+            self.topo.command_to(lbox, cmd)
+            cmd = l.buildBwCmd(rif)
+            print(cmd)
+            self.topo.command_to(rbox, cmd)
+            ilif = self.getMidL2RIncomingInterface(i)
+            irif = self.getMidR2LIncomingInterface(i)
+            cmd = l.buildPolicingCmd(ilif)
+            print(cmd)
+            self.topo.command_to(lbox, cmd)
+            cmd = l.buildPolicingCmd(irif)
+            print(cmd)
+            self.topo.command_to(rbox, cmd)
+            cmd = l.buildNetemCmd(irif)
+            print(cmd)
+            self.topo.command_to(rbox, cmd)
+            cmd = l.buildNetemCmd(ilif)
+            print(cmd)
+            self.topo.command_to(lbox, cmd)
+
     def getMidL2RInterface(self, id):
         "get Middle link, left to right interface"
         pass
@@ -298,10 +372,25 @@ class TopoConfig(object):
     def configureInterfaces(self):
         pass
 
-    def getClientInterfaceCount(self):
-        raise Exception("To be implemented")
+    def client_interface_count(self):
+        """
+        Return the number of client's interfaces
+        """
+        raise NotImplementedError()
 
-    def interfaceBUPCommand(self, interfaceName):
+    def get_client_interface(self, index):
+        """
+        Return the client's interface with index `index`
+        """
+        raise NotImplementedError()
+
+    def get_router_interface_to_switch(self, index):
+        """
+        Return the router's interface to switch with index `index`
+        """
+        raise NotImplementedError()
+
+    def interface_backup_command(self, interfaceName):
         s = "/home/mininet/git/iproute-mptcp/ip/ip link set dev " + interfaceName + " multipath backup "
         print(s)
         return s

@@ -150,7 +150,7 @@ class ECMPSingleInterfaceConfig(TopoConfig):
 
             i = i + 1
 
-        cmd = self.interfaceUpCommand(self.getClientInterface(0),
+        cmd = self.interfaceUpCommand(self.get_client_interface(0),
                 self.getClientIP(0), netmask)
         self.topo.command_to(self.client, cmd)
 
@@ -183,7 +183,7 @@ class ECMPSingleInterfaceConfig(TopoConfig):
         serverIP = rSubnet + "0.1"
         return serverIP
 
-    def getClientInterfaceCount(self):
+    def client_interface_count(self):
         return 1
 
     def getRouterInterfaceLSwitch(self, id):
@@ -192,7 +192,7 @@ class ECMPSingleInterfaceConfig(TopoConfig):
     def getRouterInterfaceRSwitch(self, id):
         return  Topo.routerNamePrefix + str(id) + "-eth1"
 
-    def getClientInterface(self, interfaceID):
+    def get_client_interface(self, interfaceID):
         return  Topo.clientName + "-eth" + str(interfaceID)
 
     def getServerInterface(self):
