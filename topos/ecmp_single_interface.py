@@ -22,7 +22,7 @@ class ECMPSingleInterfaceTopo(Topo):
             self.routers.append(self.addOneRouterPerLink(l))
             print("added : " + self.routers[-1])
             self.addLink(self.lswitch, self.routers[-1])
-            self.addLink(self.rswitch, self.routers[-1], **l.asDict())
+            self.addLink(self.rswitch, self.routers[-1], **l.as_dict())
 
     def addOneRouterPerLink(self, link):
         return self.addHost(Topo.routerNamePrefix +

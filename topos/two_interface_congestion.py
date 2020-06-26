@@ -25,7 +25,7 @@ class TwoInterfaceCongestionTopo(Topo):
         # Link between c1 and r2
         self.switch.append(self.addOneSwitchPerLink(self.topoParam.linkCharacteristics[0]))
         self.addLink(self.client, self.switch[-1])
-        self.addLink(self.switch[-1], self.router, **self.topoParam.linkCharacteristics[0].asDict())
+        self.addLink(self.switch[-1], self.router, **self.topoParam.linkCharacteristics[0].as_dict())
 
         # Link between c1 and r1
         self.addLink(self.client, self.routerCong)
@@ -33,12 +33,12 @@ class TwoInterfaceCongestionTopo(Topo):
         # Link between c2 and r1
         self.switch.append(self.addOneSwitchPerLink(self.topoParam.linkCharacteristics[2]))
         self.addLink(self.clientCong, self.switch[-1])
-        self.addLink(self.switch[-1], self.routerCong, **self.topoParam.linkCharacteristics[2].asDict())
+        self.addLink(self.switch[-1], self.routerCong, **self.topoParam.linkCharacteristics[2].as_dict())
 
         # Link between r1 and r2
         self.switch.append(self.addOneSwitchPerLink(self.topoParam.linkCharacteristics[1]))
         self.addLink(self.routerCong, self.switch[-1])
-        self.addLink(self.switch[-1], self.router, **self.topoParam.linkCharacteristics[1].asDict())
+        self.addLink(self.switch[-1], self.router, **self.topoParam.linkCharacteristics[1].as_dict())
 
         # Link between r2 and s1
         self.addLink(self.router, self.server)
@@ -150,7 +150,7 @@ class TwoInterfaceCongestionConfig(TopoConfig):
         # Link 0: Client - Router
         self.configureInterface(self.client, self.router, Topo.clientName + "-eth0", "10.0.0.1", netmask)
 
-        if(links[0].back_up):
+        if(links[0].backup):
             cmd = self.interface_backup_command(Topo.clientName + "-eth0")
             self.topo.command_to(self.client, cmd)
 
@@ -160,7 +160,7 @@ class TwoInterfaceCongestionConfig(TopoConfig):
         # Client - Router cong
         self.configureInterface(self.client, self.routerCong, Topo.clientName + "-eth1", "10.0.1.1", netmask)
 
-        if(links[1].back_up):
+        if(links[1].backup):
             cmd = self.interface_backup_command(Topo.clientName + "-eth1")
             self.topo.command_to(self.client, cmd)
 

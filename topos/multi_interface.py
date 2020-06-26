@@ -15,7 +15,7 @@ class MultiInterfaceTopo(Topo):
             self.switchClient.append(self.addSwitch1ForLink(l))
             self.addLink(self.client,self.switchClient[-1])
             self.switchServer.append(self.addSwitch2ForLink(l))
-            self.addLink(self.switchClient[-1], self.switchServer[-1], **l.asDict())
+            self.addLink(self.switchClient[-1], self.switchServer[-1], **l.as_dict())
             self.addLink(self.switchServer[-1],self.router)
         self.addLink(self.router, self.server)
 
@@ -90,7 +90,7 @@ class MultiInterfaceConfig(TopoConfig):
             clientIntfMac = self.client.intf(self.get_client_interface(i)).MAC()
             self.topo.command_to(self.router, "arp -s " + self.getClientIP(i) + " " + clientIntfMac)
 
-            if(links[i].back_up):
+            if(links[i].backup):
                 cmd = self.interface_backup_command(
                         self.get_client_interface(i))
                 self.topo.command_to(self.client, cmd)
