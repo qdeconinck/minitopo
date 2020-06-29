@@ -250,62 +250,60 @@ class BottleneckLink(object):
         topo_builder.add_link(self.bs2, self.bs3)
 
     def configure_bottleneck(self):
-        bs1 = self.topo.get_host(self.bs1)
-        bs2 = self.topo.get_host(self.bs2)
-        # NOTE: bs1.intfNames()[0] is lo...
+        bs1_interface_names = self.topo.get_interface_names(self.bs1)
+        bs2_interface_names = self.topo.get_interface_names(self.bs2)      
         # Flow bs0 -> bs3
         # Only once
-        clean_policing_cmd = self.link_characteristics.clean_policing_cmd(bs1.intfNames()[1])
+        clean_policing_cmd = self.link_characteristics.clean_policing_cmd(bs1_interface_names[0])
         logging.info(clean_policing_cmd)
-        self.topo.command_to(bs1, clean_policing_cmd)
-        policing_cmd = self.link_characteristics.build_policing_cmd(bs1.intfNames()[1])
+        self.topo.command_to(self.bs1, clean_policing_cmd)
+        policing_cmd = self.link_characteristics.build_policing_cmd(bs1_interface_names[0])
         logging.info(policing_cmd)
-        self.topo.command_to(bs1, policing_cmd)
-        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs1.intfNames()[-1])
+        self.topo.command_to(self.bs1, policing_cmd)
+        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs1_interface_names[-1])
         logging.info(shaping_cmd)
-        self.topo.command_to(bs1, shaping_cmd)
-        netem_cmd = self.link_characteristics.build_netem_cmd(bs2.intfNames()[-1],
+        self.topo.command_to(self.bs1, shaping_cmd)
+        netem_cmd = self.link_characteristics.build_netem_cmd(bs2_interface_names[-1],
             "loss {}".format(self.link_characteristics.loss))
         logging.info(netem_cmd)
-        self.topo.command_to(bs2, netem_cmd)
+        self.topo.command_to(self.bs2, netem_cmd)
 
         # Flow bs3 -> bs0
-        policing_cmd = self.link_characteristics.build_policing_cmd(bs2.intfNames()[-1])
+        policing_cmd = self.link_characteristics.build_policing_cmd(bs2_interface_names[-1])
         logging.info(policing_cmd)
-        self.topo.command_to(bs2, policing_cmd)
-        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs2.intfNames()[1])
+        self.topo.command_to(self.bs2, policing_cmd)
+        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs2_interface_names[0])
         logging.info(shaping_cmd)
-        self.topo.command_to(bs2, shaping_cmd)
-        netem_cmd = self.link_characteristics.build_netem_cmd(bs1.intfNames()[1],
+        self.topo.command_to(self.bs2, shaping_cmd)
+        netem_cmd = self.link_characteristics.build_netem_cmd(bs1_interface_names[0],
             "loss {}".format(self.link_characteristics.loss))
         logging.info(netem_cmd)
-        self.topo.command_to(bs1, netem_cmd)
+        self.topo.command_to(self.bs1, netem_cmd)
 
     def configure_changing_bottleneck(self):
-        bs1 = self.topo.get_host(self.bs1)
-        bs2 = self.topo.get_host(self.bs2)
-        # NOTE: bs1.intfNames()[0] is lo...
+        bs1_interface_names = self.topo.get_interface_names(self.bs1)
+        bs2_interface_names = self.topo.get_interface_names(self.bs2)
         # Flow bs0 -> bs3
-        policing_cmd = self.link_characteristics.build_changing_policing_cmd(bs1.intfNames()[1])
+        policing_cmd = self.link_characteristics.build_changing_policing_cmd(bs1_interface_names[0])
         logging.info(policing_cmd)
-        self.topo.command_to(bs1, policing_cmd)
-        shaping_cmd = self.link_characteristics.build_changing_bandwidth_cmd(bs1.intfNames()[-1])
+        self.topo.command_to(self.bs1, policing_cmd)
+        shaping_cmd = self.link_characteristics.build_changing_bandwidth_cmd(bs1_interface_names[-1])
         logging.info(shaping_cmd)
-        self.topo.command_to(bs1, shaping_cmd)
-        netem_cmd = self.link_characteristics.build_changing_netem_cmd(bs2.intfNames()[-1])
+        self.topo.command_to(self.bs1, shaping_cmd)
+        netem_cmd = self.link_characteristics.build_changing_netem_cmd(bs2_interface_names[-1])
         logging.info(netem_cmd)
-        self.topo.command_to(bs2, netem_cmd)
+        self.topo.command_to(self.bs2, netem_cmd)
 
         # Flow bs3 -> bs0
-        policing_cmd = self.link_characteristics.build_changing_policing_cmd(bs2.intfNames()[-1])
+        policing_cmd = self.link_characteristics.build_changing_policing_cmd(bs2_interface_names[-1])
         logging.info(policing_cmd)
-        self.topo.command_to(bs2, policing_cmd)
-        shaping_cmd = self.link_characteristics.build_changing_bandwidth_cmd(bs2.intfNames()[1])
+        self.topo.command_to(self.bs2, policing_cmd)
+        shaping_cmd = self.link_characteristics.build_changing_bandwidth_cmd(bs2_interface_names[0])
         logging.info(shaping_cmd)
-        self.topo.command_to(bs2, shaping_cmd)
-        netem_cmd = self.link_characteristics.build_changing_netem_cmd(bs1.intfNames()[1])
+        self.topo.command_to(self.bs2, shaping_cmd)
+        netem_cmd = self.link_characteristics.build_changing_netem_cmd(bs1_interface_names[0])
         logging.info(netem_cmd)
-        self.topo.command_to(bs1, netem_cmd)
+        self.topo.command_to(self.bs1, netem_cmd)
 
     def get_left(self):
         return self.bs0
@@ -390,6 +388,9 @@ class Topo(object):
     def get_host(self, who):
         return self.topo_builder.get_host(who)
 
+    def get_interface_names(self, who):
+        return self.topo_builder.get_interface_names(who)
+
     def add_host(self, host):
         return self.topo_builder.add_host(host)
 
@@ -448,12 +449,11 @@ class TopoConfig(object):
         Disable TSO on all interfaces
         """
         for node in self.topo.topo_builder.net:
-            n = self.topo.get_host(node)
-            for intf in n.intfNames():
+            for intf in self.topo.get_interface_names(node):
                 logging.info("Disable TSO on interface {}".format(intf))
                 cmd = "ethtool -K {} tso off".format(intf)
                 logging.info(cmd)
-                self.topo.command_to(n, cmd)
+                self.topo.command_to(node, cmd)
 
     def run_netem_at(self):
         """
