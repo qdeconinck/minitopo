@@ -90,22 +90,7 @@ class ExperimentParameter(Parameter):
 
     def __init__(self, parameter_filename):
         super(ExperimentParameter, self).__init__(parameter_filename)
-        self.default_parameters = ExperimentParameter.DEFAULT_PARAMETERS
-
-    def get(self, key):
-        """
-        Get the value of the parameter with key `key`.
-        If not defined by the configuration file, return the default value.
-        Raise Exception if the parameter has no default value and is absent.
-        """
-        val = super(ExperimentParameter, self).get(key)
-        if val is None:
-            if key in self.default_parameters:
-                return self.default_parameters[key]
-            else:
-                raise Exception("Parameter not found " + key)
-        else:
-            return val
+        self.default_parameters.update(ExperimentParameter.DEFAULT_PARAMETERS)
 
 
 class Experiment(object):
@@ -129,6 +114,7 @@ class Experiment(object):
     PARAMETER_CLASS = ExperimentParameter
 
     IP_BIN = "ip"
+    PING_OUTPUT = "ping.log"
 
     def __init__(self, experiment_parameter_filename, topo, topo_config):
         """
@@ -373,6 +359,18 @@ class Experiment(object):
         if server_pcap == "yes" or client_pcap == "yes":
             logging.info("Activating tcpdump, waiting for it to run")
             self.topo.command_to(self.topo_config.client,"sleep 5")
+
+    def ping(self):
+        self.topo.command_to(self.topo_config.client,
+                        "rm {}".format(Experiment.PING_OUTPUT))
+        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
+        for i in range(0, self.topo_config.client_interface_count()):
+             cmd = self.ping_command(self.topo_config.getClientIP(i),
+                 self.topo_config.getServerIP(), n = count)
+             self.topo.command_to(self.topo_config.client, cmd)
+
+    def ping_command(self, from_ip, to_ip, n=5):
+        return "ping -c {} -I {} {} >> {}".format(n, from_ip, to_ip, Experiment.PING_OUTPUT)
 
 
 class RandomFileParameter(ExperimentParameter):

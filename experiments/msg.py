@@ -36,11 +36,11 @@ class Msg(Experiment):
                 Msg.PING_OUTPUT )
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.pingCommand(self.topo_config.getClientIP(i),
+             cmd = self.ping_command(self.topo_config.getClientIP(i),
                  self.topo_config.getServerIP(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)
 
-    def pingCommand(self, fromIP, toIP, n=5):
+    def ping_command(self, fromIP, toIP, n=5):
         s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
                   " >> " + Msg.PING_OUTPUT
         print(s)

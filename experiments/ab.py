@@ -26,21 +26,6 @@ class AB(RandomFileExperiment):
     def __init__(self, experiment_parameter_filename, topo, topo_config):
         super(AB, self).__init__(experiment_parameter_filename, topo, topo_config)
 
-    def ping(self):
-        self.topo.command_to(self.topo_config.client,
-                        "rm " + AB.PING_OUTPUT)
-        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
-        for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.pingCommand(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
-             self.topo.command_to(self.topo_config.client, cmd)
-
-    def pingCommand(self, fromIP, toIP, n=5):
-        s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-                  " >> " + AB.PING_OUTPUT
-        print(s)
-        return s
-
     def load_parameters(self):
         super(AB, self).load_parameters()
         self.concurrent_requests = self.experiment_parameter.get(ABParameter.CONCURRENT_REQUESTS)

@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(format="%(asctime)-15s [%(levelname)s] %(funcName)s: %(message)s", level=logging.INFO)
 
     # XXX Currently, there is no alternate topo builder...
     Runner(Topo.MININET_BUILDER, args.topo_param_file, args.experiment_param_file)

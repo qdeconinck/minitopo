@@ -26,21 +26,6 @@ class Epload(Experiment):
         self.load_parameters()
         self.ping()
 
-    def ping(self):
-        self.topo.command_to(self.topo_config.client, "rm " + \
-                Epload.PING_OUTPUT )
-        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
-        for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.pingCommand(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
-             self.topo.command_to(self.topo_config.client, cmd)
-
-    def pingCommand(self, fromIP, toIP, n=5):
-        s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-                  " >> " + Epload.PING_OUTPUT
-        print(s)
-        return s
-
     def load_parameters(self):
         self.test_dir = self.experiment_parameter.get(EploadParameter.TEST_DIR)
 

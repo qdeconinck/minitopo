@@ -5,6 +5,9 @@ import math
 
 
 class NetemAt(object):
+    """
+    Class representing a netem command to be run after some time
+    """
     def __init__(self, at, cmd):
         self.at = at
         self.cmd = cmd
@@ -110,89 +113,85 @@ Link id: {}
 
 
 class TopoParameter(Parameter):
-    LSUBNET = "leftSubnet"
-    RSUBNET = "rightSubnet"
-    netem_at = "netem_at_"
-    changeNetem = "changeNetem"
-    DEFAULT_PARAMETERS = {}
-    DEFAULT_PARAMETERS[LSUBNET] = "10.1."
-    DEFAULT_PARAMETERS[RSUBNET] = "10.2."
-    DEFAULT_PARAMETERS[changeNetem] = "false"
+    LEFT_SUBNET = "leftSubnet"
+    RIGHT_SUBNET = "rightSubnet"
+    NETEM_AT = "netem_at_"
+    CHANGE_NETEM = "changeNetem"
+
+    DEFAULT_PARAMETERS = {
+        LEFT_SUBNET: "10.1.",
+        RIGHT_SUBNET: "10.2.",
+        CHANGE_NETEM: "false",
+    }
 
     def __init__(self, parameter_filename):
         Parameter.__init__(self, parameter_filename)
-        self.linkCharacteristics = []
-        self.loadLinkCharacteristics()
-        self.loadNetemAt()
-        print(self.__str__())
+        self.default_parameters.update(TopoParameter.DEFAULT_PARAMETERS)
+        self.link_characteristics = []
+        self.load_link_characteristics()
+        self.load_netem_at()
+        logging.info(self)
 
-    def loadNetemAt(self):
-        if not self.get(TopoParameter.changeNetem) == "yes":
+    def load_netem_at(self):
+        if not self.get(TopoParameter.CHANGE_NETEM) == "yes":
             return
         for k in sorted(self.parameters):
-            if k.startswith(TopoParameter.netem_at):
-                i = int(k[len(TopoParameter.netem_at):])
+            if k.startswith(TopoParameter.NETEM_AT):
+                link_id = int(k[len(TopoParameter.NETEM_AT):])
                 val = self.parameters[k]
                 if not isinstance(val, list):
                     tmp = val
                     val = []
                     val.append(tmp)
-                self.loadNetemAtList(i, val)
+                self.load_netem_at_list(link_id, val)
 
-    def loadNetemAtList(self, id, nlist):
+    def load_netem_at_list(self, link_id, nlist):
         for n in nlist:
-            tab = n.split(",")
-            if len(tab)==2:
-                o = NetemAt(float(tab[0]), tab[1])
-                if id < len(self.linkCharacteristics):
-                    self.linkCharacteristics[id].add_netem_at(o)
+            try:
+                at, cmd = n.split(",")
+                na = NetemAt(float(at), cmd)
+                if link_id < len(self.link_characteristics):
+                    self.link_characteristics[id].add_netem_at(na)
                 else:
-                    print("Error can't set netem for link " + str(id))
-            else:
-                print("Netem wrong line : " + n)
-        print(self.linkCharacteristics[id].netem_at)
+                    logging.error("Unable to set netem for link {}; only have {} links".format(
+                        link_id, len(self.link_characteristics)))
+            except ValueError as e:
+                logging.error("Unable to set netem for link {}: {}".format(link_id, n))
 
-    def loadLinkCharacteristics(self):
+        logging.info(self.link_characteristics[link_id].netem_at)
+
+    def load_link_characteristics(self):
+        """
+        CAUTION: the path_i in config file is not taken into account. Hence place them in
+        increasing order in the topo parameter file!
+        """
         i = 0
         for k in sorted(self.parameters):
+            # TODO FIXME rewrite this function
             if k.startswith("path"):
                 tab = self.parameters[k].split(",")
                 bup = False
                 loss = "0.0"
                 if len(tab) == 5:
                     loss = tab[3]
-                    bup = tab[4] == 'True'
+                    bup = tab[4].lower() == 'true'
                 if len(tab) == 4:
                     try:
                         loss = float(tab[3])
                         loss = tab[3]
                     except ValueError:
-                        bup = tab[3] == 'True'
+                        bup = tab[3].lower() == 'true'
                 if len(tab) == 3 or len(tab) == 4 or len(tab) == 5:
-                    path = LinkCharacteristics(i,tab[0],
+                    path = LinkCharacteristics(i, tab[0],
                             tab[1], tab[2], loss, bup)
-                    self.linkCharacteristics.append(path)
+                    self.link_characteristics.append(path)
                     i = i + 1
                 else:
-                    print("Ignored path :")
-                    print(self.parameters[k])
-
-    def get(self, key):
-        val = Parameter.get(self, key)
-        if val is None:
-            if key in TopoParameter.DEFAULT_PARAMETERS:
-                return TopoParameter.DEFAULT_PARAMETERS[key]
-            else:
-                raise Exception("Param not found " + key)
-        else:
-            return val
+                    logging.warning("Ignored path {}".format(self.parameters[k]))
 
     def __str__(self):
-        s = Parameter.__str__(self)
-        s = s + "\n"
-        for p in self.linkCharacteristics[:-1]:
-            s = s + p.__str__() + "\n"
-        s = s + self.linkCharacteristics[-1].__str__()
+        s = "{}".format(super(TopoParameter, self).__str__())
+        s += "".join(["{}".format(lc) for lc in self.link_characteristics])
         return s
 
 class Topo(object):
@@ -201,60 +200,65 @@ class Topo(object):
 
     This class is not instantiable as it. You must define a child class with the
     `NAME` attribute.
+
+    Attributes:
+        topo_builder    instance of TopoBuilder
+        topo_parameter  instance of TopoParameter
+        change_netem    boolean indicating if netem must be changed
+        log_file        file descriptor logging commands relative to the topo
     """
     MININET_BUILDER = "mininet"
     TOPO_ATTR = "topoType"
-    switchNamePrefix = "s"
-    routerNamePrefix = "r"
-    clientName = "Client"
-    serverName = "Server"
-    routerName = "Router"
-    cmdLog = "command.log"
+    SWITCH_NAME_PREFIX = "s"
+    ROUTER_NAME_PREFIX = "r"
+    CLIENT_NAME = "Client"
+    SERVER_NAME = "Server"
+    ROUTER_NAME = "Router"
+    CMD_LOG_FILENAME = "command.log"
 
-    """Simple MpTopo"""
-    def __init__(self, topoBuilder, topoParam):
-        self.topoBuilder = topoBuilder
-        self.topoParam = topoParam
-        self.changeNetem = topoParam.get(TopoParameter.changeNetem)
-        self.logFile = open(Topo.cmdLog, 'w')
+    def __init__(self, topo_builder, topo_parameter):
+        self.topo_builder = topo_builder
+        self.topo_parameter = topo_parameter
+        self.change_netem = topo_parameter.get(TopoParameter.CHANGE_NETEM).lower() == "yes"
+        self.log_file = open(Topo.CMD_LOG_FILENAME, 'w')
 
-    def getLinkCharacteristics(self):
-        return self.topoParam.linkCharacteristics
+    def get_link_characteristics(self):
+        return self.topo_parameter.link_characteristics
 
     def command_to(self, who, cmd):
-        self.logFile.write(who.__str__() + " : " + cmd + "\n")
-        return self.topoBuilder.command_to(who, cmd)
+        self.log_file.write("{} : {}\n".format(who, cmd))
+        return self.topo_builder.command_to(who, cmd)
 
     def command_global(self, cmd):
         """
         mainly use for not namespace sysctl.
         """
-        self.logFile.write("Not_NS" + " : " + cmd + "\n")
-        return self.topoBuilder.command_global(cmd)
+        self.log_file.write("Global : {}\n".format(cmd))
+        return self.topo_builder.command_global(cmd)
 
     def get_host(self, who):
-        return self.topoBuilder.get_host(who)
+        return self.topo_builder.get_host(who)
 
-    def addHost(self, host):
-        return self.topoBuilder.addHost(host)
+    def add_host(self, host):
+        return self.topo_builder.add_host(host)
 
-    def addSwitch(self, switch):
-        return self.topoBuilder.addSwitch(switch)
+    def add_switch(self, switch):
+        return self.topo_builder.add_switch(switch)
 
-    def addLink(self, fromA, toB, **kwargs):
-        self.topoBuilder.addLink(fromA,toB,**kwargs)
+    def add_link(self, from_a, to_b, **kwargs):
+        self.topo_builder.add_link(from_a, to_b, **kwargs)
 
     def get_cli(self):
-        self.topoBuilder.get_cli()
+        self.topo_builder.get_cli()
 
     def start_network(self):
-        self.topoBuilder.start_network()
+        self.topo_builder.start_network()
 
-    def closeLogFile(self):
-        self.logFile.close()
+    def close_log_file(self):
+        self.log_file.close()
 
     def stop_network(self):
-        self.topoBuilder.stop_network()
+        self.topo_builder.stop_network()
 
 
 class TopoConfig(object):
@@ -264,89 +268,78 @@ class TopoConfig(object):
     This class is not instantiable as it. You must define a child class with the
     `NAME` attribute.
     """
-
-    PING_OUTPUT = "ping.log"
-
     def __init__(self, topo, param):
         self.topo = topo
         self.param = param
 
     def configure_network(self):
-        print("Configure interfaces....Generic call ?")
-        self.configureInterfaces()
-        self.configureRoute()
+        logging.debug("Configure network in TopoConfig")
+        self.configure_interfaces()
+        self.configure_routing()
 
     def disable_tso(self):
         """
         Disable TSO on all interfaces
         """
-        links = self.topo.getLinkCharacteristics()
+        links = self.topo.get_link_characteristics()
         for i, l in enumerate(links):
-            lname = self.getMidLeftName(i)
-            rname = self.getMidRightName(i)
-            lbox = self.topo.get_host(lname)
+            lbox = self.topo.get_host(self.getMidLeftName(i))
+            rbox = self.topo.get_host(self.getMidRightName(i))
             lif = self.getMidL2RInterface(i)
             rif = self.getMidR2LInterface(i)
-            rbox = self.topo.get_host(rname)
-            print(str(lname) + " " + str(lif))
-            print(str(rname) + " " + str(rif))
-            print("boxes " + str(lbox) + " " + str(rbox))
-            cmd = "ethtool -K " + lif + " tso off"
-            print(cmd)
+            logging.info("Disable TSO on link between {} and {}".format(lif, rif))
+            cmd = "ethtool -K {} tso off".format(lif)
+            logging.info(cmd)
             self.topo.command_to(lbox, cmd)
-            cmd = "ethtool -K " + rif + " tso off"
-            print(cmd)
+            cmd = "ethtool -K {} tso off".format(rif)
+            logging.info(cmd)
             self.topo.command_to(rbox, cmd)
 
         # And for the server
-        cmd = "ethtool -K " + self.getServerInterface() + " tso off"
-        print(cmd)
+        cmd = "ethtool -K {} tso off".format(self.get_server_interface())
+        logging.info(cmd)
         self.topo.command_to(self.server, cmd)
 
-        cmd = "ethtool -K " + self.get_router_interface_to_switch(self.client_interface_count()) + " tso off"
-        print(cmd)
+        cmd = "ethtool -K {} tso off".format(self.get_router_interface_to_switch(self.client_interface_count()))
+        logging.info(cmd)
         self.topo.command_to(self.router, cmd)
 
     def run_netem_at(self):
         """
         Prepare netem commands to be run after some delay
         """
-        if not self.topo.changeNetem == "yes":
+        if not self.topo.change_netem:
             # Just rely on defaults of TCLink
-            logging.debug("No need to change netem")
+            logging.info("No need to change netem")
             return
 
         logging.info("Will change netem config on the fly")
-        links = self.topo.getLinkCharacteristics()
+        links = self.topo.get_link_characteristics()
         for i, l in enumerate(links):
-            lname = self.getMidLeftName(i)
-            rname = self.getMidRightName(i)
-            lbox = self.topo.get_host(lname)
+            lbox = self.topo.get_host(self.getMidLeftName(i))
+            rbox = self.topo.get_host(self.getMidRightName(i))
             lif = self.getMidL2RInterface(i)
             rif = self.getMidR2LInterface(i)
-            rbox = self.topo.get_host(rname)
-            print(str(lname) + " " + str(lif))
-            print(str(rname) + " " + str(rif))
-            print("boxes " + str(lbox) + " " + str(rbox))
+            logging.info("Put netem command on link {} {}".format(lif, rif))
             cmd = l.build_bandwidth_cmd(lif)
-            print(cmd)
+            logging.info(cmd)
             self.topo.command_to(lbox, cmd)
             cmd = l.build_bandwidth_cmd(rif)
-            print(cmd)
+            logging.info(cmd)
             self.topo.command_to(rbox, cmd)
             ilif = self.getMidL2RIncomingInterface(i)
             irif = self.getMidR2LIncomingInterface(i)
             cmd = l.build_policing_cmd(ilif)
-            print(cmd)
+            logging.info(cmd)
             self.topo.command_to(lbox, cmd)
             cmd = l.build_policing_cmd(irif)
-            print(cmd)
+            logging.info(cmd)
             self.topo.command_to(rbox, cmd)
             cmd = l.build_netem_cmd(irif)
-            print(cmd)
+            logging.info(cmd)
             self.topo.command_to(rbox, cmd)
             cmd = l.build_netem_cmd(ilif)
-            print(cmd)
+            logging.info(cmd)
             self.topo.command_to(lbox, cmd)
 
     def getMidL2RInterface(self, id):
@@ -363,7 +356,16 @@ class TopoConfig(object):
     def getMidRightName(self, i):
         pass
 
-    def configureInterfaces(self):
+    def configure_interfaces(self):
+        """
+        Function to override to configure the interfaces of the topology
+        """
+        pass
+
+    def configure_routing(self):
+        """
+        Function to override to configure the routing of the topology
+        """
         pass
 
     def client_interface_count(self):
@@ -384,51 +386,28 @@ class TopoConfig(object):
         """
         raise NotImplementedError()
 
-    def interface_backup_command(self, interfaceName):
-        s = "/home/mininet/git/iproute-mptcp/ip/ip link set dev " + interfaceName + " multipath backup "
-        print(s)
-        return s
+    def interface_backup_command(self, interface_name):
+        return "ip link set dev {} multipath backup ".format(
+            interface_name)
 
-    def interfaceUpCommand(self, interfaceName, ip, subnet):
-        s = "ifconfig " + interfaceName + " " + ip + " netmask " + \
-            subnet
-        print(s)
-        return s
+    def interface_up_command(self, interface_name, ip, subnet):
+        return "ifconfig {} {} netmask {}".format(interface_name, ip, subnet)
 
-    def addRouteTableCommand(self, fromIP, id):
-        s = "ip rule add from " + fromIP + " table " + str(id + 1)
-        print(s)
-        return s
+    def add_table_route_command(self, from_ip, id):
+        return "ip rule add from {} table {}".format(from_ip, id + 1)
 
-    def addRouteScopeLinkCommand(self, network, interfaceName, id):
-        s = "ip route add " + network + " dev " + interfaceName + \
-                " scope link table " + str(id + 1)
-        print(s)
-        return s
+    def add_link_scope_route_command(self, network, interface_name, id):
+        return "ip route add {} dev {} scope link table {}".format(
+            network, interface_name, id + 1)
 
-    def addRouteDefaultCommand(self, via, id):
-        s = "ip route add default via " + via + " table " + str(id + 1)
-        print(s)
-        return s
+    def add_table_default_route_command(self, via, id):
+        return "ip route add default via {} table {}".format(via, id + 1)
 
-    def addRouteDefaultGlobalCommand(self, via, interfaceName):
-        s = "ip route add default scope global nexthop via " + via + \
-                " dev " + interfaceName
-        print(s)
-        return s
+    def add_global_default_route_command(self, via, interface_name):
+        return "ip route add default scope global nexthop via {} dev {}".format(via, interface_name)
 
-    def arpCommand(self, ip, mac):
-        s = "arp -s " + ip + " " + mac
-        print(s)
-        return s
+    def arp_command(self, ip, mac):
+        return "arp -s {} {}".format(ip, mac)
 
-    def addRouteDefaultSimple(self, via):
-        s = "ip route add default via " + via
-        print(s)
-        return s
-
-    def pingCommand(self, fromIP, toIP, n=5):
-        s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-                " >> " + TopoConfig.PING_OUTPUT
-        print(s)
-        return s
+    def add_simple_default_route_command(self, via):
+        return "ip route add default via {}".format(via)

@@ -5,10 +5,12 @@ class Parameter(object):
     Generic handler for parameters stored in configuration files
 
     Attributes:
-        parameters  dictionary containing the value for configuration parameters
+        parameters          dictionary containing the value for configuration parameters
+        default_parameters  dictionary containung default values for parameters
     """
     def __init__(self, parameter_filename):
         self.parameters = {}
+        self.default_parameters = {}
         if parameter_filename is None:
             logging.warning("No parameter file provided; using default parameters")
         else:
@@ -37,9 +39,18 @@ class Parameter(object):
 
     def get(self, key):
         """
-        Get the parameter with key `key`. If it does not exist, return None
+        Get the value of the parameter with key `key`.
+        If not defined by the configuration file, return the default value.
+        Raise Exception if the parameter has no default value and is absent.
         """
-        return self.parameters.get(key)
+        val = self.parameters.get(key)
+        if val is None:
+            if key in self.default_parameters:
+                return self.default_parameters[key]
+            else:
+                raise Exception("Parameter not found " + key)
+        else:
+            return val
 
     def __str__(self):
         return self.parameters.__str__()
