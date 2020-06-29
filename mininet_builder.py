@@ -35,7 +35,7 @@ class MininetBuilder(Topo):
 
         Note that the use of OVSBridge avoid facing issues with OVS controllers.
         """
-        self.net = Mininet(topo=self,link=TCLink,switch=OVSBridge)
+        self.net = Mininet(topo=self, link=TCLink, switch=OVSBridge, controller=None)
         self.net.start()
 
     def get_cli(self):
@@ -53,6 +53,15 @@ class MininetBuilder(Topo):
             raise Exception("Network not ready")
         else:
             return self.net.getNodeByName(who)
+
+    def add_host(self, host):
+        return self.addHost(host)
+
+    def add_switch(self, switch):
+        return self.addSwitch(switch)
+
+    def add_link(self, from_a, to_b, **kwargs):
+        return self.addLink(from_a, to_b, **kwargs)
 
     def stop_network(self):
         if self.net is None:

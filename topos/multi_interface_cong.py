@@ -264,9 +264,3 @@ class MultiInterfaceCongConfig(TopoConfig):
 
     def getMidRightName(self, id):
         return Topo.ROUTER_NAME
-
-    def getMidL2RInterface(self, id):
-        return self.getMidLeftName(id) + "-eth2"
-
-    def getMidR2LInterface(self, id):
-        return self.getMidRightName(id) + "-eth" + str(id)

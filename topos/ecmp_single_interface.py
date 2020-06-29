@@ -203,9 +203,3 @@ class ECMPSingleInterfaceConfig(TopoConfig):
 
     def getMidRightName(self, id):
         return Topo.SWITCH_NAME_PREFIX + "1"
-
-    def getMidL2RInterface(self, id):
-        return self.getMidLeftName(id) + "-eth1"
-
-    def getMidR2LInterface(self, id):
-        return self.getMidRightName(id) + "-eth" + str(id+2)

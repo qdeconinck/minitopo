@@ -242,12 +242,3 @@ class TwoInterfaceCongestionConfig(TopoConfig):
             return Topo.ROUTER_NAME + "Cong"
 
         return Topo.ROUTER_NAME
-
-    def getMidL2RInterface(self, id):
-        return self.getMidLeftName(id) + "-eth2"
-
-    def getMidR2LInterface(self, id):
-        if id == 2:
-            return self.getMidRightName(id) + "-eth1"
-
-        return self.getMidRightName(id) + "-eth" + str(id)

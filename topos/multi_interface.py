@@ -15,7 +15,7 @@ class MultiInterfaceTopo(Topo):
             self.switchClient.append(self.add_switch1ForLink(l))
             self.add_link(self.client,self.switchClient[-1])
             self.switchServer.append(self.add_switch2ForLink(l))
-            self.add_link(self.switchClient[-1], self.switchServer[-1], **l.as_dict())
+            self.add_bottleneck_link(self.switchClient[-1], self.switchServer[-1], link_characteristics=l)
             self.add_link(self.switchServer[-1],self.router)
         self.add_link(self.router, self.server)
 
@@ -171,12 +171,6 @@ class MultiInterfaceConfig(TopoConfig):
 
     def getMidRightName(self, id):
         return self.getSwitchServerName(id)
-
-    def getMidL2RInterface(self, id):
-        return self.getMidLeftName(id) + "-eth2"
-
-    def getMidR2LInterface(self, id):
-        return self.getMidRightName(id) + "-eth1"
 
     def getMidL2RIncomingInterface(self, id):
         return self.getMidLeftName(id) + "-eth1"
