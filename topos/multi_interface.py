@@ -1,32 +1,31 @@
 from core.topo import Topo, TopoConfig, TopoParameter
+import logging
+
 
 class MultiInterfaceTopo(Topo):
     NAME = "MultiIf"
 
     def __init__(self, topo_builder, parameterFile):
+        logging.info("Initializing MultiInterfaceTopo...")
         super(MultiInterfaceTopo, self).__init__(topo_builder, parameterFile)
-        print("Hello from topo multi if")
         self.client = self.add_client()
         self.server = self.add_server()
         self.router = self.add_router()
-        print(self.router)
-        self.switchClient = []
-        self.switchServer = []
+        self.client_switches = []
+        self.server_switches = []
         for l in self.topo_parameter.link_characteristics:
-            self.switchClient.append(self.add_switch1ForLink(l))
-            self.add_link(self.client,self.switchClient[-1])
-            self.switchServer.append(self.add_switch2ForLink(l))
-            self.add_bottleneck_link(self.switchClient[-1], self.switchServer[-1], link_characteristics=l)
-            self.add_link(self.switchServer[-1],self.router)
+            self.client_switches.append(self.add_client_side_switch(l))
+            self.add_link(self.client,self.client_switches[-1])
+            self.server_switches.append(self.add_router_side_switch(l))
+            self.add_bottleneck_link(self.client_switches[-1], self.server_switches[-1], link_characteristics=l)
+            self.add_link(self.server_switches[-1],self.router)
         self.add_link(self.router, self.server)
 
-    def add_switch1ForLink(self, link):
-        return self.add_switch(MultiInterfaceTopo.SWITCH_NAME_PREFIX +
-                str(2 * link.id))
+    def add_client_side_switch(self, link):
+        return self.add_switch("{}{}".format(MultiInterfaceTopo.SWITCH_NAME_PREFIX, 2 * link.id))
 
-    def add_switch2ForLink(self, link):
-        return self.add_switch(MultiInterfaceTopo.SWITCH_NAME_PREFIX +
-                str(2 * link.id + 1))
+    def add_router_side_switch(self, link):
+        return self.add_switch("{}{}".format(MultiInterfaceTopo.SWITCH_NAME_PREFIX, 2 * link.id + 1))
 
     def __str__(self):
         s = "Simple multiple interface topolgy \n"
@@ -53,31 +52,31 @@ class MultiInterfaceConfig(TopoConfig):
 
     def configure_routing(self):
         i = 0
-        for l in self.topo.switchClient:
-            cmd = self.add_table_route_command(self.getClientIP(i), i)
+        for l in self.topo.client_switches:
+            cmd = self.add_table_route_command(self.get_client_ip(i), i)
             self.topo.command_to(self.client, cmd)
 
             cmd = self.add_link_scope_route_command(
-                    self.getClientSubnet(i),
+                    self.get_client_subnet(i),
                     self.get_client_interface(0, i), i)
             self.topo.command_to(self.client, cmd)
 
-            cmd = self.add_table_default_route_command(self.getRouterIPSwitch(i),
+            cmd = self.add_table_default_route_command(self.get_router_ip_to_switch(i),
                     i)
             self.topo.command_to(self.client, cmd)
             i = i + 1
 
-        cmd = self.add_global_default_route_command(self.getRouterIPSwitch(0),
+        cmd = self.add_global_default_route_command(self.get_router_ip_to_switch(0),
                 self.get_client_interface(0, 0))
         self.topo.command_to(self.client, cmd)
 
-        cmd = self.add_simple_default_route_command(self.getRouterIPServer())
+        cmd = self.add_simple_default_route_command(self.get_router_ip_to_server())
         self.topo.command_to(self.server, cmd)
 
 
     def configure_interfaces(self):
+        logging.info("Configure interfaces using MultiInterfaceConfig...")
         super(MultiInterfaceConfig, self).configure_interfaces()
-        print("Configure interfaces for multi inf")
         self.client = self.topo.get_client(0)
         self.server = self.topo.get_server(0)
         self.router = self.topo.get_router(0)
@@ -85,13 +84,13 @@ class MultiInterfaceConfig(TopoConfig):
         netmask = "255.255.255.0"
 
         links = self.topo.get_link_characteristics()
-        for l in self.topo.switchClient:
+        for l in self.topo.client_switches:
             cmd = self.interface_up_command(
                     self.get_client_interface(0, i),
-                    self.getClientIP(i), netmask)
+                    self.get_client_ip(i), netmask)
             self.topo.command_to(self.client, cmd)
             clientIntfMac = self.client.intf(self.get_client_interface(0, i)).MAC()
-            self.topo.command_to(self.router, "arp -s " + self.getClientIP(i) + " " + clientIntfMac)
+            self.topo.command_to(self.router, "arp -s " + self.get_client_ip(i) + " " + clientIntfMac)
 
             if(links[i].backup):
                 cmd = self.interface_backup_command(
@@ -101,58 +100,47 @@ class MultiInterfaceConfig(TopoConfig):
             i = i + 1
 
         i = 0
-        for l in self.topo.switchServer:
+        for l in self.topo.server_switches:
             cmd = self.interface_up_command(
                     self.get_router_interface_to_switch(i),
-                    self.getRouterIPSwitch(i), netmask)
+                    self.get_router_ip_to_switch(i), netmask)
             self.topo.command_to(self.router, cmd)
             routerIntfMac = self.router.intf(self.get_router_interface_to_switch(i)).MAC()
-            self.topo.command_to(self.client, "arp -s " + self.getRouterIPSwitch(i) + " " + routerIntfMac)
-            print(str(links[i]))
+            self.topo.command_to(self.client, "arp -s " + self.get_router_ip_to_switch(i) + " " + routerIntfMac)
             i = i + 1
 
         cmd = self.interface_up_command(self.getRouterInterfaceServer(),
-                self.getRouterIPServer(), netmask)
+                self.get_router_ip_to_server(), netmask)
         self.topo.command_to(self.router, cmd)
         routerIntfMac = self.router.intf(self.getRouterInterfaceServer()).MAC()
-        self.topo.command_to(self.server, "arp -s " + self.getRouterIPServer() + " " + routerIntfMac)
+        self.topo.command_to(self.server, "arp -s " + self.get_router_ip_to_server() + " " + routerIntfMac)
 
         cmd = self.interface_up_command(self.get_server_interface(0),
-                self.getServerIP(), netmask)
+                self.get_server_ip(), netmask)
         self.topo.command_to(self.server, cmd)
         serverIntfMac = self.server.intf(self.get_server_interface(0)).MAC()
-        self.topo.command_to(self.router, "arp -s " + self.getServerIP() + " " + serverIntfMac)
+        self.topo.command_to(self.router, "arp -s " + self.get_server_ip() + " " + serverIntfMac)
 
-    def getClientIP(self, interfaceID):
-        lSubnet = self.param.get(TopoParameter.LEFT_SUBNET)
-        clientIP = lSubnet + str(interfaceID) + ".1"
-        return clientIP
+    def get_client_ip(self, interface_index):
+        return "{}{}.1".format(self.param.get(TopoParameter.LEFT_SUBNET), interface_index)
 
-    def getClientSubnet(self, interfaceID):
-        lSubnet = self.param.get(TopoParameter.LEFT_SUBNET)
-        clientSubnet = lSubnet + str(interfaceID) + ".0/24"
-        return clientSubnet
+    def get_client_subnet(self, interface_index):
+        return "{}{}.0/24".format(self.param.get(TopoParameter.LEFT_SUBNET), interface_index)
 
-    def getRouterIPSwitch(self, interfaceID):
-        lSubnet = self.param.get(TopoParameter.LEFT_SUBNET)
-        routerIP = lSubnet + str(interfaceID) + ".2"
-        return routerIP
+    def get_router_ip_to_switch(self, switch_index):
+        return "{}{}.2".format(self.param.get(TopoParameter.LEFT_SUBNET), switch_index)
 
-    def getRouterIPServer(self):
-        rSubnet = self.param.get(TopoParameter.RIGHT_SUBNET)
-        routerIP = rSubnet + "0.2"
-        return routerIP
+    def get_router_ip_to_server(self):
+        return "{}0.2".format(self.param.get(TopoParameter.RIGHT_SUBNET))
 
-    def getServerIP(self):
-        rSubnet = self.param.get(TopoParameter.RIGHT_SUBNET)
-        serverIP = rSubnet + "0.1"
-        return serverIP
+    def get_server_ip(self):
+        return "{}0.1".format(self.param.get(TopoParameter.RIGHT_SUBNET))
 
     def client_interface_count(self):
-        return len(self.topo.switchClient)
+        return len(self.topo.client_switches)
 
     def getRouterInterfaceServer(self):
-        return self.get_router_interface_to_switch(len(self.topo.switchServer))
+        return self.get_router_interface_to_switch(len(self.topo.server_switches))
 
     def get_client_interface(self, client_index, interface_index):
         return "{}-eth{}".format(self.topo.get_client_name(client_index), interface_index)
@@ -162,21 +150,3 @@ class MultiInterfaceConfig(TopoConfig):
 
     def get_server_interface(self, server_index):
         return "{}-eth0".format(self.topo.get_server_name(server_index))
-
-    def getSwitchClientName(self, id):
-        return Topo.SWITCH_NAME_PREFIX + str(2 * id)
-
-    def getSwitchServerName(self, id):
-        return Topo.SWITCH_NAME_PREFIX + str(2 * id + 1)
-
-    def getMidLeftName(self, id):
-        return self.getSwitchClientName(id)
-
-    def getMidRightName(self, id):
-        return self.getSwitchServerName(id)
-
-    def getMidL2RIncomingInterface(self, id):
-        return self.getMidLeftName(id) + "-eth1"
-
-    def getMidR2LIncomingInterface(self, id):
-        return self.getMidRightName(id) + "-eth2"

@@ -34,8 +34,8 @@ class QUICSiri(Experiment):
                 QUICSiri.PING_OUTPUT )
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
+             cmd = self.ping_command(self.topo_config.get_client_ip(i),
+                 self.topo_config.get_server_ip(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)
 
     def ping_command(self, fromIP, toIP, n=5):
@@ -63,7 +63,7 @@ class QUICSiri(Experiment):
 
     def get_quic_siri_client_cmd(self):
         s = "{} run {} -addr {}:8080 -runTime {}s {} &> {}".format(QUICSiri.GO_BIN,
-            QUICSiri.CLIENT_GO_FILE, self.topo_config.getServerIP(), self.run_time,
+            QUICSiri.CLIENT_GO_FILE, self.topo_config.get_server_ip(), self.run_time,
             "-m" if int(self.multipath) > 0 else "", QUICSiri.CLIENT_LOG)
         print(s)
         return s

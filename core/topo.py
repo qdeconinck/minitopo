@@ -497,13 +497,6 @@ class TopoConfig(object):
         for b in self.topo.bottleneck_links:
             b.configure_changing_bottleneck()
 
-    def getMidLeftName(self, i):
-        "get Middle link, left box name"
-        pass
-
-    def getMidRightName(self, i):
-        pass
-
     def configure_interfaces(self):
         """
         Function to inherit to configure the interfaces of the topology

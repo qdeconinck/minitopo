@@ -31,7 +31,7 @@ class HTTPS(RandomFileExperiment):
         return s
 
     def getHTTPSClientCmd(self):
-        s = "(time " + HTTPS.WGET_BIN + " https://" + self.topo_config.getServerIP() + \
+        s = "(time " + HTTPS.WGET_BIN + " https://" + self.topo_config.get_server_ip() + \
                 "/" + self.file + " --no-check-certificate) &>" + HTTPS.CLIENT_LOG
         print(s)
         return s

@@ -55,14 +55,14 @@ class Epload(Experiment):
 
     def getSubHostCmd(self):
         s = "for f in `ls " + self.test_dir + "/*`; do " + \
-            " sed -i 's/@host@/" + self.topo_config.getServerIP() + "/' " + \
+            " sed -i 's/@host@/" + self.topo_config.get_server_ip() + "/' " + \
             "$f; done"
         print(s)
         return s
 
     def getSubBackHostCmd(self):
         s = "for f in `ls " + self.test_dir + "/*`; do " + \
-            " sed -i 's/" + self.topo_config.getServerIP() + "/@host@/' " + \
+            " sed -i 's/" + self.topo_config.get_server_ip() + "/@host@/' " + \
             "$f; done"
         print(s)
         return s

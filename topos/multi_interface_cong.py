@@ -65,7 +65,7 @@ class MultiInterfaceCongConfig(TopoConfig):
     def configure_routing(self):
         i = 0
         for l in self.topo.switch:
-            cmd = self.add_table_route_command(self.getClientIP(i), i)
+            cmd = self.add_table_route_command(self.get_client_ip(i), i)
             self.topo.command_to(self.client, cmd)
 
             # Congestion client
@@ -139,10 +139,10 @@ class MultiInterfaceCongConfig(TopoConfig):
         for l in self.topo.switch:
             cmd = self.interface_up_command(
                     self.get_client_interface(i),
-                    self.getClientIP(i), netmask)
+                    self.get_client_ip(i), netmask)
             self.topo.command_to(self.client, cmd)
             clientIntfMac = self.client.intf(self.get_client_interface(i)).MAC()
-            self.topo.command_to(self.router, "arp -s " + self.getClientIP(i) + " " + clientIntfMac)
+            self.topo.command_to(self.router, "arp -s " + self.get_client_ip(i) + " " + clientIntfMac)
 
             if(links[i].backup):
                 cmd = self.interface_backup_command(
@@ -175,10 +175,10 @@ class MultiInterfaceCongConfig(TopoConfig):
         self.topo.command_to(self.server, "arp -s " + self.getRouterIPServer() + " " + routerIntfMac)
 
         cmd = self.interface_up_command(self.get_server_interface(),
-                self.getServerIP(), netmask)
+                self.get_server_ip(), netmask)
         self.topo.command_to(self.server, cmd)
         serverIntfMac = self.server.intf(self.get_server_interface()).MAC()
-        self.topo.command_to(self.router, "arp -s " + self.getServerIP() + " " + serverIntfMac)
+        self.topo.command_to(self.router, "arp -s " + self.get_server_ip() + " " + serverIntfMac)
 
         # Congestion servers
         i = 0
@@ -196,7 +196,7 @@ class MultiInterfaceCongConfig(TopoConfig):
             self.topo.command_to(self.router, "arp -s " + self.getCongServerIP(i) + " " + congServerIntfMac)
             i = i + 1
 
-    def getClientIP(self, interfaceID):
+    def get_client_ip(self, interfaceID):
         lSubnet = self.param.get(TopoParameter.LEFT_SUBNET)
         clientIP = lSubnet + str(interfaceID) + ".1"
         return clientIP
@@ -226,7 +226,7 @@ class MultiInterfaceCongConfig(TopoConfig):
         routerIP = rSubnet + str(1 + congID) + ".2"
         return routerIP
 
-    def getServerIP(self):
+    def get_server_ip(self):
         rSubnet = self.param.get(TopoParameter.RIGHT_SUBNET)
         serverIP = rSubnet + "0.1"
         return serverIP

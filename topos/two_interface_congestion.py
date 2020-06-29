@@ -185,7 +185,7 @@ class TwoInterfaceCongestionConfig(TopoConfig):
         self.configureInterface(self.serverCong, self.router, Topo.SERVER_NAME + "Cong-eth0", "10.1.1.1", netmask)
         self.configureInterface(self.router, self.serverCong, Topo.ROUTER_NAME + "-eth3", "10.1.1.2", netmask)
 
-    def getClientIP(self, interfaceID):
+    def get_client_ip(self, interfaceID):
         lSubnet = self.param.get(TopoParameter.LEFT_SUBNET)
         clientIP = lSubnet + str(interfaceID) + ".1"
         return clientIP
@@ -215,7 +215,7 @@ class TwoInterfaceCongestionConfig(TopoConfig):
         routerIP = rSubnet + "0.2"
         return routerIP
 
-    def getServerIP(self):
+    def get_server_ip(self):
         rSubnet = self.param.get(TopoParameter.RIGHT_SUBNET)
         serverIP = rSubnet + "0.1"
         return serverIP

@@ -52,8 +52,8 @@ class NCPV(NC):
                 NCPV.PING_OUTPUT )
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
+             cmd = self.ping_command(self.topo_config.get_client_ip(i),
+                 self.topo_config.get_server_ip(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)
 
     def ping_command(self, fromIP, toIP, n=5):
@@ -129,7 +129,7 @@ class NCPV(NC):
                 " -q --rate-limit " + self.pvRateLimit + \
                 " | " + NC.NC_BIN + " " + \
                 "  -p " + self.ncClientPort[id] + " " + \
-                self.topo_config.getServerIP() + " " + \
+                self.topo_config.get_server_ip() + " " + \
                 self.ncServerPort + " " + \
                 "&>" + NCPV.CLIENT_NC_LOG + \
                 "_" + str(id) + ".log"

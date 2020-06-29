@@ -56,7 +56,7 @@ class DITG(Experiment):
         self.topo.command_to(self.topo_config.client, "rm " + DITG.DITG_TEMP_LOG)
 
     def getClientCmd(self):
-        s = DITG.ITGSEND_BIN + " -a " + self.topo_config.getServerIP() + \
+        s = DITG.ITGSEND_BIN + " -a " + self.topo_config.get_server_ip() + \
             " -T TCP -k " + self.kbytes + " -l " + DITG.DITG_TEMP_LOG
 
         if self.constant_packet_size != "0":

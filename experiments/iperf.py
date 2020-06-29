@@ -31,8 +31,8 @@ class IPerf(Experiment):
                 IPerf.PING_OUTPUT)
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
+             cmd = self.ping_command(self.topo_config.get_client_ip(i),
+                 self.topo_config.get_server_ip(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)
 
     def ping_command(self, fromIP, toIP, n=5):
@@ -53,7 +53,7 @@ class IPerf(Experiment):
                 IPerf.SERVER_LOG)
 
     def getClientCmd(self):
-        s = IPerf.IPERF_BIN + " -c " + self.topo_config.getServerIP() + \
+        s = IPerf.IPERF_BIN + " -c " + self.topo_config.get_server_ip() + \
             " -t " + self.time + " -P " + self.parallel + " &>" + IPerf.IPERF_LOG
         print(s)
         return s

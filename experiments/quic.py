@@ -35,8 +35,8 @@ class QUIC(RandomFileExperiment):
                 QUIC.PING_OUTPUT )
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
+             cmd = self.ping_command(self.topo_config.get_client_ip(i),
+                 self.topo_config.get_server_ip(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)
 
     def ping_command(self, fromIP, toIP, n=5):
@@ -67,7 +67,7 @@ class QUIC(RandomFileExperiment):
         s = QUIC.GO_BIN + " run " + QUIC.CLIENT_GO_FILE
         if int(self.multipath) > 0:
             s += " -m"
-        s += " https://" + self.topo_config.getServerIP() + ":6121/random &>" + QUIC.CLIENT_LOG
+        s += " https://" + self.topo_config.get_server_ip() + ":6121/random &>" + QUIC.CLIENT_LOG
         print(s)
         return s
 

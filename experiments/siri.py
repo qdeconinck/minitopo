@@ -49,8 +49,8 @@ class Siri(Experiment):
                 Siri.PING_OUTPUT )
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
+             cmd = self.ping_command(self.topo_config.get_client_ip(i),
+                 self.topo_config.get_server_ip(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)
 
     def ping_command(self, fromIP, toIP, n=5):
@@ -86,7 +86,7 @@ class Siri(Experiment):
 
     def get_siri_client_cmd(self):
         s = "{} -jar {}/../utils/siriClient.jar {} 8080 {} {} {} {} {} {} {} {} {} {} > {} 2> {}".format(
-            Siri.JAVA_BIN, os.path.dirname(os.path.abspath(__file__)), self.topo_config.getServerIP(),
+            Siri.JAVA_BIN, os.path.dirname(os.path.abspath(__file__)), self.topo_config.get_server_ip(),
             self.run_time, self.query_size, self.response_size, self.delay_query_response,
             self.min_payload_size, self.max_payload_size, self.interval_time_ms, self.buffer_size,
             self.burst_size, self.interval_burst_time_ms, Siri.CLIENT_LOG, Siri.CLIENT_ERR)

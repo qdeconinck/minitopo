@@ -71,7 +71,7 @@ class NC(Experiment):
     def getNCClientCmd(self, id):
         s = NC.NC_BIN + " " + \
                 " -p " + self.ncClientPort[id] + " " + \
-                self.topo_config.getServerIP() + " " + \
+                self.topo_config.get_server_ip() + " " + \
                 self.ncServerPort + " " + \
                 "&>" + NC.CLIENT_NC_LOG + \
                 "_" + str(id) + ".log"

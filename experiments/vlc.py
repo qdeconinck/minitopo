@@ -31,8 +31,8 @@ class VLC(Experiment):
                 VLC.PING_OUTPUT )
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.getClientIP(i),
-                 self.topo_config.getServerIP(), n = count)
+             cmd = self.ping_command(self.topo_config.get_client_ip(i),
+                 self.topo_config.get_server_ip(), n = count)
              self.topo.command_to(self.topo_config.client, cmd)
 
     def ping_command(self, fromIP, toIP, n=5):
@@ -62,7 +62,7 @@ class VLC(Experiment):
         s = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mininet/usr/lib/ && sudo ldconfig && \
             {} -I dummy --x11-display :66 --adaptive-logic 3 --no-loop --play-and-exit \
                 http://{}/{} 2>&1 | grep -E '(Neb|halp|bandwidth|late|Buffering|buffering)' > {} {}".format(
-                    VLC.VLC_BIN, self.topo_config.getServerIP(), self.file, VLC.CLIENT_LOG,
+                    VLC.VLC_BIN, self.topo_config.get_server_ip(), self.file, VLC.CLIENT_LOG,
                     "&" if self.time != "0" else "")
         print(s)
         return s

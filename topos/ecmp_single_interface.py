@@ -152,14 +152,14 @@ class ECMPSingleInterfaceConfig(TopoConfig):
             i = i + 1
 
         cmd = self.interface_up_command(self.get_client_interface(0),
-                self.getClientIP(0), netmask)
+                self.get_client_ip(0), netmask)
         self.topo.command_to(self.client, cmd)
 
         cmd = self.interface_up_command(self.get_server_interface(),
-                self.getServerIP(), netmask)
+                self.get_server_ip(), netmask)
         self.topo.command_to(self.server, cmd)
 
-    def getClientIP(self, interfaceID):
+    def get_client_ip(self, interfaceID):
         lSubnet = self.param.get(TopoParameter.LEFT_SUBNET)
         clientIP = lSubnet + str(interfaceID) + ".1"
         return clientIP
@@ -179,7 +179,7 @@ class ECMPSingleInterfaceConfig(TopoConfig):
         routerIP = rSubnet + "0." + str(id + 2)
         return routerIP
 
-    def getServerIP(self):
+    def get_server_ip(self):
         rSubnet = self.param.get(TopoParameter.RIGHT_SUBNET)
         serverIP = rSubnet + "0.1"
         return serverIP

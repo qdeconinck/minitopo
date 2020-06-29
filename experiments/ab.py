@@ -46,7 +46,7 @@ class AB(RandomFileExperiment):
 
     def get_ab_client_cmd(self):
         s = "{} -c {} -t {} http://{}/{} &> {}".format(AB.AB_BIN, self.concurrent_requests,
-            self.time_limit, self.topo_config.getServerIP(), self.file, AB.CLIENT_LOG)
+            self.time_limit, self.topo_config.get_server_ip(), self.file, AB.CLIENT_LOG)
         print(s)
         return s
 
