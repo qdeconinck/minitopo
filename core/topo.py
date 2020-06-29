@@ -451,7 +451,7 @@ class TopoConfig(object):
         """
         Disable TSO on all interfaces
         """
-        for node in self.topo.topo_builder.net:
+        for node in [self.get_host(n) for n in self.topo.topo_builder.net]:
             for intf in self.topo.get_interface_names(node):
                 logging.info("Disable TSO on interface {}".format(intf))
                 cmd = "ethtool -K {} tso off".format(intf)
