@@ -56,8 +56,7 @@ class MininetBuilder(Topo):
 
     def get_interface_names(self, who):
         # NOTE: bs1.intfNames()[0] is lo...
-        host = self.get_host(who)
-        return [i for i in host.intfNames() if i != "lo"]
+        return [i for i in who.intfNames() if i != "lo"]
 
     def add_host(self, host):
         return self.addHost(host)

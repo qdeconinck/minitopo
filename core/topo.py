@@ -95,14 +95,10 @@ class LinkCharacteristics(object):
             + ["true &"]
         )
 
-    def clean_policing_cmd(self, ifname):
-        return "tc qdisc del dev {} ingress ".format(ifname)
-
     def build_policing_cmd(self, ifname):
-        """ For some reason, the delete can break everything """
-        return "tc qdisc add dev {} handle ffff: ingress ; \
-                 tc filter add dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop".format(
-                ifname, ifname, self.bandwidth, int(self.buffer_size()) * 1.2)
+        return "tc qdisc del dev {} ingress ; tc qdisc add dev {} handle ffff: ingress ; \
+            tc filter add dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop".format(
+                ifname, ifname, ifname, self.bandwidth, int(self.buffer_size()) * 1.2)
 
     def build_changing_policing_cmd(self, ifname):
         return "&&".join(
@@ -237,31 +233,28 @@ class BottleneckLink(object):
     def __init__(self, topo_builder, topo, link_characteristics):
         self.link_characteristics = link_characteristics
         self.topo = topo
-        self.bs0 = topo_builder.add_switch("{}_{}_0".format(
-            BottleneckLink.BOTTLENECK_SWITCH_NAME_PREFIX, self.link_characteristics.id))
-        self.bs1 = topo_builder.add_switch("{}_{}_1".format(
-            BottleneckLink.BOTTLENECK_SWITCH_NAME_PREFIX, self.link_characteristics.id))
-        self.bs2 = topo_builder.add_switch("{}_{}_2".format(
-            BottleneckLink.BOTTLENECK_SWITCH_NAME_PREFIX, self.link_characteristics.id))
-        self.bs3 = topo_builder.add_switch("{}_{}_3".format(
-            BottleneckLink.BOTTLENECK_SWITCH_NAME_PREFIX, self.link_characteristics.id))
+        self.bs0 = topo_builder.add_switch(self.get_bs_name(0))
+        self.bs1 = topo_builder.add_switch(self.get_bs_name(1))
+        self.bs2 = topo_builder.add_switch(self.get_bs_name(2))
+        self.bs3 = topo_builder.add_switch(self.get_bs_name(3))
         topo_builder.add_link(self.bs0, self.bs1)
         topo_builder.add_link(self.bs1, self.bs2)
         topo_builder.add_link(self.bs2, self.bs3)
 
-    def configure_bottleneck(self):
+    def get_bs_name(self, index):
+        return "{}_{}_{}".format(BottleneckLink.BOTTLENECK_SWITCH_NAME_PREFIX, self.link_characteristics.id, index)
+
+    def reinit_variables(self):
         # Required to retrieve actual nodes
-        self.bs0 = self.topo.get_host(self.bs0)
-        self.bs1 = self.topo.get_host(self.bs1)
-        self.bs2 = self.topo.get_host(self.bs2)
-        self.bs3 = self.topo.get_host(self.bs3)
+        self.bs0 = self.topo.get_host(self.get_bs_name(0))
+        self.bs1 = self.topo.get_host(self.get_bs_name(1))
+        self.bs2 = self.topo.get_host(self.get_bs_name(2))
+        self.bs3 = self.topo.get_host(self.get_bs_name(3))
+
+    def configure_bottleneck(self):
         bs1_interface_names = self.topo.get_interface_names(self.bs1)
         bs2_interface_names = self.topo.get_interface_names(self.bs2)      
         # Flow bs0 -> bs3
-        # Only once
-        clean_policing_cmd = self.link_characteristics.clean_policing_cmd(bs1_interface_names[0])
-        logging.info(clean_policing_cmd)
-        self.topo.command_to(self.bs1, clean_policing_cmd)
         policing_cmd = self.link_characteristics.build_policing_cmd(bs1_interface_names[0])
         logging.info(policing_cmd)
         self.topo.command_to(self.bs1, policing_cmd)
@@ -339,10 +332,9 @@ class Topo(object):
     MININET_BUILDER = "mininet"
     TOPO_ATTR = "topoType"
     SWITCH_NAME_PREFIX = "s"
-    ROUTER_NAME_PREFIX = "r"
-    CLIENT_NAME = "Client"
-    SERVER_NAME = "Server"
-    ROUTER_NAME = "Router"
+    CLIENT_NAME_PREFIX = "Client"
+    SERVER_NAME_PREFIX = "Server"
+    ROUTER_NAME_PREFIX = "Router"
     CMD_LOG_FILENAME = "command.log"
 
     def __init__(self, topo_builder, topo_parameter):
@@ -354,6 +346,30 @@ class Topo(object):
         self.routers = []
         self.servers = []
         self.bottleneck_links = []
+
+    def get_client_name(self, index):
+        return "{}_{}".format(Topo.CLIENT_NAME_PREFIX, index)
+
+    def get_router_name(self, index):
+        return "{}_{}".format(Topo.ROUTER_NAME_PREFIX, index)
+
+    def get_server_name(self, index):
+        return "{}_{}".format(Topo.SERVER_NAME_PREFIX, index)
+
+    def add_client(self):
+        client = self.add_host(self.get_client_name(self.client_count()))
+        self.clients.append(client)
+        return client
+
+    def add_router(self):
+        router = self.add_host(self.get_router_name(self.router_count()))
+        self.routers.append(router)
+        return router
+
+    def add_server(self):
+        server = self.add_host(self.get_server_name(self.server_count()))
+        self.servers.append(server)
+        return server
 
     def get_link_characteristics(self):
         return self.topo_parameter.link_characteristics
@@ -418,6 +434,14 @@ class Topo(object):
         self.topo_builder.add_link(bottleneck_link.get_right(), to_b)
         return bottleneck_link
 
+    def reinit_variables(self):
+        # Because we create nodes before starting mininet
+        self.clients = [self.get_host(self.get_client_name(i)) for i in range(len(self.clients))]
+        self.routers = [self.get_host(self.get_router_name(i)) for i in range(len(self.routers))]
+        self.servers = [self.get_host(self.get_server_name(i)) for i in range(len(self.servers))]
+        for b in self.bottleneck_links:
+            b.reinit_variables()
+
     def get_cli(self):
         self.topo_builder.get_cli()
 
@@ -443,6 +467,8 @@ class TopoConfig(object):
         self.param = param
 
     def configure_network(self):
+        self.topo.reinit_variables()
+        self.disable_tso()
         logging.debug("Configure network in TopoConfig")
         self.configure_interfaces()
         self.configure_routing()
@@ -480,7 +506,7 @@ class TopoConfig(object):
 
     def configure_interfaces(self):
         """
-        Function to override to configure the interfaces of the topology
+        Function to inherit to configure the interfaces of the topology
         """
         for b in self.topo.bottleneck_links:
             b.configure_bottleneck()
@@ -493,13 +519,13 @@ class TopoConfig(object):
 
     def client_interface_count(self):
         """
-        Return the number of client's interfaces
+        Return the number of client's interfaces, without lo
         """
         raise NotImplementedError()
 
-    def get_client_interface(self, index):
+    def get_client_interface(self, client_index, interface_index):
         """
-        Return the client's interface with index `index`
+        Return the interface with index `interface_index` of the client with index `client_index` 
         """
         raise NotImplementedError()
 

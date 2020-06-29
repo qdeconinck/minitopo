@@ -152,10 +152,8 @@ class Experiment(object):
         """
         self.setup_sysctl()
         self.run_userspace_path_manager()  # TODO to move elsewhere
-        self.topo_config.configure_network()
         self.change_metric()  # TODO to move elsewhere
         self.put_priority_on_paths()  # TODO to move elsewhere
-        self.disable_tso()
         self.run_tcpdump()
         self.run_netem_at()
 
@@ -196,9 +194,6 @@ class Experiment(object):
                 self.topo_config.interface_backup_command(self.topo_config.get_client_interface(1)))
             self.topo.command_to(self.topo_config.router,
                 self.topo_config.interface_backup_command(self.topo_config.get_router_interface_to_switch(1)))
-
-    def disable_tso(self):
-        self.topo_config.disable_tso()
 
     def run_userspace_path_manager(self):
         """

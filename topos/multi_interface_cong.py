@@ -8,6 +8,7 @@ class MultiInterfaceCongTopo(Topo):
     congServerName = "CSer"
 
     def __init__(self, topo_builder, parameterFile):
+        raise Exception("Broken")
         super(MultiInterfaceCongTopo, self).__init__(topo_builder, parameterFile)
         print("Hello from topo multi if")
         self.client = self.add_host(Topo.CLIENT_NAME)

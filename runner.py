@@ -22,8 +22,8 @@ class Runner(object):
     def __init__(self, builder_type, topo_parameter_file, experiment_parameter_file):
         self.topo_parameter = TopoParameter(topo_parameter_file)
         self.set_builder(builder_type)
-        self.set_topo()
-        self.set_topo_config()
+        self.apply_topo()
+        self.apply_topo_config()
         self.start_topo()
         self.run_experiment(experiment_parameter_file)
         self.stop_topo()
@@ -37,7 +37,7 @@ class Runner(object):
         else:
             raise Exception("I can not find the builder {}".format(builder_type))
 
-    def set_topo(self):
+    def apply_topo(self):
         """
         Matches the name of the topo and find the corresponding Topo class.
         """
@@ -49,7 +49,7 @@ class Runner(object):
 
         logging.info("Using topo {}".format(self.topo))
 
-    def set_topo_config(self):
+    def apply_topo_config(self):
         """
         Match the name of the topo and find the corresponding TopoConfig class.
         """

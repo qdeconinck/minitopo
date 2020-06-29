@@ -5,6 +5,7 @@ class TwoInterfaceCongestionTopo(Topo):
     NAME = "twoIfCong"
 
     def __init__(self, topo_builder, parameterFile):
+        raise Exception("Broken")
         super(TwoInterfaceCongestionTopo, self).__init__(topo_builder, parameterFile)
 
         print("Hello from topo two ifs cong")

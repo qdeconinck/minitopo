@@ -5,6 +5,7 @@ class ECMPSingleInterfaceTopo(Topo):
     NAME = "ECMPLike"
 
     def __init__(self, topo_builder, parameterFile):
+        raise Exception("Broken")
         super(ECMPSingleInterfaceTopo, self).__init__(topo_builder, parameterFile)
 
         print("Hello ECMP topo")
