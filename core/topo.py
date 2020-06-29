@@ -250,6 +250,11 @@ class BottleneckLink(object):
         topo_builder.add_link(self.bs2, self.bs3)
 
     def configure_bottleneck(self):
+        # Required to retrieve actual nodes
+        self.bs0 = self.topo.get_host(self.bs0)
+        self.bs1 = self.topo.get_host(self.bs1)
+        self.bs2 = self.topo.get_host(self.bs2)
+        self.bs3 = self.topo.get_host(self.bs3)
         bs1_interface_names = self.topo.get_interface_names(self.bs1)
         bs2_interface_names = self.topo.get_interface_names(self.bs2)      
         # Flow bs0 -> bs3
@@ -418,8 +423,6 @@ class Topo(object):
 
     def start_network(self):
         self.topo_builder.start_network()
-        for b in self.bottleneck_links:
-            b.configure_bottleneck()
 
     def close_log_file(self):
         self.log_file.close()
@@ -479,7 +482,8 @@ class TopoConfig(object):
         """
         Function to override to configure the interfaces of the topology
         """
-        pass
+        for b in self.topo.bottleneck_links:
+            b.configure_bottleneck()
 
     def configure_routing(self):
         """
