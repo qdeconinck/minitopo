@@ -14,6 +14,7 @@ class ExperimentParameter(Parameter):
     """
     RMEM       = "rmem"
     WMEM       = "wmem"
+    MPTCP_ENABLED = "mptcpEnabled"
     SCHED      = "sched"
     CC		   = "congctrl"
     AUTOCORK   = "autocork"
@@ -42,6 +43,7 @@ class ExperimentParameter(Parameter):
     SYSCTL_KEY = {
         RMEM: "net.ipv4.tcp_rmem",
         WMEM: "net.ipv4.tcp_wmem",
+        MPTCP_ENABLED: "net.mptcp.mptcp_enabled",
         KERNELPM: "net.mptcp.mptcp_path_manager",
         SCHED: "net.mptcp.mptcp_scheduler",
         CC: "net.ipv4.tcp_congestion_control",
@@ -63,6 +65,7 @@ class ExperimentParameter(Parameter):
     DEFAULT_PARAMETERS = {
         RMEM: "10240 87380 16777216",
         WMEM: "4096 16384 4194304",
+        MPTCP_ENABLED: "1",
         KERNELPM: "fullmesh",
         KERNELPMC: "fullmesh",
         KERNELPMS: "fullmesh",
