@@ -223,7 +223,7 @@ class TwoInterfaceCongestionConfig(TopoConfig):
     def client_interface_count(self):
         return len(self.topo.switch)
 
-    def getRouterInterfaceServer(self):
+    def get_router_interface_to_server(self):
         return self.get_router_interface_to_switch(len(self.topo.switch))
 
     def get_client_interface(self, interfaceID):

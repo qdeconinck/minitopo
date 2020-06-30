@@ -168,10 +168,10 @@ class MultiInterfaceCongConfig(TopoConfig):
             print(str(links[i]))
             i = i + 1
 
-        cmd = self.interface_up_command(self.getRouterInterfaceServer(),
+        cmd = self.interface_up_command(self.get_router_interface_to_server(),
                 self.getRouterIPServer(), netmask)
         self.topo.command_to(self.router, cmd)
-        routerIntfMac = self.router.intf(self.getRouterInterfaceServer()).MAC()
+        routerIntfMac = self.router.intf(self.get_router_interface_to_server()).MAC()
         self.topo.command_to(self.server, "arp -s " + self.getRouterIPServer() + " " + routerIntfMac)
 
         cmd = self.interface_up_command(self.get_server_interface(),
@@ -239,7 +239,7 @@ class MultiInterfaceCongConfig(TopoConfig):
     def client_interface_count(self):
         return len(self.topo.switch)
 
-    def getRouterInterfaceServer(self):
+    def get_router_interface_to_server(self):
         return self.get_router_interface_to_switch(len(self.topo.switch))
 
     def getRouterInterfaceCongServer(self, congID):
