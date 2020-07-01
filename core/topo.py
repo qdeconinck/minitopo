@@ -278,7 +278,7 @@ class BottleneckLink(object):
         logging.info(shaping_cmd)
         self.topo.command_to(self.bs1, shaping_cmd)
         netem_cmd = self.link_characteristics.build_netem_cmd(bs2_interface_names[-1],
-            "loss {}".format(self.link_characteristics.loss) if self.link_characteristics.loss > 0 else "")
+            "loss {}".format(self.link_characteristics.loss) if float(self.link_characteristics.loss) > 0 else "")
         logging.info(netem_cmd)
         self.topo.command_to(self.bs2, netem_cmd)
 
@@ -290,7 +290,7 @@ class BottleneckLink(object):
         logging.info(shaping_cmd)
         self.topo.command_to(self.bs2, shaping_cmd)
         netem_cmd = self.link_characteristics.build_netem_cmd(bs1_interface_names[0],
-            "loss {}".format(self.link_characteristics.loss) if self.link_characteristics.loss > 0 else "")
+            "loss {}".format(self.link_characteristics.loss) if float(self.link_characteristics.loss) > 0 else "")
         logging.info(netem_cmd)
         self.topo.command_to(self.bs1, netem_cmd)
 
