@@ -73,37 +73,41 @@ class LinkCharacteristics(object):
             else:
                 logging.error("{}: not taken into account because not specified in order in the topo param file".format(n))
 
-    def build_bandwidth_cmd(self, ifname):
-        return "tc qdisc del {} root ; tc qdisc add dev {} root handle 5:0 tbf rate {}mbit burst 15000 limit {}".format(
-            ifname, ifname, self.bandwidth, self.buffer_size())
+    def build_delete_tc_cmd(self, ifname):
+        return "tc qdisc del dev {} root; tc qdisc del dev {} ingress ".format(ifname, ifname)
+
+    def build_bandwidth_cmd(self, ifname, change=False):
+        return "tc qdisc {} dev {} root handle 5:0 tbf rate {}mbit burst 15000 limit {}".format(
+            "change" if change else "add", ifname, self.bandwidth, self.buffer_size())
 
     def build_changing_bandwidth_cmd(self, ifname):
         return "&&".join(
             ["sleep {} && {} ".format(
-                n.delta, self.build_bandwidth_cmd(ifname)) for n in self.netem_at]
+                n.delta, self.build_bandwidth_cmd(ifname, change=True)) for n in self.netem_at]
             + ["true &"]
         )
 
-    def build_netem_cmd(self, ifname, cmd):
-        return "tc qdisc del dev {} root ; tc qdisc add dev {} root handle 10: netem {} delay {}ms limit 50000".format(
-            ifname, ifname, cmd, self.delay)
+    def build_netem_cmd(self, ifname, cmd, change=False):
+        return "tc qdisc {} dev {} root handle 10: netem {} delay {}ms limit 50000".format(
+            "change" if change else "add", ifname, cmd, self.delay)
 
     def build_changing_netem_cmd(self, ifname):
         return "&&".join(
             ["sleep {} && {} ".format(
-                n.delta, self.build_netem_cmd(ifname, n.cmd)) for n in self.netem_at]
+                n.delta, self.build_netem_cmd(ifname, n.cmd, change=True)) for n in self.netem_at]
             + ["true &"]
         )
 
-    def build_policing_cmd(self, ifname):
-        return "tc qdisc del dev {} ingress ; tc qdisc add dev {} handle ffff: ingress ; \
-            tc filter add dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop".format(
-                ifname, ifname, ifname, self.bandwidth, int(self.buffer_size()) * 1.2)
+    def build_policing_cmd(self, ifname, change=False):
+        return "tc qdisc {} dev {} handle ffff: ingress ; \
+            tc filter {} dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop".format(
+                "change" if change else "add", ifname, "change" if change else "add", ifname,
+                self.bandwidth, int(self.buffer_size()) * 1.2)
 
     def build_changing_policing_cmd(self, ifname):
         return "&&".join(
             ["sleep {} && {} ".format(
-                n.delta, self.build_policing_cmd(ifname)) for n in self.netem_at]
+                n.delta, self.build_policing_cmd(ifname, change=True)) for n in self.netem_at]
             + ["true &"]
         )
 
@@ -253,7 +257,19 @@ class BottleneckLink(object):
 
     def configure_bottleneck(self):
         bs1_interface_names = self.topo.get_interface_names(self.bs1)
-        bs2_interface_names = self.topo.get_interface_names(self.bs2)      
+        bs2_interface_names = self.topo.get_interface_names(self.bs2)
+
+        # Cleanup tc commands
+        for bs1_ifname in bs1_interface_names:
+            clean_cmd = self.link_characteristics.build_delete_tc_cmd(bs1_ifname)
+            logging.info(clean_cmd)
+            self.topo.command_top(self.bs1, clean_cmd)
+
+        for bs2_ifname in bs2_interface_names:
+            clean_cmd = self.link_characteristics.build_delete_tc_cmd(bs2_ifname)
+            logging.info(clean_cmd)
+            self.topo.command_top(self.bs2, clean_cmd)
+
         # Flow bs0 -> bs3
         policing_cmd = self.link_characteristics.build_policing_cmd(bs1_interface_names[0])
         logging.info(policing_cmd)
