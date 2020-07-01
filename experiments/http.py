@@ -1,4 +1,5 @@
 from core.experiment import ExperimentParameter, RandomFileExperiment, RandomFileParameter
+import logging
 import os
 
 class HTTP(RandomFileExperiment):
@@ -25,14 +26,15 @@ class HTTP(RandomFileExperiment):
                 HTTP.SERVER_LOG )
 
     def getHTTPServerCmd(self):
-        s = "/etc/init.d/apache2 restart &> {}&".format(HTTP.SERVER_LOG)
-        print(s)
+        s = "python {}/../utils/http_server.py &> {}&".format(
+            os.path.dirname(os.path.abspath(__file__)), HTTP.SERVER_LOG)
+        logging.info(s)
         return s
 
     def getHTTPClientCmd(self):
         s = "(time {} http://{}/{} --no-check-certificate) &> {}".format(HTTP.WGET_BIN,
             self.topo_config.get_server_ip(), self.file, HTTP.CLIENT_LOG)
-        print(s)
+        logging.info(s)
         return s
 
     def clean(self):
