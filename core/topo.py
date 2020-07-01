@@ -263,12 +263,12 @@ class BottleneckLink(object):
         for bs1_ifname in bs1_interface_names:
             clean_cmd = self.link_characteristics.build_delete_tc_cmd(bs1_ifname)
             logging.info(clean_cmd)
-            self.topo.command_top(self.bs1, clean_cmd)
+            self.topo.command_to(self.bs1, clean_cmd)
 
         for bs2_ifname in bs2_interface_names:
             clean_cmd = self.link_characteristics.build_delete_tc_cmd(bs2_ifname)
             logging.info(clean_cmd)
-            self.topo.command_top(self.bs2, clean_cmd)
+            self.topo.command_to(self.bs2, clean_cmd)
 
         # Flow bs0 -> bs3
         policing_cmd = self.link_characteristics.build_policing_cmd(bs1_interface_names[0])
