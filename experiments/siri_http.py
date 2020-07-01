@@ -48,12 +48,12 @@ class SiriHTTP(Siri, RandomFileExperiment):
         self.topo.command_to(self.topo_config.server, "rm " + \
                 SiriHTTP.HTTP_SERVER_LOG)
 
-    def getHTTPServerCmd(self):
+    def get_http_server_cmd(self):
         s = "/etc/init.d/apache2 restart &>" + SiriHTTP.SERVER_LOG + "&"
         print(s)
         return s
 
-    def getHTTPClientCmd(self):
+    def get_http_client_cmd(self):
         s = SiriHTTP.WGET_BIN + " http://" + self.topo_config.get_server_ip() + \
                 "/" + self.file + " --no-check-certificate"
         print(s)
@@ -66,12 +66,12 @@ class SiriHTTP(Siri, RandomFileExperiment):
         cmd = self.get_siri_server_cmd()
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
         self.topo.command_to(self.topo_config.server, cmd)
-        cmd = self.getHTTPServerCmd()
+        cmd = self.get_http_server_cmd()
         self.topo.command_to(self.topo_config.server, cmd)
 
         self.topo.command_to(self.topo_config.client, "sleep 2")
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
-        cmd = self.getHTTPClientCmd()
+        cmd = self.get_http_client_cmd()
         self.topo.command_to(self.topo_config.client, "for i in {1..200}; do " + cmd + "; done &")
         cmd = self.get_siri_client_cmd()
         self.topo.command_to(self.topo_config.client, cmd)

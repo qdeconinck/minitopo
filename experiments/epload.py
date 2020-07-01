@@ -36,7 +36,7 @@ class Epload(Experiment):
         self.topo.command_to(self.topo_config.server, "rm " + \
                 Epload.SERVER_LOG )
 
-    def getHTTPServerCmd(self):
+    def get_http_server_cmd(self):
         s = "/etc/init.d/apache2 restart &>" + Epload.SERVER_LOG + " &"
         print(s)
         return s
@@ -71,7 +71,7 @@ class Epload(Experiment):
         super(Epload, self).clean()
 
     def run(self):
-        cmd = self.getHTTPServerCmd()
+        cmd = self.get_http_server_cmd()
         self.topo.command_to(self.topo_config.server, cmd)
         self.topo.command_to(self.topo_config.client, "sleep 2")
 
