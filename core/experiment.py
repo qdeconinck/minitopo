@@ -363,9 +363,10 @@ class Experiment(object):
                         "rm {}".format(Experiment.PING_OUTPUT))
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.get_client_ip(i),
-                 self.topo_config.get_server_ip(), n = count)
-             self.topo.command_to(self.topo_config.client, cmd)
+            cmd = self.ping_command(self.topo_config.get_client_ip(i),
+                 self.topo_config.get_server_ip(), n=count)
+            logging.info(cmd)
+            self.topo.command_to(self.topo_config.client, cmd)
 
     def ping_command(self, from_ip, to_ip, n=5):
         return "ping -c {} -I {} {} >> {}".format(n, from_ip, to_ip, Experiment.PING_OUTPUT)
