@@ -141,7 +141,7 @@ class MultiInterfaceConfig(TopoConfig):
     def get_router_ip_to_server_switch(self, switch_index):
         return "{}{}.2".format(self.param.get(TopoParameter.RIGHT_SUBNET), switch_index)
 
-    def get_server_ip(self, interface_index):
+    def get_server_ip(self, interface_index=0):
         return "{}{}.1".format(self.param.get(TopoParameter.RIGHT_SUBNET), interface_index)
 
     def get_server_subnet(self, interface_index):
