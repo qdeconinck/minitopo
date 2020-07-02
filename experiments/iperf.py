@@ -1,5 +1,7 @@
 from core.experiment import Experiment, ExperimentParameter
+import logging
 import os
+
 
 class IPerfParameter(ExperimentParameter):
     TIME = "iperfTime"
@@ -26,52 +28,34 @@ class IPerf(Experiment):
         self.load_parameters()
         self.ping()
 
-    def ping(self):
-        self.topo.command_to(self.topo_config.client, "rm " + \
-                IPerf.PING_OUTPUT)
-        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
-        for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.get_client_ip(i),
-                 self.topo_config.get_server_ip(), n = count)
-             self.topo.command_to(self.topo_config.client, cmd)
-
-    def ping_command(self, fromIP, toIP, n=5):
-        s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-                  " >> " + IPerf.PING_OUTPUT
-        print(s)
-        return s
-
     def load_parameters(self):
         self.time = self.experiment_parameter.get(IPerfParameter.TIME)
         self.parallel = self.experiment_parameter.get(IPerfParameter.PARALLEL)
 
     def prepare(self):
         super(IPerf, self).prepare()
-        self.topo.command_to(self.topo_config.client, "rm " +
-                IPerf.IPERF_LOG)
-        self.topo.command_to(self.topo_config.server, "rm " +
-                IPerf.SERVER_LOG)
+        self.topo.command_to(self.topo_config.client, "rm {}".format(IPerf.IPERF_LOG))
+        self.topo.command_to(self.topo_config.server, "rm {}".format(IPerf.SERVER_LOG))
 
-    def getClientCmd(self):
-        s = IPerf.IPERF_BIN + " -c " + self.topo_config.get_server_ip() + \
-            " -t " + self.time + " -P " + self.parallel + " &>" + IPerf.IPERF_LOG
-        print(s)
+    def get_client_cmd(self):
+        s = "{} -c {} -t {} -P {} &>{}".format(IPerf.IPERF_BIN, 
+            self.topo_config.get_server_ip(), self.time, self.parallel, IPerf.IPERF_LOG)
+        logging.info(s)
         return s
 
-    def getServerCmd(self):
-        s = "sudo " + IPerf.IPERF_BIN + " -s &>" + \
-            IPerf.SERVER_LOG + "&"
-        print(s)
+    def get_server_cmd(self):
+        s = "{} -s &> {} &".format(IPerf.IPERF_BIN, IPerf.SERVER_LOG)
+        logging.info(s)
         return s
 
     def clean(self):
         super(IPerf, self).clean()
 
     def run(self):
-        cmd = self.getServerCmd()
+        cmd = self.get_server_cmd()
         self.topo.command_to(self.topo_config.server, cmd)
 
         self.topo.command_to(self.topo_config.client, "sleep 2")
-        cmd = self.getClientCmd()
+        cmd = self.get_client_cmd()
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.client, "sleep 2")

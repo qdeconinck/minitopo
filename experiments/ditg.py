@@ -55,7 +55,7 @@ class DITG(Experiment):
         self.topo.command_to(self.topo_config.server, "rm " + DITG.DITG_SERVER_LOG)
         self.topo.command_to(self.topo_config.client, "rm " + DITG.DITG_TEMP_LOG)
 
-    def getClientCmd(self):
+    def get_client_cmd(self):
         s = DITG.ITGSEND_BIN + " -a " + self.topo_config.get_server_ip() + \
             " -T TCP -k " + self.kbytes + " -l " + DITG.DITG_TEMP_LOG
 
@@ -72,7 +72,7 @@ class DITG(Experiment):
         print(s)
         return s
 
-    def getServerCmd(self):
+    def get_server_cmd(self):
         s = DITG.ITGRECV_BIN + " -l " + DITG.DITG_SERVER_TEMP_LOG + " &"
         print(s)
         return s
@@ -81,11 +81,11 @@ class DITG(Experiment):
         super(DITG, self).clean()
 
     def run(self):
-        cmd = self.getServerCmd()
+        cmd = self.get_server_cmd()
         self.topo.command_to(self.topo_config.server, cmd)
 
         self.topo.command_to(self.topo_config.client, "sleep 2")
-        cmd = self.getClientCmd()
+        cmd = self.get_client_cmd()
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.server, "pkill -9 -f ITGRecv")
         self.topo.command_to(self.topo_config.server, DITG.ITGDEC_BIN + " " + DITG.DITG_SERVER_TEMP_LOG + " &> " + DITG.DITG_SERVER_LOG)

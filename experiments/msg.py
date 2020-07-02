@@ -1,4 +1,5 @@
 from core.experiment import Experiment, ExperimentParameter
+import logging
 import os
 
 
@@ -31,21 +32,6 @@ class Msg(Experiment):
         self.load_parameters()
         self.ping()
 
-    def ping(self):
-        self.topo.command_to(self.topo_config.client, "rm " + \
-                Msg.PING_OUTPUT )
-        count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
-        for i in range(0, self.topo_config.client_interface_count()):
-             cmd = self.ping_command(self.topo_config.get_client_ip(i),
-                 self.topo_config.get_server_ip(), n = count)
-             self.topo.command_to(self.topo_config.client, cmd)
-
-    def ping_command(self, fromIP, toIP, n=5):
-        s = "ping -c " + str(n) + " -I " + fromIP + " " + toIP + \
-                  " >> " + Msg.PING_OUTPUT
-        print(s)
-        return s
-
     def load_parameters(self):
         self.client_sleep = self.experiment_parameter.get(MsgParameter.CLIENT_SLEEP)
         self.server_sleep = self.experiment_parameter.get(MsgParameter.SERVER_SLEEP)
@@ -63,14 +49,14 @@ class Msg(Experiment):
         s = "python {}/../utils/msg_server.py --sleep {} --bytes {} &> {}&".format(
            os.path.dirname(os.path.abspath(__file__)), self.server_sleep, self.bytes,
            Msg.SERVER_LOG)
-        print(s)
+        logging.info(s)
         return s
 
     def get_msg_client_cmd(self, daemon=False):
         s = "python {}/../utils/msg_client.py --sleep {} --nb {} --bytes {} > {} 2> {} {}".format(
            os.path.dirname(os.path.abspath(__file__)), self.client_sleep, self.nb_requests,
            self.bytes, Msg.CLIENT_LOG, Msg.CLIENT_ERR, "&" if daemon else "")
-        print(s)
+        logging.info(s)
         return s
 
     def clean(self):
