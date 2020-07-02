@@ -66,7 +66,7 @@ class MultiInterfaceConfig(TopoConfig):
                     i)
             self.topo.command_to(self.client, cmd)
 
-        for i in range(int(self.topo_parameter.get(TopoParameter.SERVER_PATHS))):
+        for i in range(int(self.topo.topo_parameter.get(TopoParameter.SERVER_PATHS))):
             cmd = self.add_table_route_command(self.get_server_ip(i), i)
             self.topo.command_to(self.server, cmd)
 
@@ -114,7 +114,7 @@ class MultiInterfaceConfig(TopoConfig):
             self.topo.command_to(self.client, "arp -s {} {}".format(
                 self.get_router_ip_to_client_switch(i), router_interface_mac))
 
-        for i in range(int(self.topo_parameter.get(TopoParameter.SERVER_PATHS))):
+        for i in range(int(self.topo.topo_parameter.get(TopoParameter.SERVER_PATHS))):
             cmd = self.interface_up_command(self.get_router_interface_to_server(i),
                     self.get_router_ip_to_server_switch(i), netmask)
             self.topo.command_to(self.router, cmd)
@@ -122,7 +122,7 @@ class MultiInterfaceConfig(TopoConfig):
             self.topo.command_to(self.server, "arp -s {} {}".format(
                 self.get_router_ip_to_server_switch(i), router_interface_mac))
 
-        for i in range(int(self.topo_parameter.get(TopoParameter.SERVER_PATHS))):
+        for i in range(int(self.topo.topo_parameter.get(TopoParameter.SERVER_PATHS))):
             cmd = self.interface_up_command(self.get_server_interface(i), self.get_server_ip(i), netmask)
             self.topo.command_to(self.server, cmd)
             server_interface_mac = self.server.intf(self.get_server_interface(i)).MAC()
