@@ -139,11 +139,13 @@ class TopoParameter(Parameter):
     RIGHT_SUBNET = "rightSubnet"
     NETEM_AT = "netem_at_"
     CHANGE_NETEM = "changeNetem"
+    SERVER_PATHS = "serverPaths"
 
     DEFAULT_PARAMETERS = {
         LEFT_SUBNET: "10.1.",
         RIGHT_SUBNET: "10.2.",
         CHANGE_NETEM: "false",
+        SERVER_PATHS: "1",
     }
 
     def __init__(self, parameter_filename):
