@@ -123,9 +123,9 @@ class MultiInterfaceConfig(TopoConfig):
                 self.get_router_ip_to_server_switch(i), router_interface_mac))
 
         for i in range(int(self.topo.topo_parameter.get(TopoParameter.SERVER_PATHS))):
-            cmd = self.interface_up_command(self.get_server_interface(i), self.get_server_ip(i), netmask)
+            cmd = self.interface_up_command(self.get_server_interface(0, i), self.get_server_ip(i), netmask)
             self.topo.command_to(self.server, cmd)
-            server_interface_mac = self.server.intf(self.get_server_interface(i)).MAC()
+            server_interface_mac = self.server.intf(self.get_server_interface(0, i)).MAC()
             self.topo.command_to(self.router, "arp -s {} {}".format(
                 self.get_server_ip(i), server_interface_mac))
 
@@ -139,10 +139,10 @@ class MultiInterfaceConfig(TopoConfig):
         return "{}{}.2".format(self.param.get(TopoParameter.LEFT_SUBNET), switch_index)
 
     def get_router_ip_to_server_switch(self, switch_index):
-        return "{}{}.2".format(self.param.get(TopoParameter.RIGHT_SUBNET))
+        return "{}{}.2".format(self.param.get(TopoParameter.RIGHT_SUBNET), switch_index)
 
     def get_server_ip(self, interface_index):
-        return "{}{}.1".format(self.param.get(TopoParameter.RIGHT_SUBNET))
+        return "{}{}.1".format(self.param.get(TopoParameter.RIGHT_SUBNET), interface_index)
 
     def get_server_subnet(self, interface_index):
         return "{}{}.0/24".format(self.param.get(TopoParameter.RIGHT_SUBNET), interface_index)
@@ -159,5 +159,5 @@ class MultiInterfaceConfig(TopoConfig):
     def get_router_interface_to_switch(self, interface_index):
         return "{}-eth{}".format(self.topo.get_router_name(0), interface_index)
 
-    def get_server_interface(self, server_index):
-        return "{}-eth0".format(self.topo.get_server_name(server_index))
+    def get_server_interface(self, server_index, interface_index):
+        return "{}-eth{}".format(self.topo.get_server_name(server_index), interface_index)
