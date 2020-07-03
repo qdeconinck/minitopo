@@ -64,8 +64,8 @@ class MultiInterfaceTopo(Topo):
         for i in range(0, m):
             if i == m // 2:
                 if m % 2 == 0:
-                    s = s + "c                r--sw---bl---sw--s\n"
-                    s = s + " \-sw---bl---sw-/\n"
+                    s = s + "c                r                s\n"
+                    s = s + " \-sw---bl---sw-/ \-sw---bl---sw-/\n"
                 else:
                     s = s + "c--sw---bl---sw--r--sw---bl---sw--s\n"
             else:
