@@ -4,11 +4,13 @@ from core.experiment import Experiment, ExperimentParameter, ExperimentParameter
 from core.topo import Topo, TopoParameter
 
 from mininet_builder import MininetBuilder
+from mininet.clean import cleanup
 
 from experiments import EXPERIMENTS
 from topos import TOPO_CONFIGS, TOPOS
 
 import logging
+import traceback
 
 
 class Runner(object):
@@ -103,4 +105,12 @@ if __name__ == '__main__':
     logging.basicConfig(format="%(asctime)-15s [%(levelname)s] %(funcName)s: %(message)s", level=logging.INFO)
 
     # XXX Currently, there is no alternate topo builder...
-    Runner(Topo.MININET_BUILDER, args.topo_param_file, args.experiment_param_file)
+    try:
+        Runner(Topo.MININET_BUILDER, args.topo_param_file, args.experiment_param_file)
+    except Exception as e:
+        logging.fatal("A fatal error occurred: {}".format(e))
+        traceback.print_exc()
+    finally:
+        # Always cleanup Mininet
+        logging.info("cleanup mininet")
+        cleanup()
