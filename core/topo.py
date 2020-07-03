@@ -89,7 +89,7 @@ class LinkCharacteristics(object):
             "change" if change else "add", ifname, self.bandwidth, self.buffer_size())
 
     def build_changing_bandwidth_cmd(self, ifname):
-        return "&&".join(
+        return "&& ".join(
             ["sleep {} && {} ".format(
                 n.delta, self.build_bandwidth_cmd(ifname, change=True)) for n in self.netem_at]
             + ["true &"]
@@ -100,7 +100,7 @@ class LinkCharacteristics(object):
             "change" if change else "add", ifname, cmd, "delay {}ms limit 50000".format(self.delay) if not change else "")
 
     def build_changing_netem_cmd(self, ifname):
-        return "&&".join(
+        return "&& ".join(
             ["sleep {} && {} ".format(
                 n.delta, self.build_netem_cmd(ifname, n.cmd, change=True)) for n in self.netem_at]
             + ["true &"]
@@ -113,7 +113,7 @@ class LinkCharacteristics(object):
                 self.bandwidth, int(self.buffer_size()) * 1.2)
 
     def build_changing_policing_cmd(self, ifname):
-        return "&&".join(
+        return "&& ".join(
             ["sleep {} && {} ".format(
                 n.delta, self.build_policing_cmd(ifname, change=True)) for n in self.netem_at]
             + ["true &"]
