@@ -140,14 +140,13 @@ class MultiInterfaceConfig(TopoConfig):
         self.router = self.topo.get_router(0)
         netmask = "255.255.255.0"
 
-        links = self.topo.get_link_characteristics()
         for i, l in enumerate(self.topo.c2r_client_switches):
             cmd = self.interface_up_command(self.get_client_interface(0, i), self.get_client_ip(i), netmask)
             self.topo.command_to(self.client, cmd)
             client_interface_mac = self.client.intf(self.get_client_interface(0, i)).MAC()
             self.topo.command_to(self.router, "arp -s {} {}".format(self.get_client_ip(i), client_interface_mac))
 
-            if(links[i].backup):
+            if self.topo.get_client_to_router_links()[i].backup:
                 cmd = self.interface_backup_command(self.get_client_interface(0, i))
                 self.topo.command_to(self.client, cmd)
 
