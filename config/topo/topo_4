@@ -1,6 +1,8 @@
 leftSubnet:10.0.
 rightSubnet:10.1.
 path_c2r_0:100,20,4
-path_c2r_1:1,20,4
+path_c2r_1:100,20,4
+path_c2r_2:100,20,4
 path_r2s_0:10,20,10
+path_r2s_1:10,20,10
 topoType:MultiIf

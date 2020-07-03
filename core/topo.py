@@ -17,12 +17,22 @@ class NetemAt(object):
         return "netem at {} ({}) will be {}".format(self.at, self.delta, self.cmd)
 
 
+def get_bandwidth_delay_product_divided_by_mtu(delay, bandwidth):
+    """
+    With delay in ms, bandwidth in Mbps
+    """
+    rtt = 2 * float(delay)
+    bandwidth_delay_product = (float(bandwidth) * 125000.0) * (rtt / 1000.0)
+    return int(math.ceil(bandwidth_delay_product * 1.0 / 1500.0))
+
+
 class LinkCharacteristics(object):
     """
     Network characteristics associated to a link
 
     Attributes:
         id              the identifier of the link
+        link_type       type of the link
         delay           the one-way delay introduced by the link in ms
         queue_size      the size of the link buffer, in packets
         bandwidth       the bandwidth of the link in Mbps
@@ -31,8 +41,9 @@ class LinkCharacteristics(object):
         netem_at        list of NetemAt instances applicable to the link
         backup          integer indicating if this link is a backup one or not (useful for MPTCP)
     """
-    def __init__(self, id, delay, queue_size, bandwidth, loss, backup=False):
+    def __init__(self, id, link_type, delay, queue_size, bandwidth, loss, backup=0):
         self.id = id
+        self.link_type = link_type
         self.delay = delay
         self.queue_size = queue_size
         self.bandwidth = bandwidth
@@ -45,10 +56,7 @@ class LinkCharacteristics(object):
         """
         Get the bandwidth-delay product in terms of packets (hence, dividing by the MTU)
         """
-        rtt = 2 * float(self.delay)
-        """ Since bandwidth is in Mbps and rtt in ms """
-        bandwidth_delay_product = (float(self.bandwidth) * 125000.0) * (rtt / 1000.0)
-        return int(math.ceil(bandwidth_delay_product * 1.0 / 1500.0))
+        return get_bandwidth_delay_product_divided_by_mtu(self.delay, self.bandwidth)
 
     def buffer_size(self):
         """
@@ -116,6 +124,8 @@ class LinkCharacteristics(object):
         Notably used by BottleneckLink
         """
         return {
+            "link_id": self.id,
+            "link_type": self.link_type,
             "bw": float(self.bandwidth),
             "delay": "{}ms".format(self.delay),
             "loss": float(self.loss),
@@ -124,13 +134,14 @@ class LinkCharacteristics(object):
 
     def __str__(self):
         return """
+Link type: {}
 Link id: {}
     Delay: {}
     Queue Size: {}
     Bandwidth: {}
     Loss: {}
     Backup: {}
-        """.format(self.id, self.delay, self.queue_size, self.bandwidth, self.loss, self.backup) + \
+        """.format(self.link_type, self.id, self.delay, self.queue_size, self.bandwidth, self.loss, self.backup) + \
             "".join(["\t {} \n".format(n) for n in self.netem_at])
 
 
@@ -139,13 +150,11 @@ class TopoParameter(Parameter):
     RIGHT_SUBNET = "rightSubnet"
     NETEM_AT = "netem_at_"
     CHANGE_NETEM = "changeNetem"
-    SERVER_PATHS = "serverPaths"
 
     DEFAULT_PARAMETERS = {
         LEFT_SUBNET: "10.1.",
         RIGHT_SUBNET: "10.2.",
         CHANGE_NETEM: "false",
-        SERVER_PATHS: "1",
     }
 
     def __init__(self, parameter_filename):
@@ -184,34 +193,63 @@ class TopoParameter(Parameter):
 
         logging.info(self.link_characteristics[link_id].netem_at)
 
+    def parse_link_id_and_type(self, key):
+        """
+        The key of a path must have the following format:
+            path_{link_type}_{ID}
+
+        Note that several links can have the same ID, several links can have the same
+        link_type, but the tuple (link_type, ID) is unique.
+        """
+        _, link_type, link_id = key.split("_")
+        return link_type, int(link_id)
+
+    def parse_link_characteristics(self, value):
+        """
+        The format of a link characteristic is one of the following:
+            - "{delay},{queue_size},{bandwidth},{loss_perc},{is_backup}"
+            - "{delay},{queue_size},{bandwidth},{loss_perc}"
+            - "{delay},{queue_size},{bandwidth}"
+            - "{delay},{bandwidth}"
+
+        When not specified, default values are the following:
+            - queue_size: get_bandwidth_delay_product_divided_by_mtu(delay, bandwidth)
+            - loss_perc: 0
+            - is_backup: 0
+
+        Return
+            delay, bandwidth, queue_size, loss_perc, is_backup
+        """
+        loss_perc, is_backup = 0.0, 0
+        c = value.split(",")
+        if len(c) == 2:
+            delay, bw = float(c[0]), float(c[1])
+            return delay, bw, get_bandwidth_delay_product_divided_by_mtu(delay, bw), loss_perc, is_backup
+        if len(c) == 3:
+            return float(c[0]), float(c[2]), int(c[1]), loss_perc, is_backup
+        if len(c) == 4:
+            return float(c[0]), float(c[2]), int(c[1]), float(c[3]), is_backup
+        if len(c) == 5:
+            return float(c[0]), float(c[2]), int(c[1]), float(c[3]), int(c[4])
+
+        raise ValueError("Invalid link characteristics: {}".format(value))
+
     def load_link_characteristics(self):
         """
-        CAUTION: the path_i in config file is not taken into account. Hence place them in
-        increasing order in the topo parameter file!
+        Load the path characteristics
         """
-        i = 0
         for k in sorted(self.parameters):
-            # TODO FIXME rewrite this function
             if k.startswith("path"):
-                tab = self.parameters[k].split(",")
-                bup = False
-                loss = "0.0"
-                if len(tab) == 5:
-                    loss = tab[3]
-                    bup = tab[4].lower() == 'true'
-                if len(tab) == 4:
-                    try:
-                        loss = float(tab[3])
-                        loss = tab[3]
-                    except ValueError:
-                        bup = tab[3].lower() == 'true'
-                if len(tab) == 3 or len(tab) == 4 or len(tab) == 5:
-                    path = LinkCharacteristics(i, tab[0],
-                            tab[1], tab[2], loss, bup)
-                    self.link_characteristics.append(path)
-                    i = i + 1
+                try:
+                    link_type, link_id = self.parse_link_id_and_type(k)
+                    delay, bw, queue_size, loss_perc, is_backup = self.parse_link_characteristics(
+                        self.parameters[k])
+                except ValueError as e:
+                    logging.error("Ignored path {}: {}".format(k, e))
                 else:
-                    logging.warning("Ignored path {}".format(self.parameters[k]))
+                    path = LinkCharacteristics(link_id, link_type, delay, bw,
+                            queue_size, loss_perc, backup=is_backup)
+                    self.link_characteristics.append(path)
 
     def __str__(self):
         s = "{}".format(super(TopoParameter, self).__str__())
@@ -248,7 +286,8 @@ class BottleneckLink(object):
         topo_builder.add_link(self.bs2, self.bs3)
 
     def get_bs_name(self, index):
-        return "{}_{}_{}".format(BottleneckLink.BOTTLENECK_SWITCH_NAME_PREFIX, self.link_characteristics.id, index)
+        return "{}_{}_{}_{}".format(BottleneckLink.BOTTLENECK_SWITCH_NAME_PREFIX, 
+            self.link_characteristics.link_type, self.link_characteristics.id, index)
 
     def reinit_variables(self):
         # Required to retrieve actual nodes
@@ -534,15 +573,33 @@ class TopoConfig(object):
         """
         raise NotImplementedError()
 
+    def server_interface_count(self):
+        """
+        Return the number of server's interfaces, without lo
+        """
+        raise NotImplementedError()
+
     def get_client_interface(self, client_index, interface_index):
         """
         Return the interface with index `interface_index` of the client with index `client_index` 
         """
         raise NotImplementedError()
 
-    def get_router_interface_to_switch(self, index):
+    def get_server_interface(self, server_index, interface_index):
         """
-        Return the router's interface to switch with index `index`
+        Return the interface with index `interface_index` of the server with index `server_index` 
+        """
+        raise NotImplementedError()
+
+    def get_router_interface_to_client_switch(self, index):
+        """
+        Return the router's interface to client's switch with index `index`
+        """
+        raise NotImplementedError()
+
+    def get_router_interface_to_server_switch(self, index):
+        """
+        Return the router's interface to server's switch with index `index`
         """
         raise NotImplementedError()
 

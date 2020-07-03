@@ -158,10 +158,10 @@ class MultiInterfaceCongConfig(TopoConfig):
             self.topo.command_to(self.router, "arp -s " + self.getCongClientIP(i) + " " + congClientIntfMac)
 
             cmd = self.interface_up_command(
-                    self.get_router_interface_to_switch(i),
+                    self.get_router_interface_to_client_switch(i),
                     self.getRouterIPSwitch(i), netmask)
             self.topo.command_to(self.router, cmd)
-            routerIntfMac = self.router.intf(self.get_router_interface_to_switch(i)).MAC()
+            routerIntfMac = self.router.intf(self.get_router_interface_to_client_switch(i)).MAC()
             self.topo.command_to(self.client, "arp -s " + self.getRouterIPSwitch(i) + " " + routerIntfMac)
             # Don't forget the congestion client
             self.topo.command_to(self.cong_clients[i], "arp -s " + self.getRouterIPSwitch(i) + " " + routerIntfMac)
@@ -240,10 +240,10 @@ class MultiInterfaceCongConfig(TopoConfig):
         return len(self.topo.switch)
 
     def get_router_interface_to_server(self):
-        return self.get_router_interface_to_switch(len(self.topo.switch))
+        return self.get_router_interface_to_client_switch(len(self.topo.switch))
 
     def getRouterInterfaceCongServer(self, congID):
-        return self.get_router_interface_to_switch(len(self.topo.switch) + 1 + congID)
+        return self.get_router_interface_to_client_switch(len(self.topo.switch) + 1 + congID)
 
     def get_client_interface(self, interfaceID):
         return  Topo.CLIENT_NAME + "-eth" + str(interfaceID)
@@ -251,7 +251,7 @@ class MultiInterfaceCongConfig(TopoConfig):
     def getCongClientInterface(self, interfaceID):
         return MultiInterfaceCongConfig.congClientName + str(interfaceID) + "-eth0"
 
-    def get_router_interface_to_switch(self, interfaceID):
+    def get_router_interface_to_client_switch(self, interfaceID):
         return  Topo.ROUTER_NAME + "-eth" + str(interfaceID)
 
     def get_server_interface(self):

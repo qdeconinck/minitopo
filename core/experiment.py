@@ -179,24 +179,24 @@ class Experiment(object):
             self.topo.command_to(self.topo_config.client, "{} link set dev {} priority {}".format(
                 Experiment.IP_BIN, self.topo_config.get_client_interface(0), priority_path_0))
             self.topo.command_to(self.topo_config.router, "{} link set dev {} priority {}".format(
-                Experiment.IP_BIN, self.topo_config.get_router_interface_to_switch(0), priority_path_0))
+                Experiment.IP_BIN, self.topo_config.get_router_interface_to_client_switch(0), priority_path_0))
             self.topo.command_to(self.topo_config.client, "{} link set dev {} priority {}".format(
                 Experiment.IP_BIN, self.topo_config.get_client_interface(1), priority_path_1))
             self.topo.command_to(self.topo_config.router, "{} link set dev {} priority {}".format(
-                Experiment.IP_BIN, self.topo_config.get_router_interface_to_switch(1), priority_path_1))
+                Experiment.IP_BIN, self.topo_config.get_router_interface_to_client_switch(1), priority_path_1))
 
         backup_path_0 = self.experiment_parameter.get(ExperimentParameter.BACKUP_PATH_0)
         if int(backup_path_0) > 0:
             self.topo.command_to(self.topo_config.client,
                 self.topo_config.interface_backup_command(self.topo_config.get_client_interface(0)))
             self.topo.command_to(self.topo_config.router,
-                self.topo_config.interface_backup_command(self.topo_config.get_router_interface_to_switch(0)))
+                self.topo_config.interface_backup_command(self.topo_config.get_router_interface_to_client_switch(0)))
         backup_path_1 = self.experiment_parameter.get(ExperimentParameter.BACKUP_PATH_1)
         if int(backup_path_1) > 0:
             self.topo.command_to(self.topo_config.client,
                 self.topo_config.interface_backup_command(self.topo_config.get_client_interface(1)))
             self.topo.command_to(self.topo_config.router,
-                self.topo_config.interface_backup_command(self.topo_config.get_router_interface_to_switch(1)))
+                self.topo_config.interface_backup_command(self.topo_config.get_router_interface_to_client_switch(1)))
 
     def run_userspace_path_manager(self):
         """
@@ -364,7 +364,7 @@ class Experiment(object):
         count = self.experiment_parameter.get(ExperimentParameter.PING_COUNT)
         for i in range(0, self.topo_config.client_interface_count()):
             cmd = self.ping_command(self.topo_config.get_client_ip(i),
-                 self.topo_config.get_server_ip(), n=count)
+                 self.topo_config.get_server_ip(interface_index=0), n=count)
             logging.info(cmd)
             self.topo.command_to(self.topo_config.client, cmd)
 
