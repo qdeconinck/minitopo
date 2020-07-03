@@ -247,8 +247,8 @@ class TopoParameter(Parameter):
                 except ValueError as e:
                     logging.error("Ignored path {}: {}".format(k, e))
                 else:
-                    path = LinkCharacteristics(link_id, link_type, delay, bw,
-                            queue_size, loss_perc, backup=is_backup)
+                    path = LinkCharacteristics(link_id, link_type, delay, queue_size,
+                            bw, loss_perc, backup=is_backup)
                     self.link_characteristics.append(path)
 
     def __str__(self):
