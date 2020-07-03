@@ -114,7 +114,7 @@ class LinkCharacteristics(object):
 
     def build_changing_policing_cmd(self, ifname):
         return "&& ".join(
-            ["sleep {} && {} ".format(
+            ["sleep {} && ({}) ".format(
                 n.delta, self.build_policing_cmd(ifname, change=True)) for n in self.netem_at]
             + ["true &"]
         )
