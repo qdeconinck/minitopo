@@ -96,8 +96,8 @@ class LinkCharacteristics(object):
         )
 
     def build_netem_cmd(self, ifname, cmd, change=False):
-        return "tc qdisc {} dev {} root handle 10: netem {} delay {}ms limit 50000".format(
-            "change" if change else "add", ifname, cmd, self.delay)
+        return "tc qdisc {} dev {} root handle 10: netem {} {}".format(
+            "change" if change else "add", ifname, cmd, "delay {}ms limit 50000".format(self.delay) if not change else "")
 
     def build_changing_netem_cmd(self, ifname):
         return "&&".join(
@@ -148,7 +148,7 @@ Link id: {}
 class TopoParameter(Parameter):
     LEFT_SUBNET = "leftSubnet"
     RIGHT_SUBNET = "rightSubnet"
-    NETEM_AT = "netem_at_"
+    NETEM_AT = "netemAt_"
     CHANGE_NETEM = "changeNetem"
 
     DEFAULT_PARAMETERS = {
@@ -165,31 +165,39 @@ class TopoParameter(Parameter):
         self.load_netem_at()
         logging.info(self)
 
+    def parse_netem_at(self, key):
+        """
+        Parse key of the form netemAt_{link_type}_{link_id}
+
+        Return link_type, link_id
+        """
+        _, link_type, link_id = key.split("_")
+        return link_type, int(link_id)
+
     def load_netem_at(self):
         if not self.get(TopoParameter.CHANGE_NETEM) == "yes":
             return
         for k in sorted(self.parameters):
             if k.startswith(TopoParameter.NETEM_AT):
-                link_id = int(k[len(TopoParameter.NETEM_AT):])
-                val = self.parameters[k]
-                if not isinstance(val, list):
-                    tmp = val
-                    val = []
-                    val.append(tmp)
-                self.load_netem_at_list(link_id, val)
+                link_type, link_id = self.parse_netem_at(k)
+                self.load_netem_at_value(link_type, link_id, self.parameters[k])
 
-    def load_netem_at_list(self, link_id, nlist):
-        for n in nlist:
-            try:
-                at, cmd = n.split(",")
-                na = NetemAt(float(at), cmd)
-                if link_id < len(self.link_characteristics):
-                    self.link_characteristics[id].add_netem_at(na)
-                else:
-                    logging.error("Unable to set netem for link {}; only have {} links".format(
-                        link_id, len(self.link_characteristics)))
-            except ValueError as e:
-                logging.error("Unable to set netem for link {}: {}".format(link_id, n))
+    def find_link_characteristic(self, link_type, link_id):
+        for l in self.link_characteristics:
+            if l.link_type == link_type and l.id == link_id:
+                return l
+
+        return ValueError("No link with link_type {} and link_id {}".format(link_type, link_id))
+
+    def load_netem_at_value(self, link_type, link_id, n):
+        try:
+            at, cmd = n.split(",")
+            na = NetemAt(float(at), cmd)
+            l = self.find_link_characteristic(link_type, link_id)
+            l.add_netem_at(na)
+
+        except ValueError as e:
+            logging.error("Unable to set netem for link {} with command {}: {}".format(link_id, n, e))
 
         logging.info(self.link_characteristics[link_id].netem_at)
 
