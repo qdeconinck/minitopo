@@ -20,6 +20,8 @@ class PQUIC(Experiment):
     PARAMETER_CLASS = PQUICParameter
 
     BIN = "~/pquic/picoquicdemo"
+    CERT_FILE = "~/pquic/certs/cert.pem"
+    KEY_FILE = "~/pquic/certs/key.pem"
     SERVER_LOG = "pquic_server.log"
     CLIENT_LOG = "pquic_client.log"
 
@@ -46,7 +48,8 @@ class PQUIC(Experiment):
         return " ".join([" -P {} ".format(p) for p in plugins])
 
     def get_pquic_server_cmd(self):
-        s = "{} {} &> {} &".format(PQUIC.BIN, self.get_plugin_cmd(), PQUIC.SERVER_LOG)
+        s = "{} {} -c {} -k {} &> {} &".format(PQUIC.BIN, self.get_plugin_cmd(),
+            PQUIC.CERT_FILE, PQUIC.KEY_FILE, PQUIC.SERVER_LOG)
         logging.info(s)
         return s
 
