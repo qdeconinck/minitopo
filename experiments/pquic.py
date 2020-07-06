@@ -11,7 +11,7 @@ class PQUICParameter(RandomFileExperiment):
         super(PQUICParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             PQUICParameter.PLUGINS: "",
-            PQUICParameter.SIZE: 1024000,
+            PQUICParameter.SIZE: 10240000,
         })
 
 
@@ -19,7 +19,7 @@ class PQUIC(RandomFileExperiment):
     NAME = "pquic"
     PARAMETER_CLASS = PQUICParameter
 
-    BIN = "~/picoquic/picoquicdemo"
+    BIN = "~/pquic/picoquicdemo"
     SERVER_LOG = "pquic_server.log"
     CLIENT_LOG = "pquic_client.log"
 
