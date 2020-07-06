@@ -3,7 +3,7 @@ import logging
 import os
 
 
-class PQUICParameter(RandomFileExperiment):
+class PQUICParameter(ExperimentParameter):
     PLUGINS = "pquicPlugins"
     SIZE = "pquicSize"
 
@@ -15,7 +15,7 @@ class PQUICParameter(RandomFileExperiment):
         })
 
 
-class PQUIC(RandomFileExperiment):
+class PQUIC(Experiment):
     NAME = "pquic"
     PARAMETER_CLASS = PQUICParameter
 
