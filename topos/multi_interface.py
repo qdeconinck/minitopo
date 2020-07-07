@@ -207,10 +207,10 @@ class MultiInterfaceConfig(TopoConfig):
         return "{}{}.0/24".format(self.param.get(TopoParameter.RIGHT_SUBNET), interface_index)
 
     def client_interface_count(self):
-        return len(self.topo.c2r_client_switches)
+        return max(len(self.topo.c2r_client_switches), 1)
 
     def server_interface_count(self):
-        return len(self.topo.r2s_server_switches)
+        return max(len(self.topo.r2s_server_switches), 1)
 
     def get_router_interface_to_server_switch(self, switch_index):
         return self.get_router_interface_to_client_switch(len(self.topo.c2r_router_switches) + switch_index)
