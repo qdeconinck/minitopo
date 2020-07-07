@@ -54,15 +54,11 @@ class IPerfScenario(Experiment):
         super(IPerfScenario, self).clean()
 
     def run(self):
-        self.topo.command_to(self.topo_config.router, "tcpdump -i any -w router.pcap &")
 
+        self.topo.command_to(self.topo_config.router, "tcpdump -i any -w router.pcap &")
         # First run servers
         for l, s in enumerate(self.topo_config.servers):
             self.topo.command_to(s, self.get_server_cmd(server_id=l))
-
-        # Disable MPTCP on all congestion clients
-        for c in self.topo_config.clients[1:]:
-            self.topo.command_to(c, "sysctl -w net.mptcp.mptcp_enabled=0")
 
         # And set nb of subflows for fullmesh
         self.topo.command_to(self.topo_config.client, "echo {} > /sys/module/mptcp_fullmesh/parameters/num_subflows".format(self.fm_subflows))
@@ -75,8 +71,14 @@ class IPerfScenario(Experiment):
         self.topo.command_to(self.topo_config.clients[1], cmd)
         cmd = "sleep 20 && {} &".format(self.get_client_iperf_cmd(self.topo_config.get_server_ip(interface_index=2), 20, 2))
         self.topo.command_to(self.topo_config.clients[2], cmd)
-        cmd = self.get_client_iperf_cmd(self.topo_config.get_server_ip(), 50, 0)
+        cmd = "{} &".format(self.get_client_iperf_cmd(self.topo_config.get_server_ip(), 50, 0))
         self.topo.command_to(self.topo_config.client, cmd)
+
         self.topo.command_to(self.topo_config.client, "sleep 2")
+
+        # This is hacky
+        self.topo.command_global("sysctl -w net.mptcp.mptcp_enabled=0")
+        
+        self.topo.command_to(self.topo_config.client, "sleep 50")
 
         self.topo.command_to(self.topo_config.client, "echo 1 > /sys/module/mptcp_fullmesh/parameters/num_subflows")
