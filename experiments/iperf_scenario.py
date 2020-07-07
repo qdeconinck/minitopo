@@ -78,6 +78,7 @@ class IPerfScenario(Experiment):
 
         # This is hacky
         self.topo.command_global("sysctl -w net.mptcp.mptcp_enabled=0")
+        self.topo.command_global("sysctl -w net.ipv4.tcp_congestion_control=reno")
         
         self.topo.command_to(self.topo_config.client, "sleep 50")
 
