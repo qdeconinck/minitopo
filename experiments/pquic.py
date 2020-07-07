@@ -5,12 +5,16 @@ import os
 
 class PQUICParameter(ExperimentParameter):
     PLUGINS = "pquicPlugins"
+    CLIENT_PLUGINS = "pquicClientPlugins"
+    SERVER_PLUGINS = "pquicServerPlugins"
     SIZE = "pquicSize"
 
     def __init__(self, experiment_parameter_filename):
         super(PQUICParameter, self).__init__(experiment_parameter_filename)
         self.default_parameters.update({
             PQUICParameter.PLUGINS: "",
+            PQUICParameter.CLIENT_PLUGINS: "",
+            PQUICParameter.SERVER_PLUGINS: "",
             PQUICParameter.SIZE: 10240000,
         })
 
@@ -33,6 +37,8 @@ class PQUIC(Experiment):
     def load_parameters(self):
         super(PQUIC, self).load_parameters()
         self.plugins = self.experiment_parameter.get(PQUICParameter.PLUGINS)
+        self.client_plugins = self.experiment_parameter.get(PQUICParameter.CLIENT_PLUGINS)
+        self.server_plugins = self.experiment_parameter.get(PQUICParameter.SERVER_PLUGINS)
         self.size = int(self.experiment_parameter.get(PQUICParameter.SIZE))
 
     def prepare(self):
@@ -40,11 +46,13 @@ class PQUIC(Experiment):
         self.topo.command_to(self.topo_config.client, "rm {}".format(PQUIC.CLIENT_LOG))
         self.topo.command_to(self.topo_config.server, "rm {}".format(PQUIC.SERVER_LOG))
 
-    def get_plugin_cmd(self):
-        if len(self.plugins) == 0:
+    def get_plugin_cmd(self, client=False):
+        device_plugins = self.client_plugins if client else self.server_plugins
+        device_plugins = self.plugins if len(device_plugins) == 0 else device_plugins
+        if len(device_plugins) == 0:
             return ""
 
-        plugins = self.plugins.split(",")
+        plugins = device_plugins.split(",")
         return " ".join([" -P {} ".format(p) for p in plugins])
 
     def get_pquic_server_cmd(self):
@@ -54,7 +62,7 @@ class PQUIC(Experiment):
         return s
 
     def get_pquic_client_cmd(self):
-        s = "{} {} -4 -G {} {} 4443 &> {}".format(PQUIC.BIN, self.get_plugin_cmd(), self.size,
+        s = "{} {} -4 -G {} {} 4443 &> {}".format(PQUIC.BIN, self.get_plugin_cmd(client=True), self.size,
             self.topo_config.get_server_ip(), PQUIC.CLIENT_LOG)
         logging.info(s)
         return s
