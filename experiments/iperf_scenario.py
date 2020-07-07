@@ -54,6 +54,8 @@ class IPerfScenario(Experiment):
         super(IPerfScenario, self).clean()
 
     def run(self):
+        self.topo.command_to(self.router, "tcpdump -i any -w router.pcap &")
+
         # First run servers
         for l, s in enumerate(self.topo_config.servers):
             self.topo.command_to(s, self.get_server_cmd(server_id=l))
