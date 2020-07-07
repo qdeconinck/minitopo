@@ -1,5 +1,5 @@
 from core.experiment import RandomFileExperiment, RandomFileParameter, ExperimentParameter
-from topos.multi_interface_cong import MultiInterfaceCongConfig
+from topos.multi_interface_multi_client import MultiInterfaceMultiClientConfig
 import os
 
 
@@ -91,7 +91,7 @@ class QUIC(RandomFileExperiment):
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_before")
         self.topo.command_to(self.topo_config.server, cmd)
 
-        if isinstance(self.topo_config, MultiInterfaceCongConfig):
+        if isinstance(self.topo_config, MultiInterfaceMultiClientConfig):
             i = 0
             for cs in self.topo_config.cong_servers:
                 cmd = self.getCongServerCmd(i)
@@ -102,7 +102,7 @@ class QUIC(RandomFileExperiment):
 
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_before")
         # First run congestion clients, then the main one
-        if isinstance(self.topo_config, MultiInterfaceCongConfig):
+        if isinstance(self.topo_config, MultiInterfaceMultiClientConfig):
             i = 0
             for cc in self.topo_config.cong_clients:
                 cmd = self.getCongClientCmd(i)
@@ -114,12 +114,12 @@ class QUIC(RandomFileExperiment):
         self.topo.command_to(self.topo_config.server, "netstat -sn > netstat_server_after")
         self.topo.command_to(self.topo_config.client, "netstat -sn > netstat_client_after")
         # Wait for congestion traffic to end
-        if isinstance(self.topo_config, MultiInterfaceCongConfig):
+        if isinstance(self.topo_config, MultiInterfaceMultiClientConfig):
             for cc in self.topo_config.cong_clients:
                 self.topo.command_to(cc, "while pkill -f wget -0; do sleep 0.5; done")
 
         self.topo.command_to(self.topo_config.server, "pkill -f " + QUIC.SERVER_GO_FILE)
-        if isinstance(self.topo_config, MultiInterfaceCongConfig):
+        if isinstance(self.topo_config, MultiInterfaceMultiClientConfig):
             for cs in self.topo_config.cong_servers:
                 self.topo.command_to(cs, "pkill -f https_server.py")
 
