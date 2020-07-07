@@ -4,8 +4,19 @@ import logging
 import os
 
 
+class IPerfScenarioParameter(ExperimentParameter):
+    FM_SUBFLOWS = "iperfScenarioFMSublows"
+
+    def __init__(self, experiment_parameter_filename):
+        super(IPerfScenarioParameter, self).__init__(experiment_parameter_filename)
+        self.default_parameters.update({
+            IPerfScenarioParameter.FM_SUBFLOWS: "1",
+        })
+
+
 class IPerfScenario(Experiment):
     NAME = "iperfScenario"
+    PARAMETER_CLASS = IPerfScenarioParameter
 
     IPERF_LOG = "iperf.log"
     SERVER_LOG = "server.log"
@@ -16,6 +27,10 @@ class IPerfScenario(Experiment):
         super(IPerfScenario, self).__init__(experiment_parameter_filename, topo, topo_config)
         self.load_parameters()
         self.ping()
+
+    def load_parameters(self):
+        super(IPerfScenario, self).load_parameters()
+        self.fm_subflows = self.experiment_parameter.get(IPerfScenarioParameter.FM_SUBFLOWS)
 
     def prepare(self):
         super(IPerfScenario, self).prepare()
@@ -47,6 +62,9 @@ class IPerfScenario(Experiment):
         for c in self.topo_config.clients[1:]:
             self.topo.command_to(c, "sysctl -w net.mptcp.mptcp_enabled=0")
 
+        # And set nb of subflows for fullmesh
+        self.topo.command_to(self.topo_config.client, "echo {} > /sys/module/mptcp_fullmesh/parameters/num_subflows".format(self.fm_subflows))
+
         self.topo.command_to(self.topo_config.client, "sleep 2")
 
         # We run as follow.
@@ -58,3 +76,5 @@ class IPerfScenario(Experiment):
         cmd = self.get_client_iperf_cmd(self.topo_config.get_server_ip(), 50, 0)
         self.topo.command_to(self.topo_config.client, cmd)
         self.topo.command_to(self.topo_config.client, "sleep 2")
+
+        self.topo.command_to(self.topo_config.client, "echo 1 > /sys/module/mptcp_fullmesh/parameters/num_subflows")
