@@ -8,7 +8,7 @@ pkg_dir = os.path.dirname(__file__)
 for (module_loader, name, ispkg) in pkgutil.iter_modules([pkg_dir]):
     importlib.import_module('.' + name, __package__)
 
-# Track direct inheritance
+# Track indirect inheritance
 EXPERIMENTS = {}
 
 def _get_all_subclasses(BaseClass):
