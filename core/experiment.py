@@ -36,7 +36,6 @@ class ExperimentParameter(Parameter):
     BACKUP_PATH_0 = "backup_path_0"
     BACKUP_PATH_1 = "backup_path_1"
     BUFFER_AUTOTUNING = "bufferAutotuning"
-    METRIC = "metric"
 
     # Global sysctl keys
     SYSCTL_KEY = {
@@ -76,7 +75,6 @@ class ExperimentParameter(Parameter):
         AUTOCORK: "1",
         EARLY_RETRANS: "3",
         BUFFER_AUTOTUNING: "1",
-        METRIC: "-1",
         CLIENT_PCAP: "no",
         SERVER_PCAP: "no",
         SNAPLEN_PCAP: "65535",  # Default snapping value of tcpdump
@@ -152,19 +150,9 @@ class Experiment(object):
         """
         self.setup_sysctl()
         self.run_userspace_path_manager()  # TODO to move elsewhere
-        self.change_metric()  # TODO to move elsewhere
         self.put_priority_on_paths()  # TODO to move elsewhere
         self.run_tcpdump()
         self.run_netem_at()
-
-    def change_metric(self):
-        """
-        Function only meaningful for MPTCP and its specific scheduler
-        """
-        metric = self.experiment_parameter.get(ExperimentParameter.METRIC)
-        if int(metric) >= 0:
-            self.topo.command_global(
-                "echo {} > /sys/module/mptcp_sched_metric/parameters/metric".format(metric))
 
     def put_priority_on_paths(self):
         """
