@@ -35,7 +35,6 @@ class ExperimentParameter(Parameter):
     PRIO_PATH_1 = "priority_path_1"
     BACKUP_PATH_0 = "backup_path_0"
     BACKUP_PATH_1 = "backup_path_1"
-    EXPIRATION = "expiration"
     BUFFER_AUTOTUNING = "bufferAutotuning"
     METRIC = "metric"
 
@@ -49,7 +48,6 @@ class ExperimentParameter(Parameter):
         CC: "net.ipv4.tcp_congestion_control",
         AUTOCORK: "net.ipv4.tcp_autocorking",
         EARLY_RETRANS: "net.ipv4.tcp_early_retrans",
-        EXPIRATION: "net.mptcp.mptcp_sched_expiration",
         BUFFER_AUTOTUNING: "net.ipv4.tcp_moderate_rcvbuf",
     }
 
@@ -77,7 +75,6 @@ class ExperimentParameter(Parameter):
         SCHED: "default",
         AUTOCORK: "1",
         EARLY_RETRANS: "3",
-        EXPIRATION: "300",
         BUFFER_AUTOTUNING: "1",
         METRIC: "-1",
         CLIENT_PCAP: "no",
