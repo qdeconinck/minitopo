@@ -542,11 +542,12 @@ class TopoConfig(object):
         """
         Disable TSO on all interfaces
         """
+        logging.info("Disable TSO on all interfaces of all nodes")
         for node in [self.topo.get_host(n) for n in self.topo.topo_builder.net]:
             for intf in self.topo.get_interface_names(node):
                 logging.info("Disable TSO on interface {}".format(intf))
                 cmd = "ethtool -K {} tso off".format(intf)
-                logging.info(cmd)
+                logging.debug(cmd)
                 self.topo.command_to(node, cmd)
 
     def run_netem_at(self):
