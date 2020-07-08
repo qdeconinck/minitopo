@@ -199,30 +199,26 @@ class Experiment(object):
         """
         Function only meaningful to MPTCP with a specific path manager
         """
-        if self.experiment_parameter.get(ExperimentParameter.KERNELPMC) != "netlink":
-            logging.warning("Client: unable to change the userspace pm if the kernel pm is not netlink")
-        else:
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMC) == "netlink":
+            logging.info("Running user-space path manager on client")
             upmc = self.experiment_parameter.get(ExperimentParameter.USERPMC)
             upmca = self.experiment_parameter.get(ExperimentParameter.USERPMC_ARGS)
             self.topo.command_to(self.topo_config.client, "{} {} &>{} &".format(
                 upmc, upmca, "upmc.log"))
-        if self.experiment_parameter.get(ExperimentParameter.KERNELPMS) != "netlink":
-            logging.warning("Server: unable to change the userspace pm if the kernel pm is not netlink")
-        else:
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMS) == "netlink":
+            logging.info("Running user-space path manager on server")
             upms = self.experiment_parameter.get(ExperimentParameter.USERPMS)
             upmsa = self.experiment_parameter.get(ExperimentParameter.USERPMS_ARGS)
             self.topo.command_to(self.topo_config.server, "{} {} &>{} &".format(
                 upms, upmsa, "upms.log"))
 
     def clean_userspace_path_manager(self):
-        if self.experiment_parameter.get(ExperimentParameter.KERNELPMC) != "netlink":
-            logging.warning("Client: unable to change the userspace pm if the kernel pm is not netlink")
-        else:
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMC) == "netlink":
+            logging.info("Cleaning user-space path manager on client")
             upmc = self.experiment_parameter.get(ExperimentParameter.USERPMC)
             self.topo.command_to(self.topo_config.client, "killall {}".format(upmc))
-        if self.experiment_parameter.get(ExperimentParameter.KERNELPMS) != "netlink":
-            logging.warning("Server: unable to change the userspace pm if the kernel pm is not netlink")
-        else:
+        if self.experiment_parameter.get(ExperimentParameter.KERNELPMS) == "netlink":
+            logging.info("Cleaning user-space path manager on server")
             upms = self.experiment_parameter.get(ExperimentParameter.USERPMS)
             self.topo.command_to(self.topo_config.client, "killall {}".format(upms))
 
