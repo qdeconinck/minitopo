@@ -1,9 +1,0 @@
-xpType:epload
-ncClientPort_0:33400
-clientPcap:yes
-ddCount:15000
-epload_test_dir:/home/mininet/epload/epload/emulator/localtests
-#sched:roundrobin
-#rmem:87380 87380 87380
-#rmem:150000 150000 150000
-#rmem:300000 300000 300000

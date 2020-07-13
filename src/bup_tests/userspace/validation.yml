@@ -1,9 +1,0 @@
-checkers:
-  tshark:
-    # applies provided filter to tcpdump trace and returns number of packets matching 
-    - test: "filter"
-      filter: "tcp.options.mptcp.subtype==5"
-      validations:
-        - name: "exact_value"
-          target: 1
-          desc: "When the default interface is a backup, MPRIO should be sent"

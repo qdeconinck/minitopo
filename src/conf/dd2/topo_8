@@ -1,9 +1,0 @@
-leftSubnet:10.0.
-rightSubnet:10.1.
-#path_0:10,6,4
-path_1:200,120,4
-topoType:MultiIf
-#changeNetem:yes
-#netemAt_0:0,delay 100ms limit 70 loss 0.1%
-#netemAt_1:0,delay 200ms limit 10
-#netemAt_1:5,delay 100ms limit 70

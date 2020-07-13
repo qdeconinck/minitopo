@@ -1,7 +1,0 @@
-xpType:ncpv
-ncClientPort_0:33400
-clientPcap:yes
-pvRateLimit:400k
-#rmem:87380 87380 87380
-#rmem:150000 150000 150000
-rmem:300000 300000 300000

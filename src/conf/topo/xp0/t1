@@ -1,9 +1,0 @@
-desc:Simple configuration with two para link
-leftSubnet:5.5.
-rightSubnet:6.6.
-midSubnet:zzz
-#path_x:delay,queueSize(may be calc),bw
-error
-path_0:10,5,3.2
-#path_1:100,5,4.0
-topoType:MultiIf

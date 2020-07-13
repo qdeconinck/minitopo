@@ -1,5 +1,0 @@
-leftSubnet:10.0.
-rightSubnet:10.1.
-path_0:10,6,4
-#path_1:100,60,4
-topoType:MultiIf
