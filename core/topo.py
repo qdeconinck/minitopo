@@ -85,12 +85,12 @@ class LinkCharacteristics(object):
         return "tc qdisc del dev {} root; tc qdisc del dev {} ingress ".format(ifname, ifname)
 
     def build_bandwidth_cmd(self, ifname, change=False):
-        return "tc qdisc {} dev {} root handle 5:0 tbf rate {}mbit burst 15000 limit {}".format(
-            "change" if change else "add", ifname, self.bandwidth, self.buffer_size())
+        return "tc qdisc {} dev {} root handle 1:0 tbf rate {}mbit burst 15000 limit {}".format(#; tc qdisc {} dev {} parent 1:0 bfifo limit {}".format(
+            "change" if change else "add", ifname, self.bandwidth, self.buffer_size())#, "change" if change else "add", ifname, self.buffer_size())
 
     def build_changing_bandwidth_cmd(self, ifname):
         return "&& ".join(
-            ["sleep {} && {} ".format(
+            ["sleep {} && ({}) ".format(
                 n.delta, self.build_bandwidth_cmd(ifname, change=True)) for n in self.netem_at]
             + ["true &"]
         )
@@ -103,19 +103,6 @@ class LinkCharacteristics(object):
         return "&& ".join(
             ["sleep {} && {} ".format(
                 n.delta, self.build_netem_cmd(ifname, n.cmd, change=True)) for n in self.netem_at]
-            + ["true &"]
-        )
-
-    def build_policing_cmd(self, ifname, change=False):
-        return "tc qdisc {} dev {} handle ffff: ingress ; \
-            tc filter {} dev {} parent ffff: u32 match u32 0 0 police rate {}mbit burst {} drop".format(
-                "change" if change else "add", ifname, "change" if change else "add", ifname,
-                self.bandwidth, int(self.buffer_size()) * 1.2)
-
-    def build_changing_policing_cmd(self, ifname):
-        return "&& ".join(
-            ["sleep {} && ({}) ".format(
-                n.delta, self.build_policing_cmd(ifname, change=True)) for n in self.netem_at]
             + ["true &"]
         )
 
@@ -320,36 +307,27 @@ class BottleneckLink(object):
             self.topo.command_to(self.bs2, clean_cmd)
 
         # Flow bs0 -> bs3
-        policing_cmd = self.link_characteristics.build_policing_cmd(bs1_interface_names[0])
-        logging.info(policing_cmd)
-        self.topo.command_to(self.bs1, policing_cmd)
-        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs1_interface_names[-1])
-        logging.info(shaping_cmd)
-        self.topo.command_to(self.bs1, shaping_cmd)
-        netem_cmd = self.link_characteristics.build_netem_cmd(bs2_interface_names[-1],
-            "loss {}".format(self.link_characteristics.loss) if float(self.link_characteristics.loss) > 0 else "")
-        logging.info(netem_cmd)
-        self.topo.command_to(self.bs2, netem_cmd)
-
-        # Flow bs3 -> bs0
-        policing_cmd = self.link_characteristics.build_policing_cmd(bs2_interface_names[-1])
-        logging.info(policing_cmd)
-        self.topo.command_to(self.bs2, policing_cmd)
-        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs2_interface_names[0])
-        logging.info(shaping_cmd)
-        self.topo.command_to(self.bs2, shaping_cmd)
-        netem_cmd = self.link_characteristics.build_netem_cmd(bs1_interface_names[0],
+        netem_cmd = self.link_characteristics.build_netem_cmd(bs1_interface_names[-1],
             "loss {}".format(self.link_characteristics.loss) if float(self.link_characteristics.loss) > 0 else "")
         logging.info(netem_cmd)
         self.topo.command_to(self.bs1, netem_cmd)
+        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs2_interface_names[-1])
+        logging.info(shaping_cmd)
+        self.topo.command_to(self.bs2, shaping_cmd)
+
+        # Flow bs3 -> bs0
+        netem_cmd = self.link_characteristics.build_netem_cmd(bs2_interface_names[0],
+            "loss {}".format(self.link_characteristics.loss) if float(self.link_characteristics.loss) > 0 else "")
+        logging.info(netem_cmd)
+        self.topo.command_to(self.bs2, netem_cmd)
+        shaping_cmd = self.link_characteristics.build_bandwidth_cmd(bs1_interface_names[0])
+        logging.info(shaping_cmd)
+        self.topo.command_to(self.bs1, shaping_cmd)
 
     def configure_changing_bottleneck(self):
         bs1_interface_names = self.topo.get_interface_names(self.bs1)
         bs2_interface_names = self.topo.get_interface_names(self.bs2)
         # Flow bs0 -> bs3
-        policing_cmd = self.link_characteristics.build_changing_policing_cmd(bs1_interface_names[0])
-        logging.info(policing_cmd)
-        self.topo.command_to(self.bs1, policing_cmd)
         shaping_cmd = self.link_characteristics.build_changing_bandwidth_cmd(bs1_interface_names[-1])
         logging.info(shaping_cmd)
         self.topo.command_to(self.bs1, shaping_cmd)
@@ -358,9 +336,6 @@ class BottleneckLink(object):
         self.topo.command_to(self.bs2, netem_cmd)
 
         # Flow bs3 -> bs0
-        policing_cmd = self.link_characteristics.build_changing_policing_cmd(bs2_interface_names[-1])
-        logging.info(policing_cmd)
-        self.topo.command_to(self.bs2, policing_cmd)
         shaping_cmd = self.link_characteristics.build_changing_bandwidth_cmd(bs2_interface_names[0])
         logging.info(shaping_cmd)
         self.topo.command_to(self.bs2, shaping_cmd)
