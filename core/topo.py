@@ -515,13 +515,13 @@ class TopoConfig(object):
 
     def disable_tso(self):
         """
-        Disable TSO on all interfaces
+        Disable TSO, GSO and GRO on all interfaces
         """
-        logging.info("Disable TSO on all interfaces of all nodes")
+        logging.info("Disable TSO, GSO and GRO on all interfaces of all nodes")
         for node in [self.topo.get_host(n) for n in self.topo.topo_builder.net]:
             for intf in self.topo.get_interface_names(node):
-                logging.debug("Disable TSO on interface {}".format(intf))
-                cmd = "ethtool -K {} tso off".format(intf)
+                logging.debug("Disable TSO, GSO and GRO on interface {}".format(intf))
+                cmd = "ethtool -K {} tso off; ethtool -K {} gso off; ethtool -K {} gro off".format(intf, intf, intf)
                 logging.debug(cmd)
                 self.topo.command_to(node, cmd)
 

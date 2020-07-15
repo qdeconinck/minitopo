@@ -20,7 +20,7 @@ class IPerfScenario(Experiment):
 
     IPERF_LOG = "iperf.log"
     SERVER_LOG = "server.log"
-    IPERF_BIN = "iperf3"
+    IPERF_BIN = "iperf"
     PING_OUTPUT = "ping.log"
 
     def __init__(self, experiment_parameter_filename, topo, topo_config):
@@ -41,7 +41,7 @@ class IPerfScenario(Experiment):
             raise Exception("IPerfScenario only runs with MultiInterfaceMultiClientTopo")
 
     def get_client_iperf_cmd(self, server_ip, time, client_id):
-        s = "{} -c {} -t {} -P 1 &>{}{}".format(IPerfScenario.IPERF_BIN, server_ip, time, IPerfScenario.IPERF_LOG, client_id)
+        s = "{} -c {} -t {} -P 1 -i 5 &>{}{}".format(IPerfScenario.IPERF_BIN, server_ip, time, IPerfScenario.IPERF_LOG, client_id)
         logging.info(s)
         return s
 

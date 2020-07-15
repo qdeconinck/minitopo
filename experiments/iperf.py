@@ -20,7 +20,7 @@ class IPerf(Experiment):
 
     IPERF_LOG = "iperf.log"
     SERVER_LOG = "server.log"
-    IPERF_BIN = "iperf3"
+    IPERF_BIN = "iperf"
     PING_OUTPUT = "ping.log"
 
     def __init__(self, experiment_parameter_filename, topo, topo_config):
@@ -38,7 +38,7 @@ class IPerf(Experiment):
         self.topo.command_to(self.topo_config.server, "rm {}".format(IPerf.SERVER_LOG))
 
     def get_client_cmd(self):
-        s = "{} -c {} -t {} -P {} &>{}".format(IPerf.IPERF_BIN, 
+        s = "{} -c {} -t {} -P {} -i 1 &>{}".format(IPerf.IPERF_BIN, 
             self.topo_config.get_server_ip(), self.time, self.parallel, IPerf.IPERF_LOG)
         logging.info(s)
         return s
