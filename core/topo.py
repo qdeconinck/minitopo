@@ -84,25 +84,25 @@ class LinkCharacteristics(object):
     def build_delete_tc_cmd(self, ifname):
         return "tc qdisc del dev {} root; tc qdisc del dev {} ingress ".format(ifname, ifname)
 
-    def build_bandwidth_cmd(self, ifname, change=False):
-        return "tc qdisc {} dev {} root handle 1:0 tbf rate {}mbit burst 15000 limit {}".format(#; tc qdisc {} dev {} parent 1:0 bfifo limit {}".format(
-            "change" if change else "add", ifname, self.bandwidth, self.buffer_size())#, "change" if change else "add", ifname, self.buffer_size())
+    def build_bandwidth_cmd(self, ifname, replace=False):
+        return "tc qdisc {} dev {} root handle 1:0 tbf rate {}mbit burst 15000 limit {}".format(
+            "replace" if replace else "add", ifname, self.bandwidth, self.buffer_size())
 
     def build_changing_bandwidth_cmd(self, ifname):
         return "&& ".join(
             ["sleep {} && ({}) ".format(
-                n.delta, self.build_bandwidth_cmd(ifname, change=True)) for n in self.netem_at]
+                n.delta, self.build_bandwidth_cmd(ifname, replace=True)) for n in self.netem_at]
             + ["true &"]
         )
 
-    def build_netem_cmd(self, ifname, cmd, change=False):
+    def build_netem_cmd(self, ifname, cmd, replace=False):
         return "tc qdisc {} dev {} root handle 10: netem {} {}".format(
-            "change" if change else "add", ifname, cmd, "delay {}ms limit 50000".format(self.delay) if not change else "")
+            "replace" if replace else "add", ifname, cmd, "delay {}ms limit 50000".format(self.delay) if not replace else "")
 
     def build_changing_netem_cmd(self, ifname):
         return "&& ".join(
             ["sleep {} && {} ".format(
-                n.delta, self.build_netem_cmd(ifname, n.cmd, change=True)) for n in self.netem_at]
+                n.delta, self.build_netem_cmd(ifname, n.cmd, replace=True)) for n in self.netem_at]
             + ["true &"]
         )
 
