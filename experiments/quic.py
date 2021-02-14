@@ -3,7 +3,7 @@ from topos.multi_interface_multi_client import MultiInterfaceMultiClientConfig
 import os
 
 
-class QUICParameter(RandomFileExperiment):
+class QUICParameter(RandomFileParameter):
     MULTIPATH = "quicMultipath"
 
     def __init__(self, experiment_parameter_filename):
