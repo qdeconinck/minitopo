@@ -10,8 +10,11 @@ from experiments import EXPERIMENTS
 from topos import TOPO_CONFIGS, TOPOS
 
 import logging
+import subprocess
 import traceback
 
+def get_git_revision_short_hash():
+    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode("unicode_escape").strip()
 
 class Runner(object):
     """
@@ -22,6 +25,7 @@ class Runner(object):
     All the operations are done when calling the constructor.
     """
     def __init__(self, builder_type, topo_parameter_file, experiment_parameter_file):
+        logging.info("Minitopo version {}".format(get_git_revision_short_hash()))
         self.topo_parameter = TopoParameter(topo_parameter_file)
         self.set_builder(builder_type)
         self.apply_topo()
