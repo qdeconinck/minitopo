@@ -10,11 +10,18 @@ from experiments import EXPERIMENTS
 from topos import TOPO_CONFIGS, TOPOS
 
 import logging
+import os
 import subprocess
 import traceback
 
 def get_git_revision_short_hash():
-    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode("unicode_escape").strip()
+    # Because we might run Minitopo from elsewhere.
+    curr_dir = os.getcwd()
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(ROOT_DIR)
+    ret = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode("unicode_escape").strip()
+    os.chdir(curr_dir)
+    return ret
 
 class Runner(object):
     """
