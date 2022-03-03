@@ -5,10 +5,13 @@ import os
 
 class MpExperienceQUICReqres(MpExperience):
 	GO_BIN = "/usr/local/go/bin/go"
-	SERVER_LOG = "quic_server.log"
-	CLIENT_LOG = "quic_client.log"
+	SERVER_LOG = "/mnt/tmpfs/quic_server.log"
+	CLIENT_LOG = "/mnt/tmpfs/quic_client.log"
+        GO_REPO_PATH = "~/go/src/github.com/lucas-clemente/quic-go/"
 	CLIENT_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/reqres/client/reqres.go"
+	CLIENT_GO_FILE_RELATIVE = "example/reqres/client/reqres.go"
 	SERVER_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/reqres/reqres.go"
+	SERVER_GO_FILE_RELATIVE = "example/reqres/reqres.go"
 	PING_OUTPUT = "ping.log"
 
 	def __init__(self, xpParamFile, mpTopo, mpConfig):
@@ -47,17 +50,21 @@ class MpExperienceQUICReqres(MpExperience):
 				MpExperienceQUICReqres.SERVER_LOG )
 
 	def getQUICReqresServerCmd(self):
-		s = MpExperienceQUICReqres.GO_BIN + " run " + MpExperienceQUICReqres.SERVER_GO_FILE
+                s = "(cd " +  MpExperienceQUICReqres.GO_REPO_PATH + " && "
+		s += MpExperienceQUICReqres.GO_BIN + " run " + MpExperienceQUICReqres.SERVER_GO_FILE_RELATIVE
 		s += " -addr 0.0.0.0:8080 &>" + MpExperienceQUICReqres.SERVER_LOG + " &"
+                s += ")"
 		print(s)
 		return s
 
 	def getQUICReqresClientCmd(self):
-		s = MpExperienceQUICReqres.GO_BIN + " run " + MpExperienceQUICReqres.CLIENT_GO_FILE
+                s = "(cd " +  MpExperienceQUICReqres.GO_REPO_PATH + " && "
+		s += MpExperienceQUICReqres.GO_BIN + " run " + MpExperienceQUICReqres.CLIENT_GO_FILE_RELATIVE
 		s += " -addr " + self.mpConfig.getServerIP() + ":8080 -runTime " + self.run_time + "s"
 		if int(self.multipath) > 0:
 			s += " -m"
 		s += " &>" + MpExperienceQUICReqres.CLIENT_LOG
+                s += ")"
 		print(s)
 		return s
 

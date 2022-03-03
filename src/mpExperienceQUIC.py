@@ -7,8 +7,11 @@ class MpExperienceQUIC(MpExperience):
 	GO_BIN = "/usr/local/go/bin/go"
 	SERVER_LOG = "quic_server.log"
 	CLIENT_LOG = "quic_client.log"
+        GO_REPO_PATH = "~/go/src/github.com/lucas-clemente/quic-go/"
 	CLIENT_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/client_benchmarker/main.go"
+	CLIENT_GO_FILE_RELATIVE = "example/client_benchmarker/main.go"
 	SERVER_GO_FILE = "~/go/src/github.com/lucas-clemente/quic-go/example/main.go"
+	SERVER_GO_FILE_RELATIVE = "example/main.go"
 	CERTPATH = "~/go/src/github.com/lucas-clemente/quic-go/example/"
 	PING_OUTPUT = "ping.log"
 
@@ -76,10 +79,14 @@ class MpExperienceQUIC(MpExperience):
 		return s
 
 	def compileGoFiles(self):
-		cmd = MpExperienceQUIC.GO_BIN + " build " + MpExperienceQUIC.SERVER_GO_FILE
+                cmd = "(cd " +  MpExperienceQUIC.GO_REPO_PATH + " && "
+		cmd += MpExperienceQUIC.GO_BIN + " build " + " -o /mnt/tmpfs/server_main " + MpExperienceQUIC.SERVER_GO_FILE_RELATIVE
+                cmd += ")"
 		self.mpTopo.commandTo(self.mpConfig.server, cmd)
-		self.mpTopo.commandTo(self.mpConfig.server, "mv main server_main")
-		cmd = MpExperienceQUIC.GO_BIN + " build " + MpExperienceQUIC.CLIENT_GO_FILE
+
+                cmd = "(cd " +  MpExperienceQUIC.GO_REPO_PATH + " && "
+		cmd = MpExperienceQUIC.GO_BIN + " build " + " -o /mnt/tmpfs/main " + MpExperienceQUIC.CLIENT_GO_FILE_RELATIVE
+                cmd +=  ")"
 		self.mpTopo.commandTo(self.mpConfig.server, cmd)
 
 	def clean(self):
@@ -105,7 +112,7 @@ class MpExperienceQUIC(MpExperience):
 		self.mpTopo.commandTo(self.mpConfig.server, "netstat -sn > netstat_server_after")
 		self.mpTopo.commandTo(self.mpConfig.client, "netstat -sn > netstat_client_after")
 
-		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + MpExperienceQUIC.SERVER_GO_FILE)
+		self.mpTopo.commandTo(self.mpConfig.server, "pkill -f " + MpExperienceQUIC.SERVER_GO_FILE_RELATIVE)
 
 		self.mpTopo.commandTo(self.mpConfig.client, "sleep 2")
 		# Need to delete the go-build directory in tmp; could lead to no more space left error
